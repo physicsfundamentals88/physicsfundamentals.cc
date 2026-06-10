@@ -1,13 +1,13 @@
 import { drizzle } from "drizzle-orm/d1";
 import * as schema from "./schema";
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 // Get Cloudflare env bindings — works in both edge runtime and local dev
 function getCloudflareEnv(): any {
   try {
-    // @opennextjs/cloudflare exposes bindings via getRequestContext()
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getRequestContext } = require("@opennextjs/cloudflare");
-    return getRequestContext().env;
+    const { env } = getCloudflareContext();
+    return env;
   } catch {
     // Fallback for local development or if context is unavailable
     return (process as any).env;

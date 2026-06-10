@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 
 export const runtime = "edge";
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 function getCloudflareEnv(): any {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { getRequestContext } = require("@opennextjs/cloudflare");
-    return getRequestContext().env;
+    const { env } = getCloudflareContext();
+    return env;
   } catch {
     return (process as any).env;
   }
