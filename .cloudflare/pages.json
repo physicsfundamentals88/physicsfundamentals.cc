@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npx @cloudflare/next-on-pages",
+  "deployCommand": "npx wrangler pages deploy .vercel/output/static"
+}
