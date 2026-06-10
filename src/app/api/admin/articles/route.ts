@@ -8,11 +8,8 @@ export const runtime = "edge";
 // GET all articles
 export async function GET(request: Request) {
   try {
-    const env = (process as any).env;
-    const db = getDb(env);
-    
+    const db = getDb();
     const allArticles = await db.select().from(articles).orderBy(desc(articles.createdAt));
-    
     return NextResponse.json(allArticles);
   } catch (error: any) {
     console.error("Fetch Articles Error:", error);
@@ -23,16 +20,14 @@ export async function GET(request: Request) {
 // POST new article
 export async function POST(request: Request) {
   try {
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
     const body = await request.json();
 
-    // Mapping editor state to DB schema
     const newArticle = await db.insert(articles).values({
       title: body.title,
       slug: body.slug,
       content: body.content,
-      excerpt: body.excerpt,
+      excerpt: body.excerpt || "",
       status: body.status || "draft",
       scheduledDate: body.scheduledDate,
       metaTitle: body.metaTitle,

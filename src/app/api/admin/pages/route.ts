@@ -7,8 +7,7 @@ export const runtime = "edge";
 
 export async function GET() {
   try {
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
     const allPages = await db.select().from(pages).orderBy(desc(pages.updatedAt));
     
     // If no pages exist yet, return seed data for the CMS
@@ -30,8 +29,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
     const data = await req.json();
     const result = await db.insert(pages).values({
       title: data.title,

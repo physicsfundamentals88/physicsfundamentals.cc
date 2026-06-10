@@ -7,8 +7,7 @@ export const runtime = "edge";
 
 export async function GET() {
   try {
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
 
     // In a real scenario, this would fetch from GSC API and cache in searchStats table.
     // For now, we return the cached data or mock data.

@@ -17,12 +17,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   // but to keep it simple and robust across environments, let's fetch from the absolute URL if available
   // or just use the DB directly by assuming env is in process.env
   
-  const env = (process as any).env;
   let article = null;
   let latestArticles: any[] = [];
 
   try {
-    const db = getDb(env);
+    const db = getDb();
     const result = await db.select().from(articles).where(eq(articles.slug, slug)).limit(1);
     article = result[0];
 

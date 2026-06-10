@@ -12,8 +12,7 @@ export async function GET(
 ) {
   try {
     const { id: idStr } = await params;
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
     const id = parseInt(idStr);
 
     const article = await db.select().from(articles).where(eq(articles.id, id));
@@ -36,8 +35,7 @@ export async function PUT(
 ) {
   try {
     const { id: idStr } = await params;
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
     const id = parseInt(idStr);
     const body = await request.json();
 
@@ -63,8 +61,7 @@ export async function DELETE(
 ) {
   try {
     const { id: idStr } = await params;
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
     const id = parseInt(idStr);
 
     await db.delete(articles).where(eq(articles.id, id));

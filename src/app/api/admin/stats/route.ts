@@ -7,8 +7,7 @@ export const runtime = "edge";
 
 export async function GET(request: Request) {
   try {
-    const env = (process as any).env;
-    const db = getDb(env);
+    const db = getDb();
 
     // Get total articles count
     const articlesCount = await db.select({ value: count() }).from(articles);
