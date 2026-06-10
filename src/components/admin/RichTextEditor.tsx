@@ -598,7 +598,7 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
       {editor && (
         <BubbleMenu
           editor={editor}
-          tippyOptions={{ duration: 150, placement: "top", arrow: false }}
+          options={{ placement: "top", arrow: false }}
           className="flex items-center gap-0.5 bg-[#0F172A] border border-white/10 shadow-2xl shadow-black/40 rounded-2xl px-2 py-1.5 animate-fade-in"
         >
           {/* Heading Options */}
