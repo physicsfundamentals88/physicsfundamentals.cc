@@ -1,1 +1,0 @@
-globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/admin/gsc/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"C:\\Users\\PC\\Downloads\\Physics site\\src\\app\\api\\admin\\gsc\\route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}};
