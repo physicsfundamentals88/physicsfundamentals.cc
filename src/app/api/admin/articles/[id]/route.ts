@@ -8,12 +8,13 @@ export const runtime = "edge";
 // GET individual article
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: idStr } = await params;
     const env = (process as any).env;
     const db = getDb(env);
-    const id = parseInt(params.id);
+    const id = parseInt(idStr);
 
     const article = await db.select().from(articles).where(eq(articles.id, id));
 
@@ -31,12 +32,13 @@ export async function GET(
 // PUT update article
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: idStr } = await params;
     const env = (process as any).env;
     const db = getDb(env);
-    const id = parseInt(params.id);
+    const id = parseInt(idStr);
     const body = await request.json();
 
     const updatedArticle = await db.update(articles)
@@ -57,12 +59,13 @@ export async function PUT(
 // DELETE article
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: idStr } = await params;
     const env = (process as any).env;
     const db = getDb(env);
-    const id = parseInt(params.id);
+    const id = parseInt(idStr);
 
     await db.delete(articles).where(eq(articles.id, id));
 
