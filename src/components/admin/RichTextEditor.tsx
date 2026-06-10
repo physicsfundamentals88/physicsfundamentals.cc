@@ -213,7 +213,12 @@ function YoutubeModal({ editor, open, onClose }: { editor: any; open: boolean; o
 }
 
 /* ─── Image Compression Helper ────────────────── */
-function compressImage(file: File): Promise<Blob> {
+function compressImage(file: File): Promise<Blob | File> {
+  // If the file is already small enough (under 600 KB), upload it directly to preserve original quality
+  if (file.size <= 600 * 1024) {
+    return Promise.resolve(file);
+  }
+
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -252,8 +257,8 @@ function compressImage(file: File): Promise<Blob> {
               resolve(file);
             }
           },
-          "image/jpeg",
-          0.7
+          "image/webp",
+          0.8
         );
       };
       img.onerror = () => resolve(file);
