@@ -319,6 +319,56 @@ export default function NewArticlePage() {
   );
 }
 
+/* ─── Image Compression Helper ────────────────── */
+function compressImage(file: File): Promise<Blob> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          0.7
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+}
+
 /* ─── Post Settings ─────────────────────────────── */
 function PostSettingsPanel({ featuredImage, setFeaturedImage, category, setCategory, author, setAuthor, content }: any) {
   const [uploading, setUploading] = useState(false);
@@ -329,15 +379,19 @@ function PostSettingsPanel({ featuredImage, setFeaturedImage, category, setCateg
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const preview = URL.createObjectURL(file);
-    setFeaturedImage(preview);
     try {
+      const compressedBlob = await compressImage(file);
+      const preview = URL.createObjectURL(compressedBlob);
+      setFeaturedImage(preview);
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", compressedBlob, file.name);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (data.url) setFeaturedImage(data.url);
-    } catch { }
+    } catch {
+      const preview = URL.createObjectURL(file);
+      setFeaturedImage(preview);
+    }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
   };

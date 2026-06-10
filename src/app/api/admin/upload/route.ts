@@ -5,15 +5,23 @@ export const runtime = "edge";
 export async function POST(request: Request) {
   try {
     const env = (process as any).env;
-    if (!env.MEDIA_BUCKET) {
-      return NextResponse.json({ error: "R2 bucket binding 'MEDIA_BUCKET' not found." }, { status: 500 });
-    }
-
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    if (!env.MEDIA_BUCKET) {
+      // Fallback: Convert to Base64 for card-free local/production storage
+      const buffer = await file.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      const contentType = file.type || "application/octet-stream";
+      const dataUrl = `data:${contentType};base64,${base64}`;
+      return NextResponse.json({ 
+        url: dataUrl,
+        name: file.name 
+      });
     }
 
     const fileName = `${Date.now()}-${file.name.replace(/\s+/g, "-")}`;

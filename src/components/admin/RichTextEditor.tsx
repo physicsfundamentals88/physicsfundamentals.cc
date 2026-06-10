@@ -212,6 +212,56 @@ function YoutubeModal({ editor, open, onClose }: { editor: any; open: boolean; o
   );
 }
 
+/* ─── Image Compression Helper ────────────────── */
+function compressImage(file: File): Promise<Blob> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          0.7
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+}
+
 /* ─── Image Upload Button ──────────────────────── */
 function ImageUploadButton({ editor, onUploadStart, onUploadEnd }: { editor: any; onUploadStart: () => void; onUploadEnd: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -221,24 +271,22 @@ function ImageUploadButton({ editor, onUploadStart, onUploadEnd }: { editor: any
     if (!file) return;
     onUploadStart();
     try {
+      const compressedBlob = await compressImage(file);
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", compressedBlob, file.name);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (data.url) {
         editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
       } else {
-        // fallback: create object URL for preview (local dev)
-        const objectUrl = URL.createObjectURL(file);
+        const objectUrl = URL.createObjectURL(compressedBlob);
         editor.chain().focus().setImage({ src: objectUrl, alt: file.name }).run();
       }
     } catch {
-      // fallback for local dev without R2
-      const objectUrl = URL.createObjectURL(file!);
-      editor.chain().focus().setImage({ src: objectUrl, alt: file!.name }).run();
+      const objectUrl = URL.createObjectURL(file);
+      editor.chain().focus().setImage({ src: objectUrl, alt: file.name }).run();
     }
     onUploadEnd();
-    // reset so same file can be re-selected
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -740,11 +788,16 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
                       input.onchange = async (e: any) => {
                           const file = e.target.files[0];
                           if (file) {
-                              const fd = new FormData();
-                              fd.append("file", file);
-                              const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-                              const data = await res.json();
-                              if (data.url) editor.chain().focus().setImage({ src: data.url }).run();
+                              try {
+                                  const compressedBlob = await compressImage(file);
+                                  const fd = new FormData();
+                                  fd.append("file", compressedBlob, file.name);
+                                  const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+                                  const data = await res.json();
+                                  if (data.url) editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
+                              } catch (err) {
+                                  console.error("Upload failed", err);
+                              }
                           }
                       };
                       input.click();

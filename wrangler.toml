@@ -11,6 +11,3 @@ database_name = "physics-blog-db"
 database_id = "d11dbfad-e50b-451d-8ba0-724246cfc858"
 migrations_dir = "drizzle"
 
-[[r2_buckets]]
-binding = "MEDIA_BUCKET"
-bucket_name = "physics-blog-assets"
