@@ -5,7 +5,7 @@ import PostClient from "./PostClient";
 import { notFound } from "next/navigation";
 import React from "react";
 
-export const runtime = "edge";
+
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

@@ -3,7 +3,7 @@ import { getDb } from "@/db";
 import { articles } from "@/db/schema";
 import { count } from "drizzle-orm";
 
-export const runtime = "edge";
+
 
 export async function GET(request: Request) {
   try {
