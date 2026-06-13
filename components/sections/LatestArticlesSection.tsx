@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -150,8 +151,14 @@ interface LatestArticlesSectionProps {
 }
 
 export default function LatestArticlesSection({ dbArticles = [] }: LatestArticlesSectionProps) {
-  // If we have database articles, use them. Otherwise, fall back to the static mock articles.
-  const displayArticles = dbArticles.length > 0 ? dbArticles.slice(0, 3) : articles.slice(0, 3);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Hydration safety: use static mock articles on server-side and initial render
+  const displayArticles = (mounted && dbArticles.length > 0) ? dbArticles.slice(0, 3) : articles.slice(0, 3);
 
   return (
     <section className="py-24 bg-white relative">
