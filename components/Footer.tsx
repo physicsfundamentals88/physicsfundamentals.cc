@@ -18,6 +18,7 @@ const footerLinks = {
     { label: "Practice Problems", href: "/roadmap#resources" },
     { label: "Simulations", href: "/simulations" },
     { label: "Formula Sheets", href: "/roadmap#resources" },
+    { label: "Sitemap", href: "/sitemap" },
   ],
   Company: [
     { label: "About Us", href: "/about" },

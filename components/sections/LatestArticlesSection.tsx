@@ -145,7 +145,14 @@ const articles = [
   }
 ];
 
-export default function LatestArticlesSection() {
+interface LatestArticlesSectionProps {
+  dbArticles?: any[];
+}
+
+export default function LatestArticlesSection({ dbArticles = [] }: LatestArticlesSectionProps) {
+  // If we have database articles, use them. Otherwise, fall back to the static mock articles.
+  const displayArticles = dbArticles.length > 0 ? dbArticles.slice(0, 3) : articles.slice(0, 3);
+
   return (
     <section className="py-24 bg-white relative">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8 relative z-10">
@@ -193,7 +200,7 @@ export default function LatestArticlesSection() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {articles.map((article, index) => (
+          {displayArticles.map((article, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -203,9 +210,23 @@ export default function LatestArticlesSection() {
               className="group bg-white rounded-[20px] overflow-hidden border border-slate-200 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-slate-300 flex flex-col h-full"
               style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.05)" }}
             >
-              {/* Illustration Area */}
-              <div className="h-[220px] w-full relative">
-                <article.Illustration />
+              {/* Illustration or Image Area */}
+              <div className="h-[220px] w-full relative bg-[#0b1221] overflow-hidden flex items-center justify-center">
+                {article.heroImage ? (
+                  <img
+                    src={article.heroImage}
+                    alt={article.title}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : article.Illustration ? (
+                  <article.Illustration />
+                ) : (
+                  <div className="text-center p-6">
+                    <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
+                  </div>
+                )}
                 {/* Category Pill Overlaid */}
                 <div className="absolute left-6 bottom-5 bg-white/10 backdrop-blur-md border border-white/10 text-white/90 text-[10px] font-bold tracking-widest px-3 py-1.5 rounded-full uppercase leading-none">
                   {article.category}
@@ -219,13 +240,13 @@ export default function LatestArticlesSection() {
                   style={{ fontFamily: "var(--font-dm-sans)" }}
                 >
                   <span className="text-slate-400/80">{article.date}</span>
-                  <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                  <span className="w-1 h-1 rounded-full bg-slate-300 font-bold shrink-0"></span>
                   <span className="text-slate-400/80">{article.readTime}</span>
                 </div>
                 
                 <h3 
-                  className="text-[18px] leading-[1.4] mb-8"
-                  style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 600, color: "rgb(15, 23, 42)" }}
+                  className="text-[18px] leading-[1.4] mb-8 font-semibold"
+                  style={{ fontFamily: "var(--font-dm-sans)", color: "rgb(15, 23, 42)" }}
                 >
                   {article.title}
                 </h3>
@@ -233,18 +254,18 @@ export default function LatestArticlesSection() {
                 {/* Author Area */}
                 <div className="flex items-center justify-between mt-auto pt-5 border-t border-slate-100">
                   <div className="flex items-center gap-2.5">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${article.avatarBg} text-[10px]`}>
-                      👩‍🔬
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${article.avatarBg || article.authorBg || 'bg-blue-600'} text-[10px] text-white font-bold`}>
+                      {article.authorInitials || 'PL'}
                     </div>
                     <span 
                       className="text-[13px]"
                       style={{ fontFamily: "var(--font-dm-sans)", color: "rgb(100, 116, 139)" }}
                     >
-                      {article.author}
+                      {article.author || 'PhysicsLab'}
                     </span>
                   </div>
                   <Link 
-                    href="#"
+                    href={article.href || `/blog/${article.slug}`}
                     className="text-blue-600 bg-transparent hover:bg-blue-50 px-4 py-2 -mr-4 rounded-full transition-all duration-300 text-[14px] flex items-center gap-1 group/read"
                     style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 500 }}
                   >

@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
+import { Inter, DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 
-const inter = { variable: "--font-sans" };
-const dmSans = { variable: "--font-dm-sans" };
-const instrumentSerif = { variable: "--font-instrument-serif" };
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "PhysicsLab – Interactive Physics Simulations & Visual Learning",
+  title: {
+    default: "PhysicsLab – Interactive Physics Simulations & Visual Learning",
+    template: "%s | PhysicsLab",
+  },
   description:
     "Explore gravity, pendulums, collisions, waves, and orbital mechanics through beautiful interactive simulations. Learn physics visually, at your own pace.",
   keywords: [

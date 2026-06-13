@@ -1,188 +1,65 @@
-"use client";
+import type { Metadata } from "next";
+import Client from "./Client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Navbar from "@components/Navbar";
-import Footer from "@components/Footer";
-import RelatedCalculators from "@components/RelatedCalculators";
+export const metadata: Metadata = {
+  title: "Circular Motion Calculator | PhysicsLab",
+  description: "Calculate angular velocity, linear velocity, and period for objects in uniform circular motion. Free online physics calculator with step-by-step solutions.",
+  alternates: {
+    canonical: "/calculators/circular-motion",
+  },
+};
 
-type SolveFor = "v" | "ω" | "T" | "r";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Circular Motion Calculator",
+  "operatingSystem": "All",
+  "applicationCategory": "EducationalApplication",
+  "description": "Calculate angular velocity, linear velocity, and period for objects in uniform circular motion.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
 
-export default function CircularMotionCalculator() {
-  const [solveFor, setSolveFor] = useState<SolveFor>("v");
-  const [velocity, setVelocity] = useState("");
-  const [angularVelocity, setAngularVelocity] = useState("6.28");
-  const [radius, setRadius] = useState("2");
-  const [period, setPeriod] = useState("1");
-
-  const [result, setResult] = useState<{ value: string; unit: string; steps: string[] } | null>(null);
-
-  useEffect(() => {
-    calculate();
-  }, [solveFor, velocity, angularVelocity, radius, period]);
-
-  const calculate = () => {
-    let r = parseFloat(radius);
-    let w = parseFloat(angularVelocity);
-    let v = parseFloat(velocity);
-    let t = parseFloat(period);
-
-    let res = 0;
-    let unit = "";
-    let steps: string[] = [];
-
-    if (solveFor === "v" && !isNaN(w) && !isNaN(r)) {
-      res = w * r;
-      unit = "m/s";
-      steps = [
-        `v = ω · r`,
-        `v = ${w} rad/s · ${r} m`,
-        `v = ${res.toFixed(2)} m/s`
-      ];
-    } else if (solveFor === "ω" && !isNaN(v) && !isNaN(r) && r !== 0) {
-      res = v / r;
-      unit = "rad/s";
-      steps = [
-        `v = ω · r  =>  ω = v / r`,
-        `ω = ${v} m/s / ${r} m`,
-        `ω = ${res.toFixed(2)} rad/s`
-      ];
-    } else if (solveFor === "T" && !isNaN(w) && w !== 0) {
-      res = (2 * Math.PI) / w;
-      unit = "s";
-      steps = [
-        `T = 2π / ω`,
-        `T = 2π / ${w} rad/s`,
-        `T = ${res.toFixed(4)} s`
-      ];
-    } else if (solveFor === "r" && !isNaN(v) && !isNaN(w) && w !== 0) {
-      res = v / w;
-      unit = "m";
-      steps = [
-        `v = ω · r  =>  r = v / ω`,
-        `r = ${v} m/s / ${w} rad/s`,
-        `r = ${res.toFixed(2)} m`
-      ];
-    } else {
-      setResult(null);
-      return;
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://physicslab.app"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Calculators",
+      "item": "https://physicslab.app/calculators"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Circular Motion Calculator",
+      "item": "https://physicslab.app/calculators/circular-motion"
     }
+  ]
+};
 
-    setResult({
-      value: res.toLocaleString(undefined, { maximumFractionDigits: 4 }),
-      unit,
-      steps
-    });
-  };
-
+export default function Page() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafcff]">
-      <Navbar />
-      
-      <div className="pt-[110px] pb-8 bg-white border-b border-slate-100">
-        <div className="max-w-[1100px] mx-auto px-6 sm:px-8">
-          <div className="flex items-center gap-2 mb-4 text-[12px] font-semibold tracking-wide uppercase" style={{ fontFamily: "var(--font-dm-sans)" }}>
-            <Link href="/calculators" className="text-slate-400 hover:text-cyan-500 transition-colors">Calculators</Link>
-            <span className="text-slate-300">/</span>
-            <span className="text-cyan-500 bg-cyan-50 px-2 py-0.5 rounded-md">Classical Mechanics</span>
-          </div>
-          <h1 className="text-[36px] md:text-[44px] leading-[1.1] font-bold text-slate-900 mb-4" style={{ fontFamily: "var(--font-instrument-serif)", fontWeight: 400 }}>
-            Circular Motion Calculator
-          </h1>
-          <p className="text-[16px] text-slate-500 max-w-[600px] leading-[1.6]" style={{ fontFamily: "var(--font-dm-sans)" }}>
-            Solve for linear velocity, angular velocity, period, or radius in uniform circular motion.
-          </p>
-        </div>
-      </div>
-
-      <section className="py-12 flex-1">
-        <div className="max-w-[1100px] mx-auto px-6 sm:px-8">
-          <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start">
-            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm">
-              <div className="mb-8">
-                <label className="block text-[13px] font-bold text-slate-700 mb-3" style={{ fontFamily: "var(--font-dm-sans)" }}>Solve for</label>
-                <div className="grid grid-cols-2 gap-1 bg-slate-100/70 p-1 rounded-xl">
-                  {[
-                    { label: "Linear Vel", val: "v" },
-                    { label: "Angular Vel", val: "ω" },
-                    { label: "Period", val: "T" },
-                    { label: "Radius", val: "r" }
-                  ].map(opt => (
-                    <button
-                      key={opt.val}
-                      onClick={() => setSolveFor(opt.val as any)}
-                      className={`py-2 text-[12px] font-bold rounded-lg transition-all ${solveFor === opt.val ? "bg-cyan-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
-                      style={{ fontFamily: "var(--font-dm-sans)" }}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {solveFor !== "r" && (
-                  <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-2" style={{ fontFamily: "var(--font-dm-sans)" }}>Radius (r, meters)</label>
-                    <input type="number" value={radius} onChange={(e) => setRadius(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[16px] text-slate-800 outline-none focus:border-cyan-500 transition-colors" />
-                  </div>
-                )}
-                {solveFor !== "v" && solveFor !== "T" && (
-                  <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-2" style={{ fontFamily: "var(--font-dm-sans)" }}>Linear Velocity (v, m/s)</label>
-                    <input type="number" value={velocity} onChange={(e) => setVelocity(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[16px] text-slate-800 outline-none focus:border-cyan-500 transition-colors" />
-                  </div>
-                )}
-                {solveFor !== "ω" && (
-                  <div>
-                    <label className="block text-[13px] font-bold text-slate-700 mb-2" style={{ fontFamily: "var(--font-dm-sans)" }}>Angular Velocity (ω, rad/s)</label>
-                    <input type="number" value={angularVelocity} onChange={(e) => setAngularVelocity(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[16px] text-slate-800 outline-none focus:border-cyan-500 transition-colors" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-white rounded-[24px] border border-slate-200 p-8 shadow-sm flex flex-col items-center justify-center min-h-[220px]" style={{ background: "linear-gradient(180deg, #ecfeff 0%, #ffffff 100%)" }}>
-                {result ? (
-                  <>
-                    <span className="text-[12px] font-bold tracking-[0.2em] text-cyan-600 uppercase mb-4" style={{ fontFamily: "var(--font-dm-sans)" }}>RESULT</span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-[64px] font-bold text-slate-900 leading-none tracking-tight" style={{ fontFamily: "var(--font-dm-sans)" }}>{result.value}</span>
-                    </div>
-                    <span className="text-[18px] font-bold text-cyan-600 mt-2" style={{ fontFamily: "var(--font-dm-sans)" }}>{result.unit}</span>
-                  </>
-                ) : <div className="text-slate-400 text-center"><p className="font-medium">Enter values to see result</p></div>}
-              </div>
-
-              {result && (
-                <div className="bg-slate-50 rounded-[24px] border border-slate-200 p-8">
-                  <h3 className="text-[16px] font-bold text-slate-900 mb-6" style={{ fontFamily: "var(--font-dm-sans)" }}>Step-by-step solution</h3>
-                  <div className="space-y-4 font-mono text-[14px]">
-                    <div className="bg-white border border-slate-200 rounded-xl p-4">
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Formula</p>
-                      <p className="text-slate-700">{result.steps[0]}</p>
-                    </div>
-                    {result.steps[1] && (
-                      <div className="bg-white border border-slate-200 rounded-xl p-4">
-                        <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-1">Substitution</p>
-                        <p className="text-slate-700">{result.steps[1]}</p>
-                      </div>
-                    )}
-                    <div className="bg-cyan-50 border border-cyan-100 rounded-xl p-4">
-                      <p className="text-[10px] uppercase font-bold tracking-widest text-cyan-500 mb-1">Result</p>
-                      <p className="text-cyan-700 font-bold">{result.steps[result.steps.length-1]}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <RelatedCalculators currentSlug="circular-motion" category="Classical Mechanics" />
-      <Footer />
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <Client />
+    </>
   );
 }
