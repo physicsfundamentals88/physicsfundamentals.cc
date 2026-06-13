@@ -124,7 +124,7 @@ export default function BlogPage() {
                     <img 
                       src={article.heroImage} 
                       alt={article.title} 
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
                     />
                   ) : (
                     <>

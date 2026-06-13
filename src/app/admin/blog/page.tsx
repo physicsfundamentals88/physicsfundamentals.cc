@@ -45,8 +45,18 @@ export default function AdminBlogListing() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Move this post to trash?")) return;
-    const res = await fetch(`/api/admin/articles/${id}`, { method: "DELETE" });
-    if (res.ok) setArticles((prev) => prev.filter((a) => a.id !== id));
+    try {
+      const res = await fetch(`/api/admin/articles/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setArticles((prev) => prev.filter((a) => Number(a.id) !== Number(id)));
+        setSelected((prev) => prev.filter((i) => Number(i) !== Number(id)));
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        alert(`Failed to delete post: ${errData.error || res.statusText}`);
+      }
+    } catch (err: any) {
+      alert(`Error deleting post: ${err.message}`);
+    }
   };
 
   const handleBulkAction = async () => {
@@ -60,13 +70,14 @@ export default function AdminBlogListing() {
     }
 
     if (bulkAction === "delete") {
-      if (!confirm(`Are you sure you want to move the ${selected.length} selected post(s) to trash?`)) return;
+      if (!confirm(`Are you sure you want to delete the ${selected.length} selected post(s) to trash?`)) return;
       setLoading(true);
       try {
         await Promise.all(
           selected.map((id) => fetch(`/api/admin/articles/${id}`, { method: "DELETE" }))
         );
-        setArticles((prev) => prev.filter((a) => !selected.includes(a.id)));
+        const selectedIds = selected.map(Number);
+        setArticles((prev) => prev.filter((a) => !selectedIds.includes(Number(a.id))));
         setSelected([]);
       } catch (err) {
         console.error("Bulk delete failed:", err);
@@ -239,7 +250,11 @@ export default function AdminBlogListing() {
                           </Link>
                           <span className="wp-row-action-sep">|</span>
                           <button
-                            onClick={() => handleDelete(article.id)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDelete(article.id);
+                            }}
                             className="wp-row-action-link wp-row-action-link--danger"
                             style={{ background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}
                           >

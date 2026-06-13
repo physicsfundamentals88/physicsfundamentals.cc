@@ -419,9 +419,9 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {related.map((a, i) => (
                 <div key={i} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
-                  <div className="h-40 w-full bg-slate-900 overflow-hidden">
+                  <div className="h-40 w-full bg-[#0b1221] overflow-hidden flex items-center justify-center relative">
                     {a.heroImage ? (
-                      <img src={a.heroImage} alt="" className="w-full h-full object-cover" />
+                      <img src={a.heroImage} alt="" className="w-full h-full object-contain" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-[11px] text-white/10 font-bold uppercase italic select-none">
                         {a.category}
