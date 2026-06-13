@@ -118,7 +118,7 @@ export default function FreeFallCalculator() {
           <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start">
             
             {/* ── Inputs Panel ── */}
-            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm sticky top-[100px]">
+            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm">
               
               <div className="mb-8">
                 <label className="block text-[13px] font-bold text-slate-700 mb-3" style={{ fontFamily: "var(--font-dm-sans)" }}>Solve for</label>

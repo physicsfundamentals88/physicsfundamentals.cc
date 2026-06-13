@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import {
   Save,
   Eye,
@@ -28,9 +28,15 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
   ),
 });
 
-/* ── Main Page ──────────────────────────────────── */
-export default function NewArticlePage() {
+interface EditPostPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function EditArticlePage({ params }: EditPostPageProps) {
+  const { id } = use(params);
   const router = useRouter();
+  
+  const [loading, setLoading] = useState(true);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -52,16 +58,44 @@ export default function NewArticlePage() {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Auto-sync
-  useEffect(() => { if (!metaTitle) setMetaTitle(title); }, [title]);
+  // Fetch article
   useEffect(() => {
-    if (content) {
+    if (!id) return;
+    fetch(`/api/admin/articles/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Article not found");
+        return res.json();
+      })
+      .then((data) => {
+        setTitle(data.title || "");
+        setSlug(data.slug || "");
+        setContent(data.content || "");
+        setFeaturedImage(data.heroImage || null);
+        setCategory(data.category || "Uncategorized");
+        setMetaTitle(data.metaTitle || data.title || "");
+        setMetaDescription(data.metaDescription || "");
+        setExcerpt(data.excerpt || "");
+        if (data.scheduledDate) {
+          setScheduledDate(data.scheduledDate);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load article:", err);
+        showNotice("error", "Failed to load article details.");
+        setLoading(false);
+      });
+  }, [id]);
+
+  // Auto-sync SEO description and excerpt
+  useEffect(() => {
+    if (content && !loading) {
       const plain = content.replace(/<[^>]*>/g, "").trim();
       const gen = plain.substring(0, 155) + (plain.length > 155 ? "..." : "");
       if (!metaDescription) setMetaDescription(gen);
       if (!excerpt) setExcerpt(gen);
     }
-  }, [content]);
+  }, [content, loading]);
 
   const wordCount = content.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
   const readTime = Math.ceil(wordCount / 200);
@@ -72,7 +106,7 @@ export default function NewArticlePage() {
   };
 
   const handleSave = async (status: "Published" | "Draft" | "Scheduled", date?: string) => {
-    if (!title.trim()) { showNotice("error", "Please add a title before publishing."); return; }
+    if (!title.trim()) { showNotice("error", "Please add a title before saving."); return; }
     if (featuredImage && featuredImage.startsWith("blob:")) {
       showNotice("error", "Featured image is still uploading. Please wait.");
       return;
@@ -97,8 +131,8 @@ export default function NewArticlePage() {
           : new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
         metaTitle, metaDescription, excerpt,
       };
-      const res = await fetch("/api/admin/articles", {
-        method: "POST",
+      const res = await fetch(`/api/admin/articles/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -106,10 +140,10 @@ export default function NewArticlePage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `Server error (${res.status})`);
       }
-      showNotice("success", `Post ${status.toLowerCase()} successfully!`);
+      showNotice("success", `Post updated successfully!`);
       setTimeout(() => router.push("/admin/blog"), 1500);
     } catch (err: any) {
-      showNotice("error", err.message || "Failed to save post.");
+      showNotice("error", err.message || "Failed to update post.");
     } finally {
       setIsSubmitting(false);
     }
@@ -144,6 +178,15 @@ export default function NewArticlePage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400, color: "var(--wp-text-muted)", fontSize: 13 }}>
+        <Loader2 className="animate-spin" size={16} style={{ marginRight: 8 }} />
+        Loading article details...
+      </div>
+    );
+  }
+
   return (
     <div className="wp-animate-in">
       {/* Notice */}
@@ -173,6 +216,7 @@ export default function NewArticlePage() {
               <input
                 type="datetime-local"
                 className="wp-input"
+                value={scheduledDate || ""}
                 onChange={(e) => setScheduledDate(e.target.value)}
               />
               <div style={{ display: "flex", gap: 8 }}>
@@ -195,7 +239,7 @@ export default function NewArticlePage() {
       {/* Page Header */}
       <div className="wp-page-header">
         <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-          <h1 className="wp-page-title">Add New Post</h1>
+          <h1 className="wp-page-title">Edit Post</h1>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--wp-text-muted)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -217,7 +261,7 @@ export default function NewArticlePage() {
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              if (!slug) setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+              setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
             }}
           />
           {slug && (
@@ -286,17 +330,17 @@ export default function NewArticlePage() {
                     Save Draft
                   </button>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <button className="wp-btn wp-btn-secondary wp-btn-sm" disabled>
+                    <Link href={`/blog/${slug}`} target="_blank" className="wp-btn wp-btn-secondary wp-btn-sm">
                       <Eye size={12} />
-                      Preview
-                    </button>
+                      View Post
+                    </Link>
                     <button
                       className="wp-btn wp-btn-primary"
                       onClick={() => handleSave("Published")}
                       disabled={isSubmitting || uploading}
                     >
                       {isSubmitting ? <Loader2 size={13} className="animate-spin" /> : null}
-                      Publish
+                      Update
                     </button>
                   </div>
                 </div>

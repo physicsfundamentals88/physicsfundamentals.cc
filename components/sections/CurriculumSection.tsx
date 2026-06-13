@@ -45,19 +45,19 @@ export default function CurriculumSection() {
             className="uppercase font-bold tracking-[0.2em] mb-4 block"
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "rgb(59, 130, 246)" }}
           >
-            COMPREHENSIVE CURRICULUM
+            LEARNING PATHWAYS
           </span>
           <h2 
             className="mb-6 text-[clamp(40px,5vw,56px)] leading-[1.1]"
             style={{ fontFamily: "var(--font-instrument-serif)", fontWeight: 400, color: "rgb(15, 23, 42)" }}
           >
-            Every branch of physics,<br className="hidden md:block"/> explained from the ground up
+            Every major branch of physics,<br className="hidden md:block"/> laid out systematically
           </h2>
           <p 
             className="max-w-[700px] text-[17px] leading-[1.7]"
             style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(100, 116, 139)" }}
           >
-            Our curriculum covers all physics fundamentals — from the classical mechanics of Newton to the strange world of quantum theory. Each topic is built for genuine understanding, not exam prep alone.
+            Explore our comprehensive interactive syllabus. We break down complex topics—from Newtonian kinematics and forces to electromagnetic fields and thermodynamics—to build genuine physical intuition.
           </p>
         </motion.div>
 

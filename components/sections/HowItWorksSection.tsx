@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    title: "Complete Physics Curriculum",
-    description: "From classical mechanics through electromagnetism to quantum physics — every fundamental concept explained with depth and clarity by working physicists.",
+    title: "Rigorous Academic Coverage",
+    description: "From basic kinematics to quantum field principles, explore detailed guides structured to meet high academic standards.",
     Icon: () => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
         <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
@@ -13,8 +13,8 @@ const features = [
     )
   },
   {
-    title: "Interactive Simulations",
-    description: "Manipulate variables, observe outcomes, build intuition. Our simulations let you experiment with physics in ways a textbook never could.",
+    title: "Hands-On Experiments",
+    description: "Tweak variables and immediately watch equations come to life. Run real-time browser labs that replace passive reading.",
     Icon: () => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
         <path d="M10 2v7.31M14 9.31V2M8.5 2h7M14 9.31l6.32 9.5A2 2 0 0 1 18.66 22H5.34a2 2 0 0 1-1.66-3.19L10 9.31" />
@@ -23,8 +23,8 @@ const features = [
     )
   },
   {
-    title: "Practice That Builds Mastery",
-    description: "Over 1,000 problems ranging from conceptual questions to multi-step calculations, each with detailed step-by-step solutions.",
+    title: "Targeted Problem Sets",
+    description: "Tackle 1,000+ interactive challenges with detailed, step-by-step guidance designed to build deep analytical skills.",
     Icon: () => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
         <path d="M12 20h9" />
@@ -33,8 +33,8 @@ const features = [
     )
   },
   {
-    title: "Conceptual Understanding First",
-    description: "We don't just hand you formulas. Every topic starts with the physical intuition — the 'why' — before introducing the mathematics.",
+    title: "Physical Intuition First",
+    description: "Grasp the underlying mechanics before writing any formulas. We train your physical intuition to make learning permanent.",
     Icon: () => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
         <circle cx="12" cy="12" r="10" />
@@ -44,8 +44,8 @@ const features = [
     )
   },
   {
-    title: "Visual Explanations",
-    description: "Complex ideas like vector fields, wave interference, and orbital mechanics become clear through carefully designed diagrams and animations.",
+    title: "Animated Vector Models",
+    description: "Visualize vector fields, wave behavior, and complex collisions with precision diagram models and animations.",
     Icon: () => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
         <path d="M3 3v18h18" />
@@ -56,8 +56,8 @@ const features = [
     )
   },
   {
-    title: "Free & Accessible",
-    description: "Quality physics education should never sit behind a paywall. Everything we build — every lesson, simulation, and problem set — is completely free.",
+    title: "Open-Access Education",
+    description: "High-quality academic resources should be open to all. Access every single lecture, lab, and quiz free of charge.",
     Icon: () => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
         <circle cx="12" cy="12" r="10" />
@@ -91,19 +91,19 @@ export default function HowItWorksSection() {
             className="uppercase font-bold tracking-[0.2em] mb-4 block"
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "14px", color: "rgb(59, 130, 246)" }}
           >
-            Why Physics Fundamentals
+            The PhysicsLab Difference
           </span>
           <h2 
             className="mb-6 text-[clamp(40px,5vw,60px)] leading-[1.1] text-slate-900 max-w-[800px]"
             style={{ fontFamily: "var(--font-instrument-serif)", fontWeight: 400, color: "rgb(15, 23, 42)" }}
           >
-            The physics education platform you&apos;ve been waiting for
+            The modern learning tools you&apos;ve been waiting for
           </h2>
           <p 
             className="max-w-[800px] text-[20px] leading-relaxed"
             style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(100, 116, 139)" }}
           >
-            More than a website — it&apos;s a complete learning ecosystem where physics fundamentals become intuitive through interaction, not memorization.
+            More than a website — it&apos;s a complete learning ecosystem where physics laws become intuitive through real-time interaction.
           </p>
         </motion.div>
 

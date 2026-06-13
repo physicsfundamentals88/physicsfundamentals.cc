@@ -1,16 +1,37 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
+function getCloudflareEnv(): any {
+  try {
+    const { env } = getCloudflareContext();
+    return env;
+  } catch {
+    return (process as any).env;
+  }
+}
 
 export async function GET(request: Request) {
   try {
-    const env = (process as any).env;
-    if (!env.MEDIA_BUCKET) {
-      return NextResponse.json({ error: "R2 bucket binding missing" }, { status: 500 });
+    const env = getCloudflareEnv();
+    if (!env?.MEDIA_BUCKET) {
+      // Fallback: Read from local JSON database
+      try {
+        const dbPath = path.join(process.cwd(), "src/data/localMedia.json");
+        if (fs.existsSync(dbPath)) {
+          const content = fs.readFileSync(dbPath, "utf-8");
+          const localMedia = JSON.parse(content);
+          return NextResponse.json(localMedia);
+        }
+      } catch (err) {
+        console.error("Failed to read local media database:", err);
+      }
+      return NextResponse.json([]);
     }
 
     // List recent objects from R2
-    // Cloudflare R2 list() returns an object containing 'objects' array
     const list = await env.MEDIA_BUCKET.list({ limit: 50 });
     
     const assets = list.objects.map((obj: any) => ({
@@ -26,10 +47,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 // DELETE media object
 export async function DELETE(request: Request) {
   try {
-    const env = (process as any).env;
+    const env = getCloudflareEnv();
     const { searchParams } = new URL(request.url);
     const key = searchParams.get("key");
 
@@ -37,8 +59,20 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Missing key" }, { status: 400 });
     }
 
-    if (!env.MEDIA_BUCKET) {
-      return NextResponse.json({ error: "R2 bucket binding missing" }, { status: 500 });
+    if (!env?.MEDIA_BUCKET) {
+      // Fallback: Delete from local JSON database
+      try {
+        const dbPath = path.join(process.cwd(), "src/data/localMedia.json");
+        if (fs.existsSync(dbPath)) {
+          const content = fs.readFileSync(dbPath, "utf-8");
+          let localMedia = JSON.parse(content);
+          localMedia = localMedia.filter((item: any) => item.name !== key);
+          fs.writeFileSync(dbPath, JSON.stringify(localMedia, null, 2), "utf-8");
+        }
+      } catch (err) {
+        console.error("Failed to delete from local media database:", err);
+      }
+      return NextResponse.json({ success: true });
     }
 
     await env.MEDIA_BUCKET.delete(key);

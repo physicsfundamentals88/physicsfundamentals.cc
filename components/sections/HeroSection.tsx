@@ -8,7 +8,7 @@ export default function HeroSection() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center px-4 mt-[70px]"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center px-4 mt-[70px] pt-[40px] pb-[40px]"
       style={{ background: "#0a0f1e" }}
     >
       {/* ── Background glows ── */}
@@ -97,12 +97,12 @@ export default function HeroSection() {
           }}
           className="mt-2"
         >
-          {"Master "}
+          {"Visualize the Laws of "}
           <span style={{ color: "rgb(96,165,250)", fontStyle: "italic" }}>
-            Physics Fundamentals
+            Physics
           </span>
           <br />
-          Through Interactive Learning
+          Through Interactive Play
         </motion.h1>
 
         {/* Description */}
@@ -116,17 +116,13 @@ export default function HeroSection() {
             fontSize: "clamp(15px, 1.2vw, 17px)",
             lineHeight: 1.65,
             color: "rgb(191,219,254)",
-            maxWidth: 580,
+            maxWidth: 600,
           }}
         >
-          From{" "}
-          <span style={{ color: "rgb(96,165,250)" }}>Newton&apos;s laws</span>{" "}
-          and{" "}
-          <span style={{ color: "rgb(96,165,250)" }}>energy conservation</span>{" "}
+          Interact with virtual labs, run real-time simulations, and explore everything from{" "}
+          <span style={{ color: "rgb(96,165,250)" }}>classical mechanics</span>{" "}
           to{" "}
-          <span style={{ color: "rgb(96,165,250)" }}>transverse waves</span>{" "}
-          and quantum mechanics — a free, comprehensive physics education
-          platform built to make every concept click.
+          <span style={{ color: "rgb(96,165,250)" }}>quantum physics</span>. A free visual education library built to make complex concepts click.
         </motion.p>
 
         {/* CTA Buttons */}

@@ -2,214 +2,284 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  ChevronDown, 
-  ExternalLink, 
-  Edit3, 
-  Trash2, 
-  CheckSquare,
-  Square,
-  BarChart3,
-  Calendar,
-  FileText
-} from "lucide-react";
+import { Plus, Edit3, Trash2, ExternalLink } from "lucide-react";
 
 export default function AdminBlogListing() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<number[]>([]);
+  const [filter, setFilter] = useState<"all" | "published" | "draft">("all");
+  const [search, setSearch] = useState("");
+  const [bulkAction, setBulkAction] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/articles")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setArticles(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, []);
 
   const toggleSelectAll = () => {
-    if (selected.length === articles.length) {
-      setSelected([]);
-    } else {
-      setSelected(articles.map(a => a.id));
-    }
+    if (selected.length === filtered.length) setSelected([]);
+    else setSelected(filtered.map((a) => a.id));
   };
 
   const toggleSelect = (id: number) => {
-    if (selected.includes(id)) {
-      setSelected(selected.filter(i => i !== id));
-    } else {
-      setSelected([...selected, id]);
+    setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+  };
+
+  const filtered = articles.filter((a) => {
+    const matchesSearch = a.title?.toLowerCase().includes(search.toLowerCase()) || !search;
+    const matchesFilter =
+      filter === "all" ||
+      (filter === "published" && a.status?.toLowerCase() !== "draft") ||
+      (filter === "draft" && a.status?.toLowerCase() === "draft");
+    return matchesSearch && matchesFilter;
+  });
+
+  const published = articles.filter((a) => a.status?.toLowerCase() !== "draft").length;
+  const drafts = articles.filter((a) => a.status?.toLowerCase() === "draft").length;
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Move this post to trash?")) return;
+    const res = await fetch(`/api/admin/articles/${id}`, { method: "DELETE" });
+    if (res.ok) setArticles((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const handleBulkAction = async () => {
+    if (selected.length === 0) {
+      alert("Please select at least one post.");
+      return;
+    }
+    if (!bulkAction || bulkAction === "Bulk actions") {
+      alert("Please select a bulk action.");
+      return;
+    }
+
+    if (bulkAction === "delete") {
+      if (!confirm(`Are you sure you want to move the ${selected.length} selected post(s) to trash?`)) return;
+      setLoading(true);
+      try {
+        await Promise.all(
+          selected.map((id) => fetch(`/api/admin/articles/${id}`, { method: "DELETE" }))
+        );
+        setArticles((prev) => prev.filter((a) => !selected.includes(a.id)));
+        setSelected([]);
+      } catch (err) {
+        console.error("Bulk delete failed:", err);
+        alert("Failed to delete some posts.");
+      } finally {
+        setLoading(false);
+      }
+    } else if (bulkAction === "publish" || bulkAction === "draft") {
+      const statusToSet = bulkAction === "publish" ? "Published" : "Draft";
+      if (!confirm(`Are you sure you want to change the status of ${selected.length} selected post(s) to ${statusToSet}?`)) return;
+      setLoading(true);
+      try {
+        await Promise.all(
+          selected.map((id) => {
+            const articleObj = articles.find((a) => a.id === id);
+            return fetch(`/api/admin/articles/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...articleObj,
+                status: statusToSet,
+              }),
+            });
+          })
+        );
+        setArticles((prev) =>
+          prev.map((a) => (selected.includes(a.id) ? { ...a, status: statusToSet } : a))
+        );
+        setSelected([]);
+      } catch (err) {
+        console.error("Bulk status update failed:", err);
+        alert("Failed to update status.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   return (
-    <div className="space-y-8">
+    <div className="wp-animate-in">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-           <h1 className="text-4xl font-black text-[#0F172A] tracking-tight">Content Library</h1>
-           <p className="text-[#64748B] font-medium mt-1">Manage and optimize your published physics articles and educational content.</p>
-        </div>
-        <Link 
-          href="/admin/blog/create" 
-          className="flex items-center gap-2 bg-[#FACC15] text-[#0F172A] px-6 py-3.5 rounded-xl font-black text-sm transition-all shadow-xl shadow-yellow-500/20 hover:scale-105 active:scale-95 w-fit"
-        >
-          <Plus size={18} />
-          Add New Post
-        </Link>
-      </div>
-
-      {/* Toolbar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#E2E8F0] shadow-sm flex flex-col xl:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 focus-within:text-[#0F172A]" />
-           <input 
-            type="text" 
-            placeholder="Search posts by title, slug or tag..." 
-            className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl py-3 pl-12 pr-4 text-sm font-medium focus:border-[#FACC15] focus:bg-white outline-none transition-all placeholder:text-slate-400"
-           />
-        </div>
-        <div className="flex flex-wrap gap-3 w-full xl:w-auto">
-           <div className="flex-1 md:flex-none relative">
-              <select className="appearance-none bg-white border border-[#E2E8F0] rounded-xl px-5 py-3 pr-10 text-xs font-black uppercase tracking-widest text-[#64748B] outline-none focus:border-[#FACC15] cursor-pointer w-full">
-                 <option>All Status</option>
-                 <option>Published</option>
-                 <option>Drafts</option>
-                 <option>Scheduled</option>
-              </select>
-              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-           </div>
-           <div className="flex-1 md:flex-none relative">
-              <select className="appearance-none bg-white border border-[#E2E8F0] rounded-xl px-5 py-3 pr-10 text-xs font-black uppercase tracking-widest text-[#64748B] outline-none focus:border-[#FACC15] cursor-pointer w-full">
-                 <option>Categories</option>
-                 <option>Electromagnetism</option>
-                 <option>Thermodynamics</option>
-                 <option>Mechanics</option>
-              </select>
-              <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-           </div>
-           <button className="flex items-center justify-center gap-2 px-5 py-3 bg-[#0F172A] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-[#1E293B] transition-colors">
-              Bulk Actions
-              <ChevronDown size={14} />
-           </button>
+      <div className="wp-page-header">
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          <h1 className="wp-page-title">Posts</h1>
+          <Link href="/admin/blog/create" style={{ fontSize: 13, color: "var(--wp-blue)", textDecoration: "none" }}>
+            Add New Post
+          </Link>
         </div>
       </div>
 
-      {/* Posts Table */}
-      <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left border-collapse">
+      {/* Table */}
+      <div className="wp-table-wrap">
+        {/* Top nav */}
+        <div className="wp-table-nav">
+          {/* Filter tabs */}
+          <div className="wp-filter-tabs">
+            <button
+              className={`wp-filter-tab ${filter === "all" ? "wp-filter-tab--active" : ""}`}
+              onClick={() => setFilter("all")}
+            >
+              All ({articles.length})
+            </button>
+            <span className="wp-filter-tab-sep">|</span>
+            <button
+              className={`wp-filter-tab ${filter === "published" ? "wp-filter-tab--active" : ""}`}
+              onClick={() => setFilter("published")}
+            >
+              Published ({published})
+            </button>
+            <span className="wp-filter-tab-sep">|</span>
+            <button
+              className={`wp-filter-tab ${filter === "draft" ? "wp-filter-tab--active" : ""}`}
+              onClick={() => setFilter("draft")}
+            >
+              Drafts ({drafts})
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="wp-search-box">
+            <input
+              type="text"
+              className="wp-search-input"
+              placeholder="Search posts..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button className="wp-btn wp-btn-secondary wp-btn-sm">Search</button>
+          </div>
+        </div>
+
+        {/* Bulk actions bar */}
+        <div style={{ padding: "8px 12px", background: "#f6f7f7", borderBottom: "1px solid var(--wp-border)", display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+          <select
+            className="wp-select"
+            style={{ width: "auto", padding: "4px 8px", fontSize: 12 }}
+            value={bulkAction}
+            onChange={(e) => setBulkAction(e.target.value)}
+          >
+            <option value="">Bulk actions</option>
+            <option value="delete">Delete</option>
+            <option value="publish">Publish</option>
+            <option value="draft">Move to Draft</option>
+          </select>
+          <button
+            className="wp-btn wp-btn-secondary wp-btn-sm"
+            onClick={handleBulkAction}
+          >
+            Apply
+          </button>
+          {selected.length > 0 && (
+            <span style={{ color: "var(--wp-text-muted)", fontSize: 12 }}>
+              {selected.length} item{selected.length > 1 ? "s" : ""} selected
+            </span>
+          )}
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table className="wp-table">
             <thead>
-              <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[10px] font-black text-[#64748B] uppercase tracking-widest">
-                <th className="px-6 py-5 w-10">
-                   <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[#FACC15] transition-colors">
-                      {selected.length === articles.length && articles.length > 0 ? <CheckSquare size={18} /> : <Square size={18} />}
-                   </button>
+              <tr>
+                <th style={{ width: 32 }}>
+                  <input
+                    type="checkbox"
+                    className="wp-checkbox"
+                    checked={selected.length === filtered.length && filtered.length > 0}
+                    onChange={toggleSelectAll}
+                  />
                 </th>
-                <th className="px-6 py-5">Article details</th>
-                <th className="px-6 py-4">Category</th>
-                <th className="px-6 py-4">SEO Score</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Created Date</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Categories</th>
+                <th>Status</th>
+                <th>Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F1F5F9] whitespace-nowrap">
+            <tbody>
               {loading ? (
-                Array(5).fill(0).map((_, i) => (
-                  <tr key={i}><td colSpan={7} className="px-6 py-10 animate-pulse bg-slate-50/20"></td></tr>
-                ))
-              ) : articles.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-6 py-24 text-center">
-                     <div className="flex flex-col items-center gap-4">
-                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200">
-                           <FileText size={40} />
-                        </div>
-                        <div className="space-y-1">
-                           <p className="text-[#0F172A] font-black text-lg">No posts found</p>
-                           <p className="text-[#64748B] text-sm font-medium">Get started by creating your first professional article.</p>
-                        </div>
-                        <Link href="/admin/blog/new" className="mt-4 px-8 py-3 bg-[#FACC15] text-[#0F172A] rounded-xl font-black text-[13px] uppercase tracking-widest shadow-lg shadow-yellow-500/10">
-                           Create New Post
-                        </Link>
-                     </div>
+                <tr className="wp-loading-row">
+                  <td colSpan={6}>Loading posts...</td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr className="wp-loading-row">
+                  <td colSpan={6}>
+                    No posts found.{" "}
+                    <Link href="/admin/blog/create" style={{ color: "var(--wp-blue)" }}>
+                      Create your first post
+                    </Link>
                   </td>
                 </tr>
               ) : (
-                articles.map((article) => (
-                  <tr key={article.id} className={`hover:bg-[#F8FAFC] transition-colors group ${selected.includes(article.id) ? "bg-amber-50/30" : ""}`}>
-                    <td className="px-6 py-6">
-                       <button onClick={() => toggleSelect(article.id)} className={`transition-colors ${selected.includes(article.id) ? "text-[#FACC15]" : "text-slate-300 hover:text-slate-400"}`}>
-                          {selected.includes(article.id) ? <CheckSquare size={18} /> : <Square size={18} />}
-                       </button>
+                filtered.map((article) => (
+                  <tr key={article.id} style={selected.includes(article.id) ? { background: "#f0f6fc" } : {}}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="wp-checkbox"
+                        checked={selected.includes(article.id)}
+                        onChange={() => toggleSelect(article.id)}
+                      />
                     </td>
-                    <td className="px-6 py-6">
-                      <div className="flex items-center gap-4 min-w-[300px]">
-                         <div className="w-12 h-12 rounded-xl border border-[#E2E8F0] bg-slate-50 flex-shrink-0 relative overflow-hidden group-hover:border-[#FACC15] transition-all">
-                            {article.heroImage ? (
-                               <img src={article.heroImage} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                               <div className="flex items-center justify-center w-full h-full text-[10px] font-black text-slate-300 uppercase">IMG</div>
-                            )}
-                         </div>
-                         <div className="flex flex-col min-w-0">
-                            <span className="font-black text-[#0F172A] group-hover:text-[#3b82f6] transition-colors truncate">{article.title}</span>
-                            <span className="text-[11px] font-bold text-slate-400 mt-0.5 font-mono">{article.slug}</span>
-                         </div>
+                    <td>
+                      <div>
+                        <Link href={`/admin/blog/${article.id}`} className="wp-post-title">
+                          {article.title}
+                        </Link>
+                        <div className="row-actions">
+                          <Link href={`/admin/blog/${article.id}`} className="wp-row-action-link">
+                            Edit
+                          </Link>
+                          <span className="wp-row-action-sep">|</span>
+                          <button
+                            onClick={() => handleDelete(article.id)}
+                            className="wp-row-action-link wp-row-action-link--danger"
+                            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}
+                          >
+                            Trash
+                          </button>
+                          <span className="wp-row-action-sep">|</span>
+                          <Link
+                            href={`/blog/${article.slug}`}
+                            target="_blank"
+                            className="wp-row-action-link"
+                          >
+                            View
+                          </Link>
+                        </div>
+                        {article.slug && (
+                          <div style={{ fontSize: 11, color: "var(--wp-text-muted)", marginTop: 2, fontFamily: "monospace" }}>
+                            /{article.slug}
+                          </div>
+                        )}
                       </div>
                     </td>
-                    <td className="px-6 py-6 font-bold text-[11px] text-[#64748B] uppercase tracking-widest">
-                       {article.category}
+                    <td style={{ whiteSpace: "nowrap", fontSize: 12 }}>
+                      {article.author || "Admin"}
                     </td>
-                    <td className="px-6 py-6">
-                       <div className="flex items-center gap-1.5">
-                          <BarChart3 size={14} className="text-emerald-500" />
-                          <span className="font-black text-[13px] text-emerald-600">85</span>
-                       </div>
+                    <td style={{ whiteSpace: "nowrap", fontSize: 12 }}>
+                      <Link
+                        href="/admin/categories"
+                        style={{ color: "var(--wp-blue)", textDecoration: "none", fontSize: 12 }}
+                      >
+                        {article.category || "Uncategorized"}
+                      </Link>
                     </td>
-                    <td className="px-6 py-6">
-                       <span className="px-3 py-1.5 rounded-lg border border-green-100 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest">
-                          Published
-                       </span>
+                    <td>
+                      <span className={`wp-badge ${article.status?.toLowerCase() === "draft" ? "wp-badge--draft" : "wp-badge--published"}`}>
+                        {article.status || "Published"}
+                      </span>
                     </td>
-                    <td className="px-6 py-6">
-                       <div className="flex items-center gap-2 text-[12px] font-bold text-[#64748B]">
-                          <Calendar size={14} className="text-slate-300" />
-                          {article.date}
-                       </div>
-                    </td>
-                    <td className="px-6 py-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link href={`/blog/${article.slug}`} target="_blank" className="p-2.5 text-slate-400 hover:text-[#0F172A] hover:bg-white border border-transparent hover:border-[#E2E8F0] rounded-xl transition-all shadow-sm">
-                          <ExternalLink size={18} />
-                        </Link>
-                        <Link href={`/admin/blog/${article.id}`} className="p-2.5 text-slate-400 hover:text-[#0F172A] hover:bg-white border border-transparent hover:border-[#E2E8F0] rounded-xl transition-all shadow-sm">
-                          <Edit3 size={18} />
-                        </Link>
-                        <button 
-                          onClick={async () => {
-                            if (!confirm("Are you sure?")) return;
-                            try {
-                              const res = await fetch(`/api/admin/articles/${article.id}`, { method: "DELETE" });
-                              if (res.ok) setArticles(articles.filter(a => a.id !== article.id));
-                            } catch (err) { console.error(err); }
-                          }}
-                          className="p-2.5 text-slate-400 hover:text-red-500 hover:bg-white border border-transparent hover:border-red-100 rounded-xl transition-all shadow-sm"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
+                    <td style={{ whiteSpace: "nowrap", fontSize: 12, color: "var(--wp-text-muted)" }}>
+                      {article.date || "—"}
                     </td>
                   </tr>
                 ))
@@ -217,12 +287,15 @@ export default function AdminBlogListing() {
             </tbody>
           </table>
         </div>
-        <div className="px-8 py-5 bg-[#F8FAFC] border-t border-[#E2E8F0] flex items-center justify-between">
-            <span className="text-[12px] font-bold text-[#64748B] uppercase tracking-widest">Showing {articles.length} total posts</span>
-            <div className="flex items-center gap-3">
-               <button className="px-5 py-2.5 bg-white border border-[#E2E8F0] rounded-xl text-[11px] font-black text-slate-400 hover:text-[#0F172A] transition-all">Previous</button>
-               <button className="px-5 py-2.5 bg-white border border-[#E2E8F0] rounded-xl text-[11px] font-black text-slate-400 hover:text-[#0F172A] transition-all">Next</button>
-            </div>
+
+        {/* Pagination */}
+        <div className="wp-pagination">
+          <span>{filtered.length} item{filtered.length !== 1 ? "s" : ""}</span>
+          <span style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
+            <button className="wp-page-btn">‹</button>
+            <button className="wp-page-btn" style={{ background: "var(--wp-blue)", color: "white", borderColor: "var(--wp-blue)" }}>1</button>
+            <button className="wp-page-btn">›</button>
+          </span>
         </div>
       </div>
     </div>

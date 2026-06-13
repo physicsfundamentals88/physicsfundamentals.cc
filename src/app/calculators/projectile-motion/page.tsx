@@ -120,7 +120,7 @@ export default function ProjectileMotionCalculator() {
           <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start">
             
             {/* ── Inputs Panel ── */}
-            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm sticky top-[100px]">
+            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm">
               
               <h3 className="text-[16px] font-bold text-slate-900 mb-6" style={{ fontFamily: "var(--font-dm-sans)" }}>Inputs</h3>
 

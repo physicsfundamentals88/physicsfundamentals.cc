@@ -23,13 +23,13 @@ export default function EarlyAccessSection() {
             className="text-[clamp(44px,5vw,56px)] leading-[1.1] mb-6"
             style={{ fontFamily: "var(--font-instrument-serif)", fontWeight: 400, color: "white" }}
           >
-            Be first to experience<br className="hidden md:block"/> Physics Fundamentals
+            Join the PhysicsLab Launch
           </h2>
           <p 
             className="text-[17px] leading-[1.65] mb-12 text-slate-400 font-normal"
             style={{ fontFamily: "var(--font-dm-sans)" }}
           >
-            We're building this platform in public. Sign up and you'll get exclusive early access, weekly physics insights, and the chance to shape what we build next.
+            We're building this platform in public. Secure your early access invite to explore newly launched simulations, receive weekly math insights, and help shape our next visual labs.
           </p>
 
           <form className="flex flex-col sm:flex-row justify-center items-stretch gap-4 max-w-[550px] mx-auto mb-6" onSubmit={(e) => e.preventDefault()}>
@@ -55,7 +55,7 @@ export default function EarlyAccessSection() {
           </form>
           
           <p className="text-[13px] text-slate-500" style={{ fontFamily: "var(--font-dm-sans)" }}>
-            Join 500+ students already on the list. No spam — unsubscribe anytime.
+            Be part of a growing group of science students and educators. Free and open-access.
           </p>
         </motion.div>
       </div>

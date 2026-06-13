@@ -90,7 +90,7 @@ export default function GravitationalPotentialEnergyCalculator() {
       <section className="py-12 flex-1">
         <div className="max-w-[1100px] mx-auto px-6 sm:px-8">
           <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start">
-            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm sticky top-[100px]">
+            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm">
               <div className="mb-8">
                 <label className="block text-[13px] font-bold text-slate-700 mb-3" style={{ fontFamily: "var(--font-dm-sans)" }}>Solve for</label>
                 <div className="flex bg-slate-100/70 p-1 rounded-xl">

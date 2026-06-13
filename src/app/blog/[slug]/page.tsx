@@ -30,7 +30,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       title: a.title,
       date: a.date,
       category: a.category,
-      href: `/blog/${a.slug}`
+      href: `/blog/${a.slug}`,
+      heroImage: a.heroImage
     }));
   } catch (e) {
     console.error("Failed to fetch article from DB:", e);

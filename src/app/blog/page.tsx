@@ -24,6 +24,16 @@ export default function BlogPage() {
         console.error(err);
         setLoading(false);
       });
+
+    // Parse category query parameter from URL
+    const params = new URLSearchParams(window.location.search);
+    const catParam = params.get("category");
+    if (catParam) {
+      const matched = categories.find((c) => c.toLowerCase() === catParam.toLowerCase());
+      if (matched) {
+        setActiveCategory(matched);
+      }
+    }
   }, []);
 
   const filtered =
@@ -35,6 +45,7 @@ export default function BlogPage() {
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
 
+      {/* Hero section */}
       <section className="mt-[76px] py-16 bg-[#0b1221] relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.035]"
@@ -74,7 +85,8 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <div className="bg-white border-b border-slate-200 sticky top-[76px] z-40">
+      {/* Categories Bar - Static, scrolls normally with the page */}
+      <div className="bg-white border-b border-slate-200">
         <div className="max-w-[1200px] mx-auto px-6 sm:px-8">
           <div className="flex items-center gap-1 overflow-x-auto py-3 no-scrollbar">
             {categories.map((cat) => (
@@ -107,14 +119,24 @@ export default function BlogPage() {
                 transition={{ duration: 0.45, delay: index * 0.07 }}
                 className="bg-white rounded-[20px] overflow-hidden border border-slate-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
               >
-                <div className="h-[200px] relative w-full bg-[#0b1221] flex items-center justify-center p-6 text-white overflow-hidden">
-                   <div className="absolute inset-0 opacity-20 pointer-events-none">
-                      <div className="w-full h-full" style={{ backgroundImage: "radial-gradient(circle at center, #3b82f6 0%, transparent 70%)", opacity: 0.2 }}></div>
-                   </div>
-                   <div className="relative z-10 text-center">
-                      <span className="text-[10px] text-blue-400 tracking-[0.2em] font-bold block mb-2">{article.category}</span>
-                      <span className="font-serif text-xl block leading-tight">{article.title}</span>
-                   </div>
+                <div className="h-[200px] relative w-full bg-[#0b1221] overflow-hidden flex items-center justify-center">
+                  {article.heroImage ? (
+                    <img 
+                      src={article.heroImage} 
+                      alt={article.title} 
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0 opacity-20 pointer-events-none">
+                         <div className="w-full h-full" style={{ backgroundImage: "radial-gradient(circle at center, #3b82f6 0%, transparent 70%)", opacity: 0.2 }}></div>
+                      </div>
+                      <div className="relative z-10 text-center p-6">
+                         <span className="text-[10px] text-blue-400 tracking-[0.2em] font-bold block mb-2">{article.category}</span>
+                         <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="p-6 flex flex-col flex-1">

@@ -5,17 +5,17 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 
 const leftFeatures = [
-  "Comprehensive lessons on all core physics topics",
-  "1,000+ practice problems with full solutions",
-  "Formula sheets and quick-reference guides",
-  "Community Q&A and discussion forums",
+  "Interactive lectures across major scientific disciplines",
+  "Extensive library of verified problem sets with answers",
+  "Handy reference cards and equation cheat-sheets",
+  "Collaborative student forums and study boards",
 ];
 
 const rightFeatures = [
-  "Interactive simulations and virtual labs",
-  "Video explanations and demonstrations",
-  "Study paths tailored to your course",
-  "100% free — forever",
+  "Real-time sandbox labs and dynamic vector modeling",
+  "Step-by-step video lessons and experiment visualizers",
+  "Personalized study roadmaps matched to your curriculum",
+  "No subscription fees or paywalls ever",
 ];
 
 export default function WaitlistSection() {
@@ -40,7 +40,7 @@ export default function WaitlistSection() {
             className="text-[clamp(40px,5vw,60px)] leading-[1.05]"
             style={{ fontFamily: "var(--font-instrument-serif)", fontWeight: 400, color: "rgb(255, 255, 255)" }}
           >
-            Everything you need to master<br className="hidden md:block"/> physics fundamentals
+            A Complete Arsenal of Tools<br className="hidden md:block"/> for Aspiring Scientists
           </h2>
         </motion.div>
 

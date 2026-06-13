@@ -1,129 +1,307 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  Plus, 
-  Search, 
-  Layers, 
-  MoreVertical, 
-  ExternalLink, 
-  Edit3, 
-  Trash2,
-  Filter,
-  ArrowUpDown
-} from "lucide-react";
+import { Edit3, Trash2 } from "lucide-react";
+
+const defaultCategories = [
+  { id: 1, name: "Electromagnetism", slug: "electromagnetism", count: 12, description: "Study of electromagnetic fields and forces" },
+  { id: 2, name: "Thermodynamics", slug: "thermodynamics", count: 8, description: "Heat, temperature, and energy transfer" },
+  { id: 3, name: "Quantum Physics", slug: "quantum-physics", count: 5, description: "Subatomic phenomena and wave-particle duality" },
+  { id: 4, name: "Classical Mechanics", slug: "mechanics", count: 15, description: "Motion, forces and classical systems" },
+];
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Electromagnetism", slug: "electromagnetism", count: 12, date: "Oct 12, 2024" },
-    { id: 2, name: "Thermodynamics", slug: "thermodynamics", count: 8, date: "Oct 10, 2024" },
-    { id: 3, name: "Quantum Physics", slug: "quantum-physics", count: 5, date: "Sep 28, 2024" },
-    { id: 4, name: "Classical Mechanics", slug: "mechanics", count: 15, date: "Sep 15, 2024" },
-  ]);
+  const [categories, setCategories] = useState(defaultCategories);
+  const [newName, setNewName] = useState("");
+  const [newSlug, setNewSlug] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newParent, setNewParent] = useState("None");
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<number[]>([]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [bulkAction, setBulkAction] = useState("");
+
+  const filtered = categories.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleAdd = () => {
+    if (!newName.trim()) return;
+    const slug = newSlug || newName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    setCategories((prev) => [
+      ...prev,
+      { id: Date.now(), name: newName.trim(), slug, count: 0, description: newDesc },
+    ]);
+    setNewName(""); setNewSlug(""); setNewDesc(""); setNewParent("None");
+  };
+
+  const handleDelete = (id: number) => {
+    if (!confirm("Delete this category?")) return;
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+    if (editingId === id) handleCancel();
+  };
+
+  const handleEditClick = (cat: any) => {
+    setEditingId(cat.id);
+    setNewName(cat.name);
+    setNewSlug(cat.slug);
+    setNewDesc(cat.description || "");
+    setNewParent("None");
+  };
+
+  const handleUpdate = () => {
+    if (!newName.trim()) return;
+    const slug = newSlug || newName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    setCategories((prev) =>
+      prev.map((c) =>
+        c.id === editingId
+          ? { ...c, name: newName.trim(), slug, description: newDesc }
+          : c
+      )
+    );
+    // Reset form
+    setNewName("");
+    setNewSlug("");
+    setNewDesc("");
+    setEditingId(null);
+  };
+
+  const handleCancel = () => {
+    setNewName("");
+    setNewSlug("");
+    setNewDesc("");
+    setEditingId(null);
+  };
+
+  const handleBulkAction = () => {
+    if (selected.length === 0) {
+      alert("Please select at least one category.");
+      return;
+    }
+    if (bulkAction === "delete") {
+      if (!confirm(`Are you sure you want to delete the ${selected.length} selected category(ies)?`)) return;
+      setCategories((prev) => prev.filter((c) => !selected.includes(c.id)));
+      if (editingId && selected.includes(editingId)) handleCancel();
+      setSelected([]);
+    }
+  };
+
+  const toggleSelect = (id: number) =>
+    setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
+
+  const toggleAll = () =>
+    setSelected(selected.length === filtered.length ? [] : filtered.map((c) => c.id));
 
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-           <h1 className="text-4xl font-black text-[#0F172A] tracking-tight">Categories</h1>
-           <p className="text-[#64748B] font-medium mt-1">Organize your physics educational content into logical topics and subjects.</p>
-        </div>
-        <button 
-          className="flex items-center gap-2 bg-[#FACC15] text-[#0F172A] px-6 py-3.5 rounded-xl font-black text-sm transition-all shadow-xl shadow-yellow-500/20 hover:scale-105 active:scale-95 w-fit"
-        >
-          <Plus size={18} />
-          Create Category
-        </button>
+    <div className="wp-animate-in">
+      <div className="wp-page-header">
+        <h1 className="wp-page-title">Categories</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         {/* Add New Category Card */}
-         <div className="lg:col-span-1">
-            <div className="bg-white p-8 rounded-2xl border border-[#E2E8F0] shadow-sm sticky top-[100px]">
-               <h2 className="text-lg font-black text-[#0F172A] mb-6">Add New Category</h2>
-               <div className="space-y-6">
-                  <div className="space-y-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Category Name</label>
-                     <input type="text" placeholder="e.g. Astrophysics" className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm font-medium focus:border-[#FACC15] focus:bg-white outline-none transition-all placeholder:text-slate-300" />
-                  </div>
-                  <div className="space-y-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Slug (URL)</label>
-                     <input type="text" placeholder="e.g. astrophysics" className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm font-medium focus:border-[#FACC15] focus:bg-white outline-none transition-all placeholder:text-slate-300" />
-                  </div>
-                  <div className="space-y-2">
-                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Parent Category</label>
-                     <select className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm font-bold text-[#64748B] outline-none focus:border-[#FACC15] cursor-pointer">
-                        <option>None</option>
-                        <option>Classical Physics</option>
-                        <option>Modern Physics</option>
-                     </select>
-                  </div>
-                  <button className="w-full py-4 bg-[#0F172A] text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#1E293B] transition-all shadow-lg shadow-slate-900/10">
-                     Save Category
-                  </button>
-               </div>
+      <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: 20, alignItems: "flex-start" }}>
+        {/* Add/Edit Category */}
+        <div className="wp-metabox">
+          <div className="wp-metabox-header">
+            <h2 className="wp-metabox-title">
+              {editingId ? `Edit Category: ${categories.find(c => c.id === editingId)?.name || ""}` : "Add New Category"}
+            </h2>
+          </div>
+          <div className="wp-metabox-body" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="wp-form-row" style={{ marginBottom: 0 }}>
+              <label className="wp-label">Name <span style={{ color: "var(--wp-red)" }}>*</span></label>
+              <input
+                type="text"
+                className="wp-input"
+                placeholder="e.g. Astrophysics"
+                value={newName}
+                onChange={(e) => {
+                  setNewName(e.target.value);
+                  setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
+                }}
+              />
+              <p className="wp-input-note">The name is how it appears on your site.</p>
             </div>
-         </div>
 
-         {/* Categories List */}
-         <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-               <div className="p-4 border-b border-[#E2E8F0] bg-[#F8FAFC] flex items-center justify-between">
-                  <div className="relative flex-1 max-w-[300px]">
-                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                     <input type="text" placeholder="Search categories..." className="w-full bg-white border border-[#E2E8F0] rounded-lg py-2 pl-10 pr-4 text-[12px] font-bold outline-none focus:border-[#FACC15] transition-all" />
-                  </div>
-                  <button className="p-2 text-slate-400 hover:text-[#0F172A] hover:bg-white rounded-lg transition-all border border-transparent hover:border-[#E2E8F0]">
-                     <Filter size={18} />
-                  </button>
-               </div>
-               <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                     <thead>
-                        <tr className="border-b border-[#E2E8F0] text-[10px] font-black text-[#64748B] uppercase tracking-widest">
-                           <th className="px-6 py-4">Name</th>
-                           <th className="px-6 py-4">Slug</th>
-                           <th className="px-6 py-4 text-center">Post count</th>
-                           <th className="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                     </thead>
-                     <tbody className="divide-y divide-[#F1F5F9] whitespace-nowrap">
-                        {categories.map((cat) => (
-                           <tr key={cat.id} className="hover:bg-[#F8FAFC] transition-colors group">
-                              <td className="px-6 py-5">
-                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:text-[#FACC15] transition-colors">
-                                       <Layers size={14} />
-                                    </div>
-                                    <span className="font-bold text-[#0F172A] text-sm">{cat.name}</span>
-                                 </div>
-                              </td>
-                              <td className="px-6 py-5 text-xs font-bold text-slate-400 font-mono">
-                                 /{cat.slug}
-                              </td>
-                              <td className="px-6 py-5 text-center">
-                                 <span className="px-3 py-1 bg-slate-50 border border-slate-100 rounded-lg text-xs font-black text-[#0F172A]">
-                                    {cat.count}
-                                 </span>
-                              </td>
-                              <td className="px-6 py-5 text-right">
-                                 <div className="flex items-center justify-end gap-2">
-                                    <button className="p-2 text-slate-400 hover:text-[#0F172A] hover:bg-white border border-transparent hover:border-[#E2E8F0] rounded-xl transition-all">
-                                       <Edit3 size={16} />
-                                    </button>
-                                    <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-white border border-transparent hover:border-red-100 rounded-xl transition-all">
-                                       <Trash2 size={16} />
-                                    </button>
-                                 </div>
-                              </td>
-                           </tr>
-                        ))}
-                     </tbody>
-                  </table>
-               </div>
+            <div className="wp-form-row" style={{ marginBottom: 0 }}>
+              <label className="wp-label">Slug</label>
+              <input
+                type="text"
+                className="wp-input"
+                placeholder="e.g. astrophysics"
+                value={newSlug}
+                onChange={(e) => setNewSlug(e.target.value)}
+              />
+              <p className="wp-input-note">The "slug" is the URL-friendly version of the name. It is usually all lowercase and contains only letters, numbers, and hyphens.</p>
             </div>
-         </div>
+
+            <div className="wp-form-row" style={{ marginBottom: 0 }}>
+              <label className="wp-label">Parent Category</label>
+              <select
+                className="wp-select"
+                value={newParent}
+                onChange={(e) => setNewParent(e.target.value)}
+              >
+                <option>None</option>
+                {categories.map((c) => <option key={c.id}>{c.name}</option>)}
+              </select>
+              <p className="wp-input-note">Unlike tags, categories can have a hierarchy.</p>
+            </div>
+
+            <div className="wp-form-row" style={{ marginBottom: 0 }}>
+              <label className="wp-label">Description</label>
+              <textarea
+                className="wp-textarea"
+                placeholder="Category description (optional)"
+                rows={4}
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+              />
+              <p className="wp-input-note">The description is not prominent by default.</p>
+            </div>
+
+            {editingId ? (
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  className="wp-btn wp-btn-primary"
+                  onClick={handleUpdate}
+                >
+                  Save Changes
+                </button>
+                <button
+                  className="wp-btn wp-btn-secondary"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                className="wp-btn wp-btn-primary"
+                onClick={handleAdd}
+                style={{ alignSelf: "flex-start" }}
+              >
+                Add New Category
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Categories Table */}
+        <div className="wp-table-wrap">
+          <div className="wp-table-nav">
+            <div className="wp-filter-tabs">
+              <span style={{ fontSize: 13, color: "var(--wp-text)" }}>All ({categories.length})</span>
+            </div>
+            <div className="wp-search-box">
+              <input
+                type="text"
+                className="wp-search-input"
+                placeholder="Search categories..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <button className="wp-btn wp-btn-secondary wp-btn-sm">Search</button>
+            </div>
+          </div>
+
+          {/* Bulk actions */}
+          <div style={{ padding: "8px 12px", background: "#f6f7f7", borderBottom: "1px solid var(--wp-border)", display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+            <select
+              className="wp-select"
+              style={{ width: "auto", padding: "4px 8px", fontSize: 12 }}
+              value={bulkAction}
+              onChange={(e) => setBulkAction(e.target.value)}
+            >
+              <option value="">Bulk actions</option>
+              <option value="delete">Delete</option>
+            </select>
+            <button
+              className="wp-btn wp-btn-secondary wp-btn-sm"
+              onClick={handleBulkAction}
+            >
+              Apply
+            </button>
+            {selected.length > 0 && (
+              <span style={{ color: "var(--wp-text-muted)", fontSize: 12 }}>
+                {selected.length} selected
+              </span>
+            )}
+          </div>
+
+          <table className="wp-table">
+            <thead>
+              <tr>
+                <th style={{ width: 32 }}>
+                  <input
+                    type="checkbox"
+                    className="wp-checkbox"
+                    checked={selected.length === filtered.length && filtered.length > 0}
+                    onChange={toggleAll}
+                  />
+                </th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Slug</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr className="wp-loading-row">
+                  <td colSpan={5}>No categories found.</td>
+                </tr>
+              ) : (
+                filtered.map((cat) => (
+                  <tr key={cat.id} style={selected.includes(cat.id) ? { background: "#f0f6fc" } : {}}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="wp-checkbox"
+                        checked={selected.includes(cat.id)}
+                        onChange={() => toggleSelect(cat.id)}
+                      />
+                    </td>
+                    <td>
+                      <strong style={{ fontSize: 13, color: "var(--wp-text)" }}>{cat.name}</strong>
+                      <div className="row-actions">
+                        <button
+                          className="wp-row-action-link"
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}
+                          onClick={() => handleEditClick(cat)}
+                        >
+                          Edit
+                        </button>
+                        <span className="wp-row-action-sep">|</span>
+                        <button
+                          className="wp-row-action-link wp-row-action-link--danger"
+                          style={{ background: "none", border: "none", cursor: "pointer", padding: 0, font: "inherit" }}
+                          onClick={() => handleDelete(cat.id)}
+                        >
+                          Delete
+                        </button>
+                        <span className="wp-row-action-sep">|</span>
+                        <a href={`/blog?category=${cat.name}`} target="_blank" className="wp-row-action-link">
+                          View
+                        </a>
+                      </div>
+                    </td>
+                    <td style={{ fontSize: 12, color: "var(--wp-text-muted)" }}>
+                      {cat.description || "—"}
+                    </td>
+                    <td style={{ fontSize: 12, fontFamily: "monospace", color: "var(--wp-text-muted)" }}>
+                      {cat.slug}
+                    </td>
+                    <td style={{ fontSize: 13 }}>{cat.count}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          <div className="wp-pagination">
+            <span>{filtered.length} item{filtered.length !== 1 ? "s" : ""}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

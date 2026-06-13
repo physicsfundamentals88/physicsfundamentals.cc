@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { compressImageToFile } from "@/utils/imageCompressor";
 import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import { Table } from "@tiptap/extension-table";
@@ -48,6 +49,7 @@ interface RichTextEditorProps {
   setTitle: (title: string) => void;
   slug: string;
   setSlug: (slug: string) => void;
+  hideTitle?: boolean;
 }
 
 /* ─── Heading Dropdown ─────────────────────────── */
@@ -212,61 +214,6 @@ function YoutubeModal({ editor, open, onClose }: { editor: any; open: boolean; o
   );
 }
 
-/* ─── Image Compression Helper ────────────────── */
-function compressImage(file: File): Promise<Blob | File> {
-  // If the file is already small enough (under 600 KB), upload it directly to preserve original quality
-  if (file.size <= 600 * 1024) {
-    return Promise.resolve(file);
-  }
-
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 1200;
-        const MAX_HEIGHT = 1200;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              resolve(blob);
-            } else {
-              resolve(file);
-            }
-          },
-          "image/webp",
-          0.8
-        );
-      };
-      img.onerror = () => resolve(file);
-    };
-    reader.onerror = () => resolve(file);
-  });
-}
-
 /* ─── Image Upload Button ──────────────────────── */
 function ImageUploadButton({ editor, onUploadStart, onUploadEnd }: { editor: any; onUploadStart: () => void; onUploadEnd: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -276,20 +223,23 @@ function ImageUploadButton({ editor, onUploadStart, onUploadEnd }: { editor: any
     if (!file) return;
     onUploadStart();
     try {
-      const compressedBlob = await compressImage(file);
+      const compressedFile = await compressImageToFile(file);
       const fd = new FormData();
-      fd.append("file", compressedBlob, file.name);
+      fd.append("file", compressedFile);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Upload failed");
+      }
       const data = await res.json();
       if (data.url) {
         editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
       } else {
-        const objectUrl = URL.createObjectURL(compressedBlob);
-        editor.chain().focus().setImage({ src: objectUrl, alt: file.name }).run();
+        throw new Error("No URL returned from server");
       }
-    } catch {
-      const objectUrl = URL.createObjectURL(file);
-      editor.chain().focus().setImage({ src: objectUrl, alt: file.name }).run();
+    } catch (err: any) {
+      console.error("Image upload failed:", err);
+      alert(err.message || "Failed to upload image. Please try again.");
     }
     onUploadEnd();
     if (fileRef.current) fileRef.current.value = "";
@@ -309,7 +259,7 @@ function ImageUploadButton({ editor, onUploadStart, onUploadEnd }: { editor: any
 }
 
 /* ─── Main Editor ──────────────────────────────── */
-export default function RichTextEditor({ content, onChange, title, setTitle, slug, setSlug }: RichTextEditorProps) {
+export default function RichTextEditor({ content, onChange, title, setTitle, slug, setSlug, hideTitle }: RichTextEditorProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [editingSlug, setEditingSlug] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
@@ -378,62 +328,39 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
         const text = event.clipboardData?.getData("text/plain");
         if (!text) return false;
 
-        // Broad detection: any math symbol, Greek letter, LaTeX, equation structure
-        const MATH_REGEX = [
-          /\$[^$]+\$/, // $inline$
-          /\$\$[\s\S]+?\$\$/, // $$block$$
-          /[\u0391-\u03C9]/, // Greek alphabet (Α-ω)
-          /[\u2200-\u22FF]/, // Math operators (∀, ∑, ∫, etc.)
-          /[\u00B2\u00B3\u00B9]/, // Superscript digits
-          /[\u2070-\u2079]/, // More superscripts
-          /\d+\s*[\^]\s*\d/, // e.g. x^2
-          /=[^=\n]{1,80}[+\-\*/^]/, // equation-like line
-          /^\s*[a-zA-Z]\s*=\s*[-\d.\s\^\*\/+a-zA-Z]+$/m, // F = ma, E = mc^2
-        ];
-        const hasMath = MATH_REGEX.some(r => r.test(text));
-        const hasNotes = /^\s*(Note|Important|Key Point|Formula|Definition|Example|Caution|Warning)\s*:/mi.test(text);
+        // If the selection is inside a code block or inline code, let native paste handle it
+        const { state } = view;
+        const { selection } = state;
+        const { $from } = selection;
+        const isInCode = $from.parent.type.name === "codeBlock" || $from.parent.type.name === "code";
+        if (isInCode) {
+          return false;
+        }
 
-        if (!hasMath && !hasNotes) return false;
+        const types = event.clipboardData?.types || [];
+        const isHtml = types.includes("text/html");
 
-        // Process each paragraph / chunk
-        const chunks = text.split(/\n{2,}|\r\n{2,}/);
-        const htmlParts = chunks.map(chunk => {
-          const t = chunk.trim();
-          if (!t) return "";
+        // Detect if the plain-text contains math formulas, markdown/space tables, or callouts
+        const hasMath = /\$[^$]+\$|\$\$[\s\S]+?\$\$/g.test(text);
+        const hasTable = text.includes("|") || text.includes("\t") || /\s{2,}/.test(text);
+        const hasCallouts = /^\s*(Note|Important|Key\s+Point|Formula|Definition|Example|Caution|Warning|Real-World\s+Example|SI\s+Unit)\s*:/mi.test(text) || text.includes("💡") || text.includes(">");
 
-          // Note/Important -> styled blockquote
-          if (/^\s*(Note|Important|Key Point|Formula|Definition|Example|Caution|Warning)\s*:/i.test(t)) {
-            return `<blockquote><strong>📌 ${t}</strong></blockquote>`;
-          }
+        // If it's a rich HTML paste and contains no formulas/tables/callouts, let Tiptap handle it natively
+        if (isHtml && !hasMath && !hasTable && !hasCallouts) {
+          return false;
+        }
 
-          // Block LaTeX $$...$$
-          if (/^\$\$[\s\S]+\$\$$/.test(t)) {
-            const inner = t.replace(/^\$\$|\$\$$/g, "").trim();
-            return `<pre><code>${inner}</code></pre>`;
-          }
+        // Run our custom parser to generate clean, semantic HTML
+        const finalHtml = parsePlaintextToHtml(text);
+        if (!finalHtml) return false;
 
-          // Standalone equation line: E = mc^2, F = ma, v = u + at
-          if (/^[a-zA-Z_][a-zA-Z0-9_^]*\s*=\s*.+$/.test(t) && t.split("\n").length === 1) {
-            return `<pre><code>${t}</code></pre>`;
-          }
-
-          // Mixed content: replace inline $...$ and superscripts
-          let processed = t
-            .replace(/\$\$([^$]+)\$\$/g, (_m: string, eq: string) => `<code>${eq.trim()}</code>`)
-            .replace(/\$([^$\n]+)\$/g, (_m: string, eq: string) => `<code>${eq.trim()}</code>`);
-
-          return `<p>${processed}</p>`;
-        });
-
-        const finalHtml = htmlParts.filter(Boolean).join("\n");
-
-        // Use DOMParser to build proper HTML then let Tiptap parse it
         try {
           const parser = view.someProp("clipboardParser") as any;
           const slice = parser.parseSlice(finalHtml);
           view.dispatch(view.state.tr.replaceSelection(slice).scrollIntoView());
           return true;
-        } catch {
+        } catch (err) {
+          console.error("Custom paste parser error:", err);
           return false;
         }
       },
@@ -452,8 +379,9 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
     }`;
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className={`${hideTitle ? "flex flex-col" : "space-y-8"} animate-fade-in`}>
       {/* ── Title + Permalink ── */}
+      {!hideTitle && (
       <div className="space-y-5">
         <div className="space-y-2">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Title</label>
@@ -502,9 +430,14 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
           )}
         </div>
       </div>
+      )}
 
       {/* ── Toolbar ── */}
-      <div className="sticky top-[86px] z-30 bg-white border border-[#E2E8F0] rounded-2xl px-3 py-2 flex items-center flex-wrap gap-1 shadow-sm">
+      <div className={`bg-white flex items-center flex-wrap gap-1 ${
+        hideTitle 
+          ? "border-b border-slate-200 px-4 py-2.5" 
+          : "border border-[#E2E8F0] rounded-2xl px-3 py-2 shadow-sm"
+      }`}>
         {/* Undo / Redo */}
         <ToolbarBtn onClick={() => editor.chain().focus().undo().run()} title="Undo" disabled={!editor.can().undo()}>
           <Undo2 size={16} />
@@ -723,20 +656,26 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
       )}
 
       {/* ── Editor Surface ── */}
-      <div className="bg-white rounded-[24px] border border-slate-200 shadow-sm p-10 lg:p-14 min-h-[600px] relative group focus-within:border-slate-300 transition-colors">
+      <div className={`${
+        hideTitle 
+          ? "p-4 min-h-[500px]" 
+          : "bg-white rounded-[24px] border border-slate-200 shadow-sm p-10 lg:p-14 min-h-[600px]"
+      } relative group transition-colors`}>
         {/* Block handle (+) for adding blocks */}
-        <div className="absolute left-5 top-12 opacity-0 group-hover:opacity-100 transition-all duration-200 flex flex-col gap-1.5">
-          <button
-            type="button"
-            onClick={() => editor.chain().focus().run()}
-            className="w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-[#0F172A] hover:border-[#FACC15] shadow-sm transition-all"
-            title="Add block"
-          >
-            <Plus size={15} />
-          </button>
-        </div>
+        {!hideTitle && (
+          <div className="absolute left-5 top-12 opacity-0 group-hover:opacity-100 transition-all duration-200 flex flex-col gap-1.5">
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().run()}
+              className="w-7 h-7 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 hover:text-[#0F172A] hover:border-[#FACC15] shadow-sm transition-all"
+              title="Add block"
+            >
+              <Plus size={15} />
+            </button>
+          </div>
+        )}
 
-        <div className="pl-5 relative">
+        <div className={`${hideTitle ? "pl-0" : "pl-5"} relative`}>
           {editor && editor.isFocused && editor.isEmpty && !showSlashMenu && (
             <div className="absolute left-0 top-0 mt-3 flex items-center gap-2 text-slate-300 animate-pulse-subtle pointer-events-none">
                <Plus size={14} className="text-[#3b82f6]" />
@@ -794,14 +733,23 @@ export default function RichTextEditor({ content, onChange, title, setTitle, slu
                           const file = e.target.files[0];
                           if (file) {
                               try {
-                                  const compressedBlob = await compressImage(file);
+                                  const compressedFile = await compressImageToFile(file);
                                   const fd = new FormData();
-                                  fd.append("file", compressedBlob, file.name);
+                                  fd.append("file", compressedFile);
                                   const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+                                  if (!res.ok) {
+                                      const errorData = await res.json().catch(() => ({}));
+                                      throw new Error(errorData.error || "Upload failed");
+                                  }
                                   const data = await res.json();
-                                  if (data.url) editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
-                              } catch (err) {
+                                  if (data.url) {
+                                      editor.chain().focus().setImage({ src: data.url, alt: file.name }).run();
+                                  } else {
+                                      throw new Error("No URL returned from server");
+                                  }
+                              } catch (err: any) {
                                   console.error("Upload failed", err);
+                                  alert(err.message || "Failed to upload image. Please try again.");
                               }
                           }
                       };
@@ -887,4 +835,340 @@ function CommandItem({ icon, label, description, onClick }: any) {
       </div>
     </button>
   );
+}
+
+function parsePlaintextToHtml(text: string): string {
+  // Pre-process text to place block equations $$...$$ on their own lines
+  let processedText = text.replace(/([^\n])\s*\$\$([\s\S]+?)\$\$\s*([^\n])/g, "$1\n$$$$$2$$$$\n$3");
+  processedText = processedText.replace(/^([^\n]+?)\s*\$\$([\s\S]+?)\$\$/gm, "$1\n$$$$$2$$$$");
+  processedText = processedText.replace(/\$\$([\s\S]+?)\$\$\s*([^\n]+)$/gm, "$$$$$1$$$$\n$2");
+
+  const lines = processedText.split(/\r?\n/);
+  const htmlParts: string[] = [];
+  
+  let currentParagraphLines: string[] = [];
+  let inList: "ul" | "ol" | null = null;
+  let listItems: string[] = [];
+
+  const flushParagraph = () => {
+    if (currentParagraphLines.length > 0) {
+      const pText = currentParagraphLines.join(" ").trim();
+      if (pText) {
+        // Replace markdown links and inline equations
+        let processed = pText
+          .replace(/\[([^\]]+)\]\s*\(([^)]+)\)/g, '<a href="$2">$1</a>')
+          .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+          .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+        htmlParts.push(`<p>${processed}</p>`);
+      }
+      currentParagraphLines = [];
+    }
+  };
+
+  const flushList = () => {
+    if (inList && listItems.length > 0) {
+      let listHtml = inList === "ul" ? "<ul>" : "<ol>";
+      listItems.forEach(item => {
+        let processed = item
+          .replace(/\[([^\]]+)\]\s*\(([^)]+)\)/g, '<a href="$2">$1</a>')
+          .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+          .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+        listHtml += `<li>${processed}</li>`;
+      });
+      listHtml += inList === "ul" ? "</ul>" : "</ol>";
+      htmlParts.push(listHtml);
+      listItems = [];
+      inList = null;
+    }
+  };
+
+  const getSeparator = (l: string) => {
+    if (l.includes("|")) return "|";
+    if (l.includes("\t")) return "\t";
+    if (/\s{2,}/.test(l)) return "MULTISPACE";
+    return null;
+  };
+
+  const getCellsCount = (l: string, sep: string) => {
+    if (sep === "|") {
+      return l.replace(/^\||\|$/g, "").split("|").length;
+    } else if (sep === "MULTISPACE") {
+      return l.split(/\s{2,}/).length;
+    } else {
+      return l.split(sep).length;
+    }
+  };
+
+  const isShortHeading = (l: string) => {
+    if (!/^[A-Z0-9💡📌⚙️📐🔍]/.test(l)) return false;
+    if (/[.,:;]$/.test(l)) return false;
+    if (l.length > 80) return false;
+    if (l.includes("=") || l.includes("\\") || l.includes("$$")) return false;
+    if (/^[\*\-\+]\s+/.test(l)) return false;
+    const words = l.split(/\s+/);
+    if (words.length > 10) return false;
+    
+    const capitalizedWords = words.filter(w => {
+      const cleanWord = w.replace(/^[("']|[)"']$/g, "");
+      if (!cleanWord) return true;
+      return /^[A-Z0-9]/.test(cleanWord) || /^(of|in|the|and|a|to|for|on|by|with|or|as|at|but|by|if|nor|off|out|per|up|via)$/i.test(cleanWord);
+    });
+    return capitalizedWords.length / words.length >= 0.75;
+  };
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i].trim();
+    
+    if (!line) {
+      flushParagraph();
+      flushList();
+      i++;
+      continue;
+    }
+
+    // Check if this is the start of a table using our robust multi-line column count detection
+    const sep = getSeparator(line);
+    if (sep && i < lines.length - 1) {
+      const nextLine = lines[i+1].trim();
+      const nextSep = getSeparator(nextLine);
+      if (nextSep === sep) {
+        const cols1 = getCellsCount(line, sep);
+        const cols2 = getCellsCount(nextLine, sep);
+        if (cols1 >= 2 && cols2 >= 2) {
+          flushParagraph();
+          flushList();
+          const tableLines: string[] = [];
+          // Consume all lines that belong to this table (contain the separator and cells >= 2)
+          while (i < lines.length && getSeparator(lines[i]) === sep && getCellsCount(lines[i], sep) >= 2) {
+            tableLines.push(lines[i]);
+            i++;
+          }
+          
+          const parsedTable = parseTableLinesToHtml(tableLines);
+          if (parsedTable) {
+            htmlParts.push(parsedTable);
+          } else {
+            tableLines.forEach(tl => {
+              currentParagraphLines.push(tl);
+            });
+          }
+          continue;
+        }
+      }
+    }
+
+    // Check for bullet or numbered list
+    const bulletMatch = line.match(/^[\*\-\+]\s+(.+)$/);
+    const numMatch = line.match(/^(\d+)\.\s+(.+)$/);
+
+    if (bulletMatch || numMatch) {
+      let isHeading = false;
+      if (numMatch) {
+        const titleText = numMatch[2].trim();
+        isHeading = titleText.includes("?") || 
+                    titleText.includes(":") || 
+                    (titleText.split(" ").length > 2 && /^[A-Z]/.test(titleText));
+      }
+
+      if (isHeading) {
+        flushParagraph();
+        flushList();
+        let processed = numMatch![2]
+          .replace(/\[([^\]]+)\]\s*\(([^)]+)\)/g, '<a href="$2">$1</a>')
+          .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+          .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+        htmlParts.push(`<h2>${numMatch![1]}. ${processed}</h2>`);
+        i++;
+        continue;
+      }
+
+      flushParagraph();
+      const type = bulletMatch ? "ul" : "ol";
+      const content = bulletMatch ? bulletMatch[1] : numMatch![2];
+
+      if (inList && inList !== type) {
+        flushList();
+      }
+
+      inList = type;
+      listItems.push(content);
+      i++;
+      continue;
+    }
+
+    flushList();
+
+    // Check for subheadings like "A. Kinetic Energy"
+    const alphaHeadingMatch = line.match(/^([A-Z])\.\s+(.+)$/);
+    if (alphaHeadingMatch) {
+      flushParagraph();
+      let processed = alphaHeadingMatch[2]
+        .replace(/\[([^\]]+)\]\s*\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+        .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+      htmlParts.push(`<h3>${alphaHeadingMatch[1]}. ${processed}</h3>`);
+      i++;
+      continue;
+    }
+
+    // Check for standalone link (e.g. in list of curated guides)
+    const standaloneLinkMatch = line.match(/^\[([^\]]+)\]\s*\(([^)]+)\)$/);
+    if (standaloneLinkMatch) {
+      flushParagraph();
+      htmlParts.push(`<p><a href="${standaloneLinkMatch[2]}">${standaloneLinkMatch[1]}</a></p>`);
+      i++;
+      continue;
+    }
+
+    // Check for blockquote / Note / Important / 💡 / >
+    const isCallout = 
+      /^\s*(Note|Important|Key\s+Point|Formula|Definition|Example|Real-World\s+Example|Caution|Warning|SEO\s+Insight|Internal\s+Link|SI\s+Unit|Summary)\b.*?:/i.test(line) ||
+      line.startsWith("💡") ||
+      line.startsWith("📌") ||
+      line.startsWith(">");
+
+    if (isCallout) {
+      flushParagraph();
+      let cleanLine = line;
+      if (line.startsWith(">")) {
+        cleanLine = line.substring(1).trim();
+      }
+      let processed = cleanLine
+        .replace(/\[([^\]]+)\]\s*\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+        .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+      htmlParts.push(`<blockquote>${processed}</blockquote>`);
+      i++;
+      continue;
+    }
+
+    // Check for standalone block LaTeX $$...$$
+    if (/^\$\$[\s\S]+\$\$$/.test(line)) {
+      flushParagraph();
+      const inner = line.replace(/^\$\$|\$\$/g, "").trim();
+      htmlParts.push(`<pre><code>${inner}</code></pre>`);
+      i++;
+      continue;
+    }
+
+    // Block LaTeX spanning lines
+    if (line.startsWith("$$")) {
+      flushParagraph();
+      let blockContent = line;
+      let j = i + 1;
+      while (j < lines.length && !lines[j-1].endsWith("$$") && !blockContent.endsWith("$$")) {
+        blockContent += "\n" + lines[j];
+        j++;
+      }
+      const inner = blockContent.replace(/^\$\$|\$\$/g, "").trim();
+      htmlParts.push(`<pre><code>${inner}</code></pre>`);
+      i = j;
+      continue;
+    }
+
+    // Check for YouTube Embed link
+    const ytMatch = line.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (ytMatch && (line.toLowerCase().includes("youtube") || line.toLowerCase().includes("video") || line.toLowerCase().includes("embed"))) {
+      flushParagraph();
+      const videoId = ytMatch[1];
+      htmlParts.push(`<div data-youtube-video=""><iframe src="https://www.youtube.com/embed/${videoId}" width="640" height="360" allowfullscreen="true"></iframe></div>`);
+      i++;
+      continue;
+    }
+
+    // Check for standalone equation line: W = F * d, E = mgh
+    if (/^[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*.+$/.test(line) && !line.includes("<") && !line.includes(">") && line.length < 100) {
+      flushParagraph();
+      htmlParts.push(`<pre><code>${line}</code></pre>`);
+      i++;
+      continue;
+    }
+
+    // Check for short headings
+    if (isShortHeading(line)) {
+      flushParagraph();
+      let processed = line
+        .replace(/\[([^\]]+)\]\s*\(([^)]+)\)/g, '<a href="$2">$1</a>')
+        .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+        .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+      htmlParts.push(`<h3>${processed}</h3>`);
+      i++;
+      continue;
+    }
+
+    currentParagraphLines.push(line);
+    i++;
+  }
+
+  flushParagraph();
+  flushList();
+
+  return htmlParts.join("\n");
+}
+
+function parseTableLinesToHtml(lines: string[]): string | null {
+  if (lines.length < 2) return null;
+
+  const firstLine = lines[0].trim();
+  const separator = firstLine.includes("|") 
+    ? "|" 
+    : firstLine.includes("\t") 
+      ? "\t" 
+      : /\s{2,}/.test(firstLine) 
+        ? "MULTISPACE" 
+        : null;
+
+  if (!separator) return null;
+
+  const getCells = (line: string) => {
+    if (separator === "|") {
+      const clean = line.replace(/^\||\|$/g, "");
+      return clean.split("|").map(s => s.trim());
+    } else if (separator === "MULTISPACE") {
+      return line.split(/\s{2,}/).map(s => s.trim());
+    } else {
+      return line.split(separator).map(s => s.trim());
+    }
+  };
+
+  const headers = getCells(firstLine);
+  if (headers.length < 2) return null;
+
+  let startIndex = 1;
+  const secondLine = lines[1].trim();
+  if (secondLine.includes("-") && (secondLine.includes("|") || secondLine.includes("---") || secondLine.includes("- -"))) {
+    startIndex = 2;
+  }
+
+  let html = `<table><thead><tr>`;
+  headers.forEach(h => {
+    let processed = h
+      .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+      .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+    html += `<th>${processed}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  let validRows = 0;
+  for (let i = startIndex; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cells = getCells(line);
+    if (cells.length === 0) continue;
+    
+    html += `<tr>`;
+    for (let c = 0; c < headers.length; c++) {
+      let cellText = cells[c] || "";
+      let processed = cellText
+        .replace(/\$\$([^$]+)\$\$/g, (_m, eq) => `<code>${eq.trim()}</code>`)
+        .replace(/\$([^$\n]+)\$/g, (_m, eq) => `<code>${eq.trim()}</code>`);
+      html += `<td>${processed}</td>`;
+    }
+    html += `</tr>`;
+    validRows++;
+  }
+  html += `</tbody></table>`;
+
+  return validRows > 0 ? html : null;
 }

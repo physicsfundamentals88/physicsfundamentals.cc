@@ -303,8 +303,8 @@ export default function CalculatorsPage() {
         </div>
       </section>
 
-      {/* ─── Category Filter — Sticky ──────────────────────────────── */}
-      <div className="bg-white border-b border-slate-200 sticky top-[76px] z-40 bg-white/80 backdrop-blur-md">
+      {/* ─── Category Filter — Static, scrolls normally with the page ─── */}
+      <div className="bg-white border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <div className="max-w-[1300px] mx-auto px-6 sm:px-8">
           <div className="flex items-center gap-1 overflow-x-auto py-3.5 no-scrollbar">
             {categories.map((cat) => (

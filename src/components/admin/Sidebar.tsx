@@ -1,118 +1,189 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  FileText, 
-  Copy, 
-  Layers, 
-  Image, 
-  Search, 
-  BarChart2, 
-  Users, 
-  FormInput, 
-  RefreshCw, 
-  Settings, 
+import {
+  LayoutDashboard,
+  FileText,
+  Tag,
+  Image,
+  BarChart2,
+  Settings,
   LogOut,
-  ChevronRight
+  ChevronDown,
+  BookOpen,
+  Zap,
+  Users,
 } from "lucide-react";
 
-const navigation = [
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+  children?: { name: string; href: string }[];
+}
+
+const navigation: NavItem[] = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { 
-    name: "Posts", 
-    href: "/admin/blog", 
+  {
+    name: "Posts",
+    href: "/admin/blog",
     icon: FileText,
     children: [
       { name: "All Posts", href: "/admin/blog" },
       { name: "Add New Post", href: "/admin/blog/create" },
-      { name: "Drafts", href: "/admin/blog/drafts" },
-      { name: "Scheduled", href: "/admin/blog/scheduled" },
-      { name: "Published", href: "/admin/blog/published" },
-    ]
+      { name: "Categories", href: "/admin/categories" },
+    ],
   },
-  { name: "Pages", href: "/admin/pages", icon: Copy },
-  { name: "Categories", href: "/admin/categories", icon: Layers },
-  { name: "Media Library", href: "/admin/media", icon: Image },
+  {
+    name: "Media",
+    href: "/admin/media",
+    icon: Image,
+    children: [
+      { name: "Library", href: "/admin/media" },
+      { name: "Watermark Remover", href: "/admin/media/watermark-remover" },
+    ],
+  },
+  {
+    name: "Pages",
+    href: "/admin/pages",
+    icon: BookOpen,
+    children: [
+      { name: "All Pages", href: "/admin/pages" },
+      { name: "Add New Page", href: "/admin/pages/new" },
+    ],
+  },
   { name: "Analytics", href: "/admin/analytics", icon: BarChart2 },
+  { name: "Users", href: "/admin/users", icon: Users },
+];
+
+const bottomNav = [
+  { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState<string[]>([]);
+
+  const toggleCollapse = (name: string) => {
+    setCollapsed((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
+    );
+  };
+
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to log out of the administration panel?")) {
+      localStorage.removeItem("admin_logged");
+      window.location.href = "/admin/login";
+    }
+  };
+
+  const isActive = (href: string) =>
+    pathname === href || (href !== "/admin" && pathname.startsWith(href));
 
   return (
-    <aside className="w-[18%] bg-[#0F172A] min-h-screen flex flex-col fixed left-0 top-0 z-50 transition-all duration-300">
-      {/* Brand Section */}
-      <div className="p-6 flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#FACC15] rounded-xl flex items-center justify-center">
-            <span className="font-black text-[#0F172A] text-lg">P</span>
+    <aside className="wp-sidebar">
+      {/* Brand */}
+      <div className="wp-brand">
+        <div className="wp-brand-icon" style={{ backgroundColor: "#d63638" }}>
+          <Zap size={16} fill="currentColor" />
         </div>
-        <div className="flex flex-col">
-          <span className="text-white font-bold text-sm tracking-tight">Physics CMS</span>
-          <span className="text-slate-500 text-[10px] uppercase font-black tracking-widest leading-none mt-0.5">Professional</span>
+        <div className="wp-brand-text">
+          <span className="wp-brand-name" style={{ color: "#ffffff", fontWeight: 800 }}>Super Admin</span>
+          <span className="wp-brand-sub" style={{ color: "#facc15" }}>v1.0 (Enterprise)</span>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-1">
+      <nav className="wp-nav">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || (item.children && pathname.startsWith(item.href));
-          
-          return (
-            <div key={item.name} className="space-y-1">
-              <Link
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all group relative ${
-                  isActive 
-                    ? "bg-[#1E293B] text-[#FACC15]" 
-                    : "text-slate-400 hover:bg-[#1E293B] hover:text-white"
-                }`}
-              >
-                <item.icon size={18} className={isActive ? "text-[#FACC15]" : "text-slate-500 group-hover:text-slate-300"} />
-                <span className="flex-1">{item.name}</span>
-                {item.children && <ChevronRight size={14} className={`transition-transform ${isActive ? "rotate-90" : ""}`} />}
-                {isActive && (
-                    <div className="absolute left-[-16px] w-[3px] h-6 bg-[#FACC15] rounded-r-full" />
-                )}
-              </Link>
+          const active = isActive(item.href);
+          const hasChildren = item.children && item.children.length > 0;
+          const isOpen = hasChildren && (active || !collapsed.includes(item.name));
 
-              {/* Submenu */}
-              {item.children && isActive && (
-                <div className="ml-10 space-y-1 mt-1">
-                  {item.children.map((child) => {
-                    const isChildActive = pathname === child.href;
+          return (
+            <div key={item.name} className="wp-nav-group">
+              {hasChildren ? (
+                <button
+                  onClick={() => toggleCollapse(item.name)}
+                  className={`wp-nav-item ${active ? "wp-nav-item--active" : ""}`}
+                >
+                  <item.icon size={16} className="wp-nav-icon" />
+                  <span className="wp-nav-label">{item.name}</span>
+                  <ChevronDown
+                    size={14}
+                    className={`wp-nav-chevron ${isOpen ? "wp-nav-chevron--open" : ""}`}
+                  />
+                </button>
+              ) : (
+                <Link
+                  href={item.href}
+                  className={`wp-nav-item ${active ? "wp-nav-item--active" : ""}`}
+                >
+                  <item.icon size={16} className="wp-nav-icon" />
+                  <span className="wp-nav-label">{item.name}</span>
+                </Link>
+              )}
+
+              {hasChildren && isOpen && (
+                <div className="wp-subnav">
+                  {item.children!.map((child) => {
+                    const childActive = pathname === child.href;
                     return (
                       <Link
-                        key={child.name}
+                        key={child.href}
                         href={child.href}
-                        className={`block py-2 text-[12px] font-bold transition-all ${
-                          isChildActive ? "text-[#FACC15]" : "text-slate-500 hover:text-slate-300"
-                        }`}
+                        className={`wp-subnav-item ${childActive ? "wp-subnav-item--active" : ""}`}
                       >
                         {child.name}
                       </Link>
-                    )
+                    );
                   })}
                 </div>
               )}
             </div>
           );
         })}
-      </div>
+      </nav>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-slate-800/50">
-        <div className="bg-[#1E293B] p-3 rounded-xl flex items-center gap-3 hover:bg-[#26334a] transition-all cursor-pointer group">
-          <div className="w-8 h-8 rounded-lg bg-[#FACC15] flex items-center justify-center text-[#0F172A] font-black text-xs shadow-lg shadow-yellow-500/10">
-            AD
+      <div className="wp-sidebar-spacer" />
+
+      {/* Bottom */}
+      <div className="wp-nav wp-nav--bottom">
+        {bottomNav.map((item) => (
+          <Link
+            key={item.name}
+            href={item.href}
+            className={`wp-nav-item ${isActive(item.href) ? "wp-nav-item--active" : ""}`}
+          >
+            <item.icon size={16} className="wp-nav-icon" />
+            <span className="wp-nav-label">{item.name}</span>
+          </Link>
+        ))}
+
+        {/* User */}
+        <div className="wp-user">
+          <div className="wp-user-avatar" style={{ backgroundColor: "#d63638" }}>SA</div>
+          <div className="wp-user-info">
+            <span className="wp-user-name">Super Admin</span>
+            <span className="wp-user-role" style={{ color: "#facc15" }}>Super Administrator</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-bold text-white truncate">Admin User</p>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mt-0.5">Manager</p>
-          </div>
-          <LogOut size={14} className="text-slate-500 group-hover:text-red-400 transition-colors" />
+          <button
+            onClick={handleLogout}
+            title="Log Out"
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              color: "inherit",
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <LogOut size={14} className="wp-user-logout" />
+          </button>
         </div>
       </div>
     </aside>

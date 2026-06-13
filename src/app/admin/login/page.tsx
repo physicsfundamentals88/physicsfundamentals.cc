@@ -18,15 +18,15 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      // In a real implementation, we would call the verify-turnstile API here
-      // For now, we'll implement a secure-looking mockup that the user can authorize
-      if (username === "admin" && password === "physics2024") {
+      // Allow admin or admin@physics.com as username/email with secret password
+      if ((username === "admin" || username === "admin@physics.com") && password === "physics2024") {
+         localStorage.setItem("admin_logged", "true");
          // Mock success
          setTimeout(() => {
             router.push("/admin");
          }, 1000);
       } else {
-         setError("Invalid credentials. Please check your username and password.");
+         setError("Invalid credentials. Please check your username/email and password.");
          setIsLoading(false);
       }
     } catch (err) {
@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Username</label>
+              <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">Email or Username</label>
               <div className="relative group">
                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#FACC15] transition-colors" />
                 <input 
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-slate-950/50 border border-slate-800 rounded-xl py-3.5 pl-12 pr-4 text-white font-medium focus:outline-none focus:border-[#FACC15] focus:bg-slate-950 transition-all placeholder:text-slate-700"
-                  placeholder="Enter your username"
+                  placeholder="Enter your email or username"
                   required
                 />
               </div>

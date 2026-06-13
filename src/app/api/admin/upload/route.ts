@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-
-
+import fs from "fs";
+import path from "path";
 
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
@@ -29,6 +29,37 @@ export async function POST(request: Request) {
       const base64 = Buffer.from(buffer).toString("base64");
       const contentType = file.type || "application/octet-stream";
       const dataUrl = `data:${contentType};base64,${base64}`;
+
+      // Save to local JSON database for listing in Media Library
+      try {
+        const dbPath = path.join(process.cwd(), "src/data/localMedia.json");
+        let localMedia = [];
+        if (fs.existsSync(dbPath)) {
+          const content = fs.readFileSync(dbPath, "utf-8");
+          localMedia = JSON.parse(content);
+        }
+
+        const newMedia = {
+          name: file.name,
+          size: file.size,
+          uploaded: new Date().toISOString(),
+          url: dataUrl
+        };
+
+        // Check if item already exists, if so filter it out to prevent duplicates
+        localMedia = localMedia.filter((item: any) => item.name !== file.name);
+        localMedia.unshift(newMedia);
+
+        const dirPath = path.dirname(dbPath);
+        if (!fs.existsSync(dirPath)) {
+          fs.mkdirSync(dirPath, { recursive: true });
+        }
+
+        fs.writeFileSync(dbPath, JSON.stringify(localMedia, null, 2), "utf-8");
+      } catch (err) {
+        console.error("Failed to write to local media database:", err);
+      }
+
       return NextResponse.json({ 
         url: dataUrl,
         name: file.name 

@@ -8,7 +8,7 @@ const fundamentals = [
     title: "Classical Mechanics",
     description: (
       <>
-        Classical Mechanics begins with <span className="text-blue-500">Newton's three laws</span>. The <span className="text-blue-500">second (F = ma)</span> relates force to mass and acceleration. The third states forces come in pairs. Together they predict everything from projectiles to orbits, and forces in structural engineering.
+        Analyze <span className="text-blue-500">Newtonian mechanics</span> from the ground up. Master force interaction, particle acceleration <span className="text-blue-500">(F = ma)</span>, action-reaction equilibrium, and conservation laws. Build the foundational intuition required to solve complex projectile and orbital mechanics problems.
       </>
     ),
     linkText: "ALL MECHANICS ARTICLES",
@@ -18,7 +18,7 @@ const fundamentals = [
     title: "Waves & Optics",
     description: (
       <>
-        Wave physics governs how energy propagates. <span className="text-blue-500">Transverse waves</span> — oscillation perpendicular to propagation — include all electromagnetic radiation. The <span className="text-blue-500">wave equation v = fλ</span> connects speed, frequency, and wavelength for every wave type in the universe.
+        Study the physics of propagation and oscillations. Walk through how <span className="text-blue-500">transverse waves</span> transfer energy, map key parameters via the fundamental <span className="text-blue-500">wave equation v = fλ</span>, and explore light refraction, diffraction, and sound wave interference.
       </>
     ),
     linkText: "ALL WAVES ARTICLES",
@@ -28,7 +28,7 @@ const fundamentals = [
     title: "Energy & Thermodynamics",
     description: (
       <>
-        <span className="text-blue-500">Energy</span> is the central concept connecting all physics. Conservation of energy — it cannot be created or destroyed, only transformed — is one of the deepest truths in science. The <span className="text-blue-500">first law of thermodynamics</span> applies this to heat and work. The <span className="text-blue-500">kinetic theory of gases</span> links molecular motion to pressure.
+        Examine energy conservation and heat exchange mechanisms. Learn how <span className="text-blue-500">mechanical energy</span> transforms into thermal energy, apply the <span className="text-blue-500">first law of thermodynamics</span>, and model gas behavior using the kinetic molecular theory.
       </>
     ),
     linkText: "ALL THERMODYNAMICS ARTICLES",
@@ -38,7 +38,7 @@ const fundamentals = [
     title: "Forces & Conservation Laws",
     description: (
       <>
-        Conservation laws are the deepest principles in physics. <span className="text-blue-500">Conservation of momentum</span> governs every collision. <span className="text-blue-500">Newton's law of gravitation</span> describes the force between any two masses — from dropping a ball to the orbit of the Moon. These are exact laws with no known exceptions.
+        Explore the immutable principles of momentum and gravity. Investigate collision mathematics, apply <span className="text-blue-500">Newton's universal law of gravitation</span> to planetary motion, and understand why <span className="text-blue-500">conservation laws</span> form the backbone of modern physics.
       </>
     ),
     linkText: "ALL FORCES ARTICLES",
@@ -61,13 +61,13 @@ export default function WhatAreFundamentalsSection() {
             className="text-[clamp(28px,4vw,36px)] leading-[1.2] mb-5 tracking-tight"
             style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 700, color: "rgb(15, 23, 42)" }}
           >
-            What Are Physics Fundamentals?
+            Demystifying the Core Principles
           </h2>
           <p 
             className="text-[16px] leading-[1.65] max-w-[700px]"
             style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(100, 116, 139)" }}
           >
-            Physics fundamentals are the core laws and principles describing how the universe behaves at every scale. Mastering them is the single most effective investment any science or engineering student can make.
+            Our modular approach breaks down complex natural laws into accessible concepts. Grasping these fundamental frameworks prepares you for advanced physics and engineering studies.
           </p>
         </motion.div>
 

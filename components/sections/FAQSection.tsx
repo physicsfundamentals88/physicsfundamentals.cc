@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
-  { question: "What are the fundamentals of physics?", answer: "At its core, physics fundamentals include classical mechanics, electromagnetism, thermodynamics, and quantum mechanics. These form the basis for understanding everything from falling apples to stars." },
-  { question: "Is Physics Fundamentals really free?", answer: "Yes, our core articles and basic interactive simulations are entirely free for students and educators." },
-  { question: "Who creates the content on Physics Fundamentals?", answer: "Our content is authored by experienced physics educators, researchers, and PhDs who have a passion for making difficult concepts intuitive." },
-  { question: "What topics does Physics Fundamentals cover?", answer: "We cover high school and introductory college-level topics: mechanics, waves, thermodynamics, electricity, magnetism, and modern physics." },
-  { question: "How is Physics Fundamentals different from a textbook?", answer: "We use interactive simulations, visual explanations, and modern web technologies to let you play with variables rather than just reading equations." },
-  { question: "What is the best way to learn physics fundamentals?", answer: "Active problem solving and playing with simulations. Don't just read—test your intuition by predicting what happens when you change a variable." }
+  { question: "What are the core topics covered on PhysicsLab?", answer: "PhysicsLab covers the essential foundations of physical science: classical mechanics, waves and optics, thermodynamics, electromagnetism, and introductory modern physics." },
+  { question: "Is it free to use the labs and simulators?", answer: "Yes! Every simulation, virtual sandbox lab, course curriculum, and article on our platform is completely open-access and free to use for both self-directed students and teachers." },
+  { question: "Who develops the learning material?", answer: "Our visual resources, mathematical explanations, and simulations are created by a dedicated team of physics educators, academic researchers, and developers focused on visual science learning." },
+  { question: "What level of physics is this built for?", answer: "Our content is structured for AP physics, high school students, and college-level introductory courses. It works well as a study companion alongside standard textbooks." },
+  { question: "How do interactive sandboxes help me learn?", answer: "Rather than reading passive formulas, you can directly tweak variables (like gravity strength, wavelength, or charge) in real-time, helping you build spatial intuition for how physical formulas translate to reality." },
+  { question: "What is the most effective study routine?", answer: "We recommend starting with our visual explanations to build intuition, running interactive simulations to test scenarios, and practicing our step-by-step problem sets to reinforce the math." }
 ];
 
 export default function FAQSection() {
@@ -36,7 +36,7 @@ export default function FAQSection() {
             className="text-[clamp(28px,4vw,36px)] leading-[1.2]" 
             style={{ fontFamily: "var(--font-instrument-serif)", color: "rgb(15, 23, 42)" }}
           >
-            Common questions about physics fundamentals
+            Frequently Asked Questions
           </h2>
         </motion.div>
 

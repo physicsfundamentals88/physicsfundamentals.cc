@@ -22,6 +22,8 @@ import {
   AlertCircle
 } from "lucide-react";
 
+import { compressImageToFile } from "@/utils/imageCompressor";
+
 export default function MediaLibraryPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [items, setItems] = useState<any[]>([]);
@@ -60,8 +62,9 @@ export default function MediaLibraryPage() {
     if (!file) return;
     setUploading(true);
     try {
+      const compressedFile = await compressImageToFile(file);
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", compressedFile);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       if (!res.ok) throw new Error("Upload failed");
       showNotification("success", "File uploaded successfully!");

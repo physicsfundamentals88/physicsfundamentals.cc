@@ -187,7 +187,7 @@ export default function SnellsLawCalculator() {
           <div className="grid lg:grid-cols-[360px_1fr] gap-8 items-start">
 
             {/* ── Inputs ── */}
-            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm sticky top-[100px] space-y-6">
+            <div className="bg-white rounded-[24px] border border-slate-200 p-7 shadow-sm space-y-6">
 
               {/* Formula display */}
               <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">

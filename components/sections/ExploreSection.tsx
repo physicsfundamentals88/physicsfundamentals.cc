@@ -66,13 +66,13 @@ export default function ExploreSection() {
             className="text-[clamp(32px,4vw,44px)] leading-[1.1] text-slate-900 mb-4" 
             style={{ fontFamily: "var(--font-instrument-serif)" }}
           >
-            Everything on Physics Fundamentals
+            Explore PhysicsLab Resources
           </h2>
           <p 
             className="text-[17px] text-slate-500 max-w-[500px]" 
             style={{ fontFamily: "var(--font-dm-sans)" }}
           >
-            Every article, topic, author, and resource — all in one place for easy discovery.
+            Every simulator, category, contributor, and page — indexed for straightforward navigation.
           </p>
         </motion.div>
 
