@@ -44,6 +44,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   const [notice, setNotice] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [scheduledDate, setScheduledDate] = useState<string | null>(null);
+  const [status, setStatus] = useState<"Published" | "Draft" | "Scheduled">("Draft");
 
   // Sidebar panels
   const [featuredImage, setFeaturedImage] = useState<string | null>(null);
@@ -139,6 +140,11 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
         setContent(data.content || "");
         setFeaturedImage(data.heroImage || null);
         setCategory(data.category || "Uncategorized");
+        const rawStatus = data.status || "Draft";
+        const normalizedStatus = 
+          rawStatus.toLowerCase() === "published" ? "Published" :
+          rawStatus.toLowerCase() === "scheduled" ? "Scheduled" : "Draft";
+        setStatus(normalizedStatus);
         setMetaTitle(data.metaTitle || data.title || "");
         setMetaDescription(data.metaDescription || "");
         setExcerpt(data.excerpt || "");
@@ -208,6 +214,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
         throw new Error(data.error || `Server error (${res.status})`);
       }
       showNotice("success", `Post updated successfully!`);
+      setStatus(status);
       setTimeout(() => router.push("/admin/blog"), 1500);
     } catch (err: any) {
       showNotice("error", err.message || "Failed to update post.");
@@ -366,50 +373,49 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ color: "var(--wp-text-muted)" }}>Status:</span>
-                    <span style={{ fontWeight: 600 }}>Draft</span>
-                    <button style={{ fontSize: 11, color: "var(--wp-blue)", background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>Edit</button>
+                    <span style={{ fontWeight: 600 }}>{status}</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ color: "var(--wp-text-muted)" }}>Visibility:</span>
                     <span style={{ fontWeight: 600 }}>Public</span>
-                    <button style={{ fontSize: 11, color: "var(--wp-blue)", background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>Edit</button>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <Calendar size={13} style={{ color: "var(--wp-text-muted)" }} />
                     <span style={{ color: "var(--wp-text-muted)" }}>Publish:</span>
                     <span style={{ fontWeight: 600, fontSize: 12 }}>Immediately</span>
-                    <button
-                      onClick={() => setScheduleOpen(true)}
-                      style={{ fontSize: 11, color: "var(--wp-blue)", background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}
-                    >
-                      Edit
-                    </button>
                   </div>
                 </div>
 
-                <div className="wp-publish-actions">
-                  <button
-                    className="wp-btn wp-btn-secondary wp-btn-sm"
-                    onClick={() => handleSave("Draft")}
-                    disabled={isSubmitting || uploading}
-                  >
-                    {isSubmitting ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
-                    Save Draft
-                  </button>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <Link href={`/blog/${slug}`} target="_blank" className="wp-btn wp-btn-secondary wp-btn-sm">
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--wp-border)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 6 }}>
+                    <button
+                      className="wp-btn wp-btn-secondary wp-btn-sm"
+                      style={{ flex: 1, justifyContent: "center" }}
+                      onClick={() => handleSave("Draft")}
+                      disabled={isSubmitting || uploading}
+                    >
+                      {isSubmitting ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+                      Save Draft
+                    </button>
+                    <Link 
+                      href={`/blog/${slug}`} 
+                      target="_blank" 
+                      className="wp-btn wp-btn-secondary wp-btn-sm"
+                      style={{ flex: 1, justifyContent: "center" }}
+                    >
                       <Eye size={12} />
                       View Post
                     </Link>
-                    <button
-                      className="wp-btn wp-btn-primary"
-                      onClick={() => handleSave("Published")}
-                      disabled={isSubmitting || uploading}
-                    >
-                      {isSubmitting ? <Loader2 size={13} className="animate-spin" /> : null}
-                      Update
-                    </button>
                   </div>
+                  <button
+                    className="wp-btn wp-btn-primary"
+                    style={{ width: "100%", justifyContent: "center", padding: "8px 14px" }}
+                    onClick={() => handleSave("Published")}
+                    disabled={isSubmitting || uploading}
+                  >
+                    {isSubmitting ? <Loader2 size={13} className="animate-spin" /> : null}
+                    Update
+                  </button>
                 </div>
               </div>
             )}
