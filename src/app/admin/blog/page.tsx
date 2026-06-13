@@ -86,7 +86,6 @@ export default function AdminBlogListing() {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                ...articleObj,
                 status: statusToSet,
               }),
             });

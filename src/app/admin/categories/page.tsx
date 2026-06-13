@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Edit3, Trash2 } from "lucide-react";
 
 const defaultCategories = [
@@ -20,6 +20,31 @@ export default function CategoriesPage() {
   const [selected, setSelected] = useState<number[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [bulkAction, setBulkAction] = useState("");
+  const [articles, setArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/articles")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setArticles(data);
+        }
+      })
+      .catch((err) => console.error("Failed to load articles for category counts:", err));
+  }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("sa_categories_list");
+    if (saved) {
+      try {
+        setCategories(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse saved categories:", e);
+      }
+    } else {
+      localStorage.setItem("sa_categories_list", JSON.stringify(defaultCategories));
+    }
+  }, []);
 
   const filtered = categories.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
@@ -28,16 +53,20 @@ export default function CategoriesPage() {
   const handleAdd = () => {
     if (!newName.trim()) return;
     const slug = newSlug || newName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    setCategories((prev) => [
-      ...prev,
+    const updated = [
+      ...categories,
       { id: Date.now(), name: newName.trim(), slug, count: 0, description: newDesc },
-    ]);
+    ];
+    setCategories(updated);
+    localStorage.setItem("sa_categories_list", JSON.stringify(updated));
     setNewName(""); setNewSlug(""); setNewDesc(""); setNewParent("None");
   };
 
   const handleDelete = (id: number) => {
     if (!confirm("Delete this category?")) return;
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+    const updated = categories.filter((c) => c.id !== id);
+    setCategories(updated);
+    localStorage.setItem("sa_categories_list", JSON.stringify(updated));
     if (editingId === id) handleCancel();
   };
 
@@ -52,13 +81,13 @@ export default function CategoriesPage() {
   const handleUpdate = () => {
     if (!newName.trim()) return;
     const slug = newSlug || newName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    setCategories((prev) =>
-      prev.map((c) =>
-        c.id === editingId
-          ? { ...c, name: newName.trim(), slug, description: newDesc }
-          : c
-      )
+    const updated = categories.map((c) =>
+      c.id === editingId
+        ? { ...c, name: newName.trim(), slug, description: newDesc }
+        : c
     );
+    setCategories(updated);
+    localStorage.setItem("sa_categories_list", JSON.stringify(updated));
     // Reset form
     setNewName("");
     setNewSlug("");
@@ -80,7 +109,9 @@ export default function CategoriesPage() {
     }
     if (bulkAction === "delete") {
       if (!confirm(`Are you sure you want to delete the ${selected.length} selected category(ies)?`)) return;
-      setCategories((prev) => prev.filter((c) => !selected.includes(c.id)));
+      const updated = categories.filter((c) => !selected.includes(c.id));
+      setCategories(updated);
+      localStorage.setItem("sa_categories_list", JSON.stringify(updated));
       if (editingId && selected.includes(editingId)) handleCancel();
       setSelected([]);
     }
@@ -291,7 +322,9 @@ export default function CategoriesPage() {
                     <td style={{ fontSize: 12, fontFamily: "monospace", color: "var(--wp-text-muted)" }}>
                       {cat.slug}
                     </td>
-                    <td style={{ fontSize: 13 }}>{cat.count}</td>
+                    <td style={{ fontSize: 13 }}>
+                      {articles.filter((a) => (a.category || "Uncategorized").toLowerCase() === cat.name.toLowerCase()).length}
+                    </td>
                   </tr>
                 ))
               )}

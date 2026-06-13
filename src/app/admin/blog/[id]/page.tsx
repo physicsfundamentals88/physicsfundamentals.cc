@@ -48,6 +48,10 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   // Sidebar panels
   const [featuredImage, setFeaturedImage] = useState<string | null>(null);
   const [category, setCategory] = useState("Uncategorized");
+  const [categoriesList, setCategoriesList] = useState<string[]>([
+    "Uncategorized", "Electromagnetism", "Thermodynamics", "Quantum Physics", "Classical Mechanics", "Optics", "Nuclear Physics"
+  ]);
+  const [newCatInput, setNewCatInput] = useState("");
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [excerpt, setExcerpt] = useState("");
@@ -57,6 +61,69 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   const [seoPanel, setSeoPanel] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Load categories
+  useEffect(() => {
+    const saved = localStorage.getItem("sa_categories_list");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const names = parsed.map((c: any) => c.name || c);
+          if (!names.includes("Uncategorized")) {
+            names.unshift("Uncategorized");
+          }
+          setCategoriesList(names);
+        }
+      } catch (err) {
+        console.error("Failed to parse categories:", err);
+      }
+    }
+  }, []);
+
+  const handleAddCategory = () => {
+    const name = newCatInput.trim();
+    if (!name) return;
+
+    // Check if category already exists (case-insensitive)
+    const exists = categoriesList.some((c) => c.toLowerCase() === name.toLowerCase());
+    if (exists) {
+      const existingName = categoriesList.find((c) => c.toLowerCase() === name.toLowerCase()) || name;
+      setCategory(existingName);
+      setNewCatInput("");
+      return;
+    }
+
+    const updatedList = [...categoriesList, name];
+    setCategoriesList(updatedList);
+    setCategory(name);
+
+    // Save to localStorage
+    const saved = localStorage.getItem("sa_categories_list");
+    let fullCats = [];
+    if (saved) {
+      try {
+        fullCats = JSON.parse(saved);
+      } catch (e) {}
+    }
+    if (!Array.isArray(fullCats)) {
+      fullCats = [];
+    }
+    const catExistsInSaved = fullCats.some((c: any) => (c.name || c).toLowerCase() === name.toLowerCase());
+    if (!catExistsInSaved) {
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const newCatObj = {
+        id: Date.now(),
+        name,
+        slug,
+        count: 0,
+        description: "",
+      };
+      fullCats.push(newCatObj);
+      localStorage.setItem("sa_categories_list", JSON.stringify(fullCats));
+    }
+    setNewCatInput("");
+  };
 
   // Fetch article
   useEffect(() => {
@@ -357,7 +424,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
             {categoryPanel && (
               <div className="wp-metabox-body">
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 13 }}>
-                  {["Uncategorized", "Electromagnetism", "Thermodynamics", "Quantum Physics", "Classical Mechanics", "Optics", "Nuclear Physics"].map((cat) => (
+                  {categoriesList.map((cat) => (
                     <label key={cat} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
                       <input
                         type="radio"
@@ -375,8 +442,29 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
                 <details style={{ fontSize: 12 }}>
                   <summary style={{ cursor: "pointer", color: "var(--wp-blue)", userSelect: "none" }}>+ Add New Category</summary>
                   <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 6 }}>
-                    <input type="text" className="wp-input" placeholder="New category name" style={{ fontSize: 12 }} />
-                    <button className="wp-btn wp-btn-secondary wp-btn-sm">Add</button>
+                    <input
+                      type="text"
+                      className="wp-input"
+                      placeholder="New category name"
+                      style={{ fontSize: 12 }}
+                      value={newCatInput}
+                      onChange={(e) => setNewCatInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddCategory();
+                        }
+                      }}
+                    />
+                    <button
+                      className="wp-btn wp-btn-secondary wp-btn-sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleAddCategory();
+                      }}
+                    >
+                      Add
+                    </button>
                   </div>
                 </details>
               </div>
