@@ -253,7 +253,7 @@ export default function RoadmapClient() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/#early-access"
+                href="/login?mode=register"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-[15px] text-[#0a0f1e] transition-all hover:bg-amber-400 active:scale-95 group"
                 style={{ fontFamily: "var(--font-dm-sans)", background: "#f59e0b" }}
               >

@@ -439,7 +439,7 @@ export default function AboutClient() {
                 Explore articles
               </Link>
               <Link
-                href="/#early-access"
+                href="/login?mode=register"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-[15px] text-[#0a0f1e] transition-all duration-300 hover:brightness-110 active:scale-95 hover:bg-amber-400"
                 style={{ fontFamily: "var(--font-dm-sans)", background: "#f59e0b" }}
               >

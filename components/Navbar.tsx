@@ -93,7 +93,7 @@ export default function Navbar() {
               Play Games
             </Link>
             <Link
-              href="/"
+              href="/login?mode=register"
               className="flex items-center gap-1.5 transition-all duration-200 hover:bg-amber-400 active:scale-95 whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-dm-sans)",
@@ -167,7 +167,7 @@ export default function Navbar() {
                     Play Games
                   </Link>
                   <Link
-                    href="/"
+                    href="/login?mode=register"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-center w-full py-3 rounded-xl text-sm font-semibold"
                     style={{ color: "#0a0f1e", background: "#f59e0b" }}

@@ -70,14 +70,45 @@ export default function SuperAdminUsersPage() {
   const [sqlQuery, setSqlQuery] = useState("SELECT * FROM articles WHERE status = 'published';");
   const [sqlOutput, setSqlOutput] = useState<string | null>(null);
 
+  const fetchUsers = () => {
+    setProcessing(true);
+    fetch("/api/admin/users")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load users");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const mapped: UserAccount[] = data.map((u: any) => ({
+            id: u.id,
+            name: u.name,
+            email: u.username,
+            role: u.role === "admin" ? "Super Admin" : "Editor",
+            status: "Active",
+            lastLogin: "Never",
+          }));
+          setUsers(mapped);
+          
+          // Seed local storage for compatibility with mock pages
+          localStorage.setItem("sa_users_list", JSON.stringify(mapped));
+        }
+        setProcessing(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch users:", err);
+        setProcessing(false);
+        // Fallback to local storage
+        const savedUsers = localStorage.getItem("sa_users_list");
+        if (savedUsers) {
+          setUsers(JSON.parse(savedUsers));
+        } else {
+          setUsers(defaultUsers);
+        }
+      });
+  };
+
   useEffect(() => {
-    const savedUsers = localStorage.getItem("sa_users_list");
-    if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
-    } else {
-      setUsers(defaultUsers);
-      localStorage.setItem("sa_users_list", JSON.stringify(defaultUsers));
-    }
+    fetchUsers();
   }, []);
 
   const triggerToast = (msg: string) => {
@@ -90,35 +121,46 @@ export default function SuperAdminUsersPage() {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
 
-    const newUser: UserAccount = {
-      id: Date.now(),
-      name: name.trim(),
-      email: email.trim(),
-      role,
-      status: "Active",
-      lastLogin: "Never",
-    };
+    setProcessing(true);
+    fetch("/api/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: email.trim(),
+        name: name.trim(),
+        password: pwd || "password123",
+        role: role === "Super Admin" || role === "Administrator" ? "admin" : "editor",
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to create user");
+        return res.json();
+      })
+      .then(() => {
+        fetchUsers();
+        // Add audit log
+        const newLog: AuditLog = {
+          id: Date.now(),
+          time: "Just now",
+          user: "Super Admin",
+          action: `Created user account: ${name} (${role})`,
+          type: "success",
+        };
+        setLogs([newLog, ...logs]);
 
-    const updated = [...users, newUser];
-    setUsers(updated);
-    localStorage.setItem("sa_users_list", JSON.stringify(updated));
-
-    // Add audit log
-    const newLog: AuditLog = {
-      id: Date.now(),
-      time: "Just now",
-      user: "Super Admin",
-      action: `Created user account: ${name} (${role})`,
-      type: "success",
-    };
-    setLogs([newLog, ...logs]);
-
-    // Reset form
-    setName("");
-    setEmail("");
-    setRole("Editor");
-    setPwd("");
-    triggerToast("User account created successfully!");
+        // Reset form
+        setName("");
+        setEmail("");
+        setRole("Editor");
+        setPwd("");
+        triggerToast("User account created successfully!");
+        setProcessing(false);
+      })
+      .catch((err) => {
+        console.error("Create user error:", err);
+        triggerToast("Failed to create user account.");
+        setProcessing(false);
+      });
   };
 
   const handleDeleteUser = (id: number) => {
@@ -130,20 +172,30 @@ export default function SuperAdminUsersPage() {
     if (!userToDelete) return;
     if (!confirm(`Are you sure you want to permanently delete user account: ${userToDelete.name}?`)) return;
 
-    const updated = users.filter(u => u.id !== id);
-    setUsers(updated);
-    localStorage.setItem("sa_users_list", JSON.stringify(updated));
-
-    // Add audit log
-    const newLog: AuditLog = {
-      id: Date.now(),
-      time: "Just now",
-      user: "Super Admin",
-      action: `Deleted user account: ${userToDelete.name}`,
-      type: "warning",
-    };
-    setLogs([newLog, ...logs]);
-    triggerToast("User account removed.");
+    setProcessing(true);
+    fetch(`/api/admin/users/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete user");
+        fetchUsers();
+        // Add audit log
+        const newLog: AuditLog = {
+          id: Date.now(),
+          time: "Just now",
+          user: "Super Admin",
+          action: `Deleted user account: ${userToDelete.name}`,
+          type: "warning",
+        };
+        setLogs([newLog, ...logs]);
+        triggerToast("User account removed.");
+        setProcessing(false);
+      })
+      .catch((err) => {
+        console.error("Delete user error:", err);
+        triggerToast("Failed to delete user account.");
+        setProcessing(false);
+      });
   };
 
   const handleRoleChange = (id: number, newRole: "Super Admin" | "Administrator" | "Editor") => {
@@ -151,20 +203,37 @@ export default function SuperAdminUsersPage() {
       alert("Primary Super Admin account role must remain unchanged.");
       return;
     }
-    const updated = users.map(u => u.id === id ? { ...u, role: newRole } : u);
-    setUsers(updated);
-    localStorage.setItem("sa_users_list", JSON.stringify(updated));
-
     const userObj = users.find(u => u.id === id);
-    const newLog: AuditLog = {
-      id: Date.now(),
-      time: "Just now",
-      user: "Super Admin",
-      action: `Updated user role: ${userObj?.name} is now ${newRole}`,
-      type: "info",
-    };
-    setLogs([newLog, ...logs]);
-    triggerToast("User role updated.");
+    if (!userObj) return;
+
+    setProcessing(true);
+    fetch(`/api/admin/users/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        role: newRole === "Super Admin" || newRole === "Administrator" ? "admin" : "editor",
+        name: userObj.name,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update user role");
+        fetchUsers();
+        const newLog: AuditLog = {
+          id: Date.now(),
+          time: "Just now",
+          user: "Super Admin",
+          action: `Updated user role: ${userObj.name} is now ${newRole}`,
+          type: "info",
+        };
+        setLogs([newLog, ...logs]);
+        triggerToast("User role updated.");
+        setProcessing(false);
+      })
+      .catch((err) => {
+        console.error("Update role error:", err);
+        triggerToast("Failed to update user role.");
+        setProcessing(false);
+      });
   };
 
   // Maintenance triggers

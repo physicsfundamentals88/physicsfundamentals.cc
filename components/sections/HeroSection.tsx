@@ -136,7 +136,7 @@ export default function HeroSection() {
           {/* Primary: amber */}
           <Link
             id="hero-get-early-access"
-            href="/#simulations"
+            href="/login?mode=register"
             className="flex items-center gap-2 active:scale-95 transition-all duration-200 hover:brightness-110"
             style={{
               fontFamily: "var(--font-dm-sans)",
