@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -11,6 +10,54 @@ export default function HeroSection() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center px-4 mt-[70px] pt-[40px] pb-[40px]"
       style={{ background: "#0a0f1e" }}
     >
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(16px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .animate-fade-in-down {
+          opacity: 0;
+          animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .animate-fade-in-up {
+          opacity: 0;
+          animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .animate-fade-in {
+          opacity: 0;
+          animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}} />
+
       {/* ── Background glows ── */}
       <div className="absolute inset-0 pointer-events-none select-none">
         {/* Animated Physics Orbital System */}
@@ -67,11 +114,8 @@ export default function HeroSection() {
       <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center gap-6">
 
         {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm"
+        <div
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm animate-fade-in-down"
           style={{ fontFamily: "var(--font-dm-sans)", fontSize: 13, fontWeight: 500, color: "rgb(191,219,254)" }}
         >
           {/* Animated green dot */}
@@ -80,13 +124,10 @@ export default function HeroSection() {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-400" />
           </span>
           Now building — Join the early access list
-        </motion.div>
+        </div>
 
         {/* ── H1 Heading ── */}
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, delay: 0.1 }}
+        <h1
           style={{
             fontFamily: "var(--font-instrument-serif)",
             fontWeight: 400,
@@ -94,8 +135,9 @@ export default function HeroSection() {
             lineHeight: 1.05,
             letterSpacing: "-0.01em",
             color: "#ffffff",
+            animationDelay: "0.1s",
           }}
-          className="mt-2"
+          className="mt-2 animate-fade-in-up"
         >
           {"Understand "}
           <span style={{ color: "rgb(96,165,250)", fontStyle: "italic" }}>
@@ -104,13 +146,10 @@ export default function HeroSection() {
           {" with Visuals,"}
           <br />
           Examples, and Simulations
-        </motion.h1>
+        </h1>
 
         {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.25 }}
+        <p
           style={{
             fontFamily: "var(--font-dm-sans)",
             fontWeight: 400,
@@ -118,20 +157,20 @@ export default function HeroSection() {
             lineHeight: 1.65,
             color: "rgb(191,219,254)",
             maxWidth: 600,
+            animationDelay: "0.2s",
           }}
+          className="animate-fade-in-up"
         >
           Interact with virtual labs, run real-time simulations, and explore everything from{" "}
           <span style={{ color: "rgb(96,165,250)" }}>classical mechanics</span>{" "}
           to{" "}
           <span style={{ color: "rgb(96,165,250)" }}>quantum physics</span>. A free visual education library built to make complex concepts click.
-        </motion.p>
+        </p>
 
         {/* CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.38 }}
-          className="flex flex-col sm:flex-row gap-3 items-center mt-2"
+        <div
+          className="flex flex-col sm:flex-row gap-3 items-center mt-2 animate-fade-in-up"
+          style={{ animationDelay: "0.3s" }}
         >
           {/* Primary: amber */}
           <Link
@@ -171,26 +210,25 @@ export default function HeroSection() {
           >
             Browse Articles
           </Link>
-        </motion.div>
+        </div>
 
         {/* Trust signal */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
+        <p
           style={{
             fontFamily: "var(--font-dm-sans)",
             fontWeight: 400,
             fontSize: 13,
             color: "rgb(100,116,139)",
+            animationDelay: "0.4s",
           }}
+          className="animate-fade-in"
         >
           Trusted by{" "}
           <span style={{ fontWeight: 600, color: "rgb(148,163,184)" }}>
             500+
           </span>{" "}
           students already on the list
-        </motion.p>
+        </p>
       </div>
     </section>
   );

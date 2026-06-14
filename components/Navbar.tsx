@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Play } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,10 +28,23 @@ export default function Navbar() {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes navSlideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-15px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-nav-slide {
+          animation: navSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}} />
+
+      <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? "shadow-lg" : ""
         }`}
@@ -118,68 +130,61 @@ export default function Navbar() {
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </nav>
-      </motion.header>
+      </header>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-[60px] z-40 md:hidden"
+      {mobileOpen && (
+        <div className="fixed inset-x-0 top-[60px] z-40 md:hidden animate-nav-slide">
+          <div
+            className="m-3 rounded-2xl overflow-hidden"
+            style={{
+              background: "rgba(10,15,30,0.95)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
           >
-            <div
-              className="m-3 rounded-2xl overflow-hidden"
-              style={{
-                background: "rgba(10,15,30,0.95)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div className="px-4 py-3 flex flex-col gap-1" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                {navLinks.map((link) => {
-                  const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="px-4 py-3 rounded-xl transition-all text-sm font-medium"
-                      style={{ 
-                        color: isActive ? "#ffffff" : "rgb(148,163,184)",
-                        background: isActive ? "rgba(255,255,255,0.05)" : "transparent"
-                      }}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-                <div className="pt-2 pb-1 flex flex-col gap-2">
+            <div className="px-4 py-3 flex flex-col gap-1" style={{ fontFamily: "var(--font-dm-sans)" }}>
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                return (
                   <Link
-                    href="/simulations"
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold"
-                    style={{ color: "#ffffff", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)" }}
+                    className="px-4 py-3 rounded-xl transition-all text-sm font-medium"
+                    style={{ 
+                      color: isActive ? "#ffffff" : "rgb(148,163,184)",
+                      background: isActive ? "rgba(255,255,255,0.05)" : "transparent"
+                    }}
                   >
-                    <Play style={{ width: 11, height: 11, fill: "currentColor" }} />
-                    Play Games
+                    {link.label}
                   </Link>
-                  <Link
-                    href="/login?mode=register"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center w-full py-3 rounded-xl text-sm font-semibold"
-                    style={{ color: "#0a0f1e", background: "#f59e0b" }}
-                  >
-                    Get Early Access
-                  </Link>
-                </div>
+                );
+              })}
+              <div className="pt-2 pb-1 flex flex-col gap-2">
+                <Link
+                  href="/simulations"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold"
+                  style={{ color: "#ffffff", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)" }}
+                >
+                  <Play style={{ width: 11, height: 11, fill: "currentColor" }} />
+                  Play Games
+                </Link>
+                <Link
+                  href="/login?mode=register"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center w-full py-3 rounded-xl text-sm font-semibold"
+                  style={{ color: "#0a0f1e", background: "#f59e0b" }}
+                >
+                  Get Early Access
+                </Link>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
