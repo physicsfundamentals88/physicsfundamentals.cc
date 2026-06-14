@@ -2,7 +2,6 @@ import { getDb } from "@/db";
 import { articles } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
-export const runtime = "edge";
 
 const baseUrl = "https://physicslab.app";
 
