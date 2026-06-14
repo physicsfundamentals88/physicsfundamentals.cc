@@ -90,19 +90,20 @@ export default function HeroSection() {
           style={{
             fontFamily: "var(--font-instrument-serif)",
             fontWeight: 400,
-            fontSize: "clamp(52px, 7.5vw, 84px)",
+            fontSize: "clamp(38px, 5.2vw, 70px)",
             lineHeight: 1.05,
             letterSpacing: "-0.01em",
             color: "#ffffff",
           }}
           className="mt-2"
         >
-          {"Visualize the Laws of "}
+          {"Master "}
           <span style={{ color: "rgb(96,165,250)", fontStyle: "italic" }}>
             Physics
           </span>
+          {" Through Interactive Learning"}
           <br />
-          Through Interactive Play
+          and Visual Exploration
         </motion.h1>
 
         {/* Description */}
