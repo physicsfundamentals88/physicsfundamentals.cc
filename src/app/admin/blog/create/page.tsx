@@ -59,21 +59,25 @@ export default function NewArticlePage() {
 
   // Load categories
   useEffect(() => {
-    const saved = localStorage.getItem("sa_categories_list_v2");
+    const saved = localStorage.getItem("sa_categories_list_v3");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           const names = parsed.map((c: any) => c.name || c);
           if (!names.includes("Uncategorized")) {
             names.unshift("Uncategorized");
           }
           setCategoriesList(names);
+          return;
         }
       } catch (err) {
         console.error("Failed to parse categories:", err);
       }
     }
+    // Fallback if not saved or empty
+    const names = ["Uncategorized", "Classical Mechanics", "Thermodynamics", "Waves & Optics", "Electromagnetism", "Kinematics", "Modern Physics"];
+    setCategoriesList(names);
   }, []);
 
   const handleAddCategory = () => {
@@ -94,15 +98,22 @@ export default function NewArticlePage() {
     setCategory(name);
 
     // Save to localStorage
-    const saved = localStorage.getItem("sa_categories_list_v2");
+    const saved = localStorage.getItem("sa_categories_list_v3");
     let fullCats = [];
     if (saved) {
       try {
         fullCats = JSON.parse(saved);
       } catch (e) {}
     }
-    if (!Array.isArray(fullCats)) {
-      fullCats = [];
+    if (!Array.isArray(fullCats) || fullCats.length === 0) {
+      fullCats = [
+        { id: 1, name: "Classical Mechanics", slug: "classical-mechanics", count: 0, description: "Newtonian dynamics, forces, motion, and gravity" },
+        { id: 2, name: "Thermodynamics", slug: "thermodynamics", count: 0, description: "Heat, temperature, entropy, and energy systems" },
+        { id: 3, name: "Waves & Optics", slug: "waves-optics", count: 0, description: "Wave propagation, acoustics, light, and refraction" },
+        { id: 4, name: "Electromagnetism", slug: "electromagnetism", count: 0, description: "Electric charges, magnetic fields, and circuits" },
+        { id: 5, name: "Kinematics", slug: "kinematics", count: 0, description: "Motion of points, bodies, and equations of motion" },
+        { id: 6, name: "Modern Physics", slug: "modern-physics", count: 0, description: "Quantum mechanics, relativity, and atomic physics" }
+      ];
     }
     const catExistsInSaved = fullCats.some((c: any) => (c.name || c).toLowerCase() === name.toLowerCase());
     if (!catExistsInSaved) {
@@ -115,7 +126,7 @@ export default function NewArticlePage() {
         description: "",
       };
       fullCats.push(newCatObj);
-      localStorage.setItem("sa_categories_list_v2", JSON.stringify(fullCats));
+      localStorage.setItem("sa_categories_list_v3", JSON.stringify(fullCats));
     }
     setNewCatInput("");
   };

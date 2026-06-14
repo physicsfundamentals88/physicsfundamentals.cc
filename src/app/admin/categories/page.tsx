@@ -36,15 +36,24 @@ export default function CategoriesPage() {
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sa_categories_list_v2");
+    const saved = localStorage.getItem("sa_categories_list_v3");
     if (saved) {
       try {
-        setCategories(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCategories(parsed);
+        } else {
+          setCategories(defaultCategories);
+          localStorage.setItem("sa_categories_list_v3", JSON.stringify(defaultCategories));
+        }
       } catch (e) {
         console.error("Failed to parse saved categories:", e);
+        setCategories(defaultCategories);
+        localStorage.setItem("sa_categories_list_v3", JSON.stringify(defaultCategories));
       }
     } else {
-      localStorage.setItem("sa_categories_list_v2", JSON.stringify(defaultCategories));
+      setCategories(defaultCategories);
+      localStorage.setItem("sa_categories_list_v3", JSON.stringify(defaultCategories));
     }
   }, []);
 
@@ -60,7 +69,7 @@ export default function CategoriesPage() {
       { id: Date.now(), name: newName.trim(), slug, count: 0, description: newDesc },
     ];
     setCategories(updated);
-    localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
+    localStorage.setItem("sa_categories_list_v3", JSON.stringify(updated));
     setNewName(""); setNewSlug(""); setNewDesc(""); setNewParent("None");
   };
 
@@ -68,7 +77,7 @@ export default function CategoriesPage() {
     if (!confirm("Delete this category?")) return;
     const updated = categories.filter((c) => c.id !== id);
     setCategories(updated);
-    localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
+    localStorage.setItem("sa_categories_list_v3", JSON.stringify(updated));
     if (editingId === id) handleCancel();
   };
 
@@ -89,7 +98,7 @@ export default function CategoriesPage() {
         : c
     );
     setCategories(updated);
-    localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
+    localStorage.setItem("sa_categories_list_v3", JSON.stringify(updated));
     // Reset form
     setNewName("");
     setNewSlug("");
@@ -113,7 +122,7 @@ export default function CategoriesPage() {
       if (!confirm(`Are you sure you want to delete the ${selected.length} selected category(ies)?`)) return;
       const updated = categories.filter((c) => !selected.includes(c.id));
       setCategories(updated);
-      localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
+      localStorage.setItem("sa_categories_list_v3", JSON.stringify(updated));
       if (editingId && selected.includes(editingId)) handleCancel();
       setSelected([]);
     }
