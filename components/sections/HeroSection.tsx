@@ -97,13 +97,13 @@ export default function HeroSection() {
           }}
           className="mt-2"
         >
-          {"Master "}
+          {"Understand "}
           <span style={{ color: "rgb(96,165,250)", fontStyle: "italic" }}>
             Physics
           </span>
-          {" Through Interactive Learning"}
+          {" with Visuals,"}
           <br />
-          and Visual Exploration
+          Examples, and Simulations
         </motion.h1>
 
         {/* Description */}
