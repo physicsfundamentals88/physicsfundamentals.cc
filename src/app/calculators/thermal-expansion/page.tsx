@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Thermal Expansion Calculator | PhysicsLab",
+  title: "Thermal Expansion Calculator | Physics Fundamentals",
   description: "Predict the change in length for a solid material when its temperature changes, given the expansion coefficient. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/thermal-expansion",

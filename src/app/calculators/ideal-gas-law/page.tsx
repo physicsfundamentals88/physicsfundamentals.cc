@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Ideal Gas Law Calculator | PhysicsLab",
+  title: "Ideal Gas Law Calculator | Physics Fundamentals",
   description: "Solver for the equation PV = nRT. Input any three variables to instantly find the fourth. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/ideal-gas-law",

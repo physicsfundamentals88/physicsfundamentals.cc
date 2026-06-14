@@ -3,8 +3,8 @@ import Footer from "@components/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Disclaimer | PhysicsLab",
-  description: "Read the disclaimer regarding the educational nature of the content on PhysicsLab.",
+  title: "Disclaimer | Physics Fundamentals",
+  description: "Read the disclaimer regarding the educational nature of the content on Physics Fundamentals.",
 };
 
 export default function Disclaimer() {

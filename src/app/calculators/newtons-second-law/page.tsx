@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Newton's Second Law Calculator | PhysicsLab",
+  title: "Newton's Second Law Calculator | Physics Fundamentals",
   description: "Calculate force, mass, or acceleration using F = ma. Supports unit conversions. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/newtons-second-law",

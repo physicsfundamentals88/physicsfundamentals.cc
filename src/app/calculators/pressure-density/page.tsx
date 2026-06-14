@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Pressure & Density Calculator | PhysicsLab",
+  title: "Pressure & Density Calculator | Physics Fundamentals",
   description: "Find the pressure exerted by a force over an area or calculate the density of a substance. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/pressure-density",

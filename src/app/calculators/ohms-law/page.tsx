@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Ohm's Law Calculator | PhysicsLab",
+  title: "Ohm's Law Calculator | Physics Fundamentals",
   description: "Easily calculate voltage, current, or resistance. Finds missing values based on identical formulas. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/ohms-law",

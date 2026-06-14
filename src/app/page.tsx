@@ -3,8 +3,8 @@ import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
 
 export const metadata: Metadata = {
-  title: "PhysicsLab – Interactive Physics Simulations & Visual Learning",
-  description: "Explore Newtonian gravity, pendulum dynamics, wave interference, and orbital mechanics in real-time. Interactive simulations make visual physics learning engaging and accessible.",
+  title: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
+  description: "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
   alternates: {
     canonical: "/",
   },

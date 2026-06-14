@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Circular Motion Calculator | PhysicsLab",
+  title: "Circular Motion Calculator | Physics Fundamentals",
   description: "Calculate angular velocity, linear velocity, and period for objects in uniform circular motion. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/circular-motion",

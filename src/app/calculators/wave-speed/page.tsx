@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Wave Speed Calculator | PhysicsLab",
+  title: "Wave Speed Calculator | Physics Fundamentals",
   description: "Calculate wave speed, frequency, or wavelength using the wave equation v = fλ. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/wave-speed",

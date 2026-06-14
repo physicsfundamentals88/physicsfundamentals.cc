@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Centripetal Force Calculator | PhysicsLab",
+  title: "Centripetal Force Calculator | Physics Fundamentals",
   description: "Find the centripetal force holding an object in a circle, given mass, velocity, and radius. Also outputs acceleration. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/centripetal-force",

@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!config) return {};
 
   return {
-    title: `${config.name} Hub | PhysicsLab`,
+    title: `${config.name} Hub | Physics Fundamentals`,
     description: config.desc,
     alternates: {
       canonical: `/category/${slug}`,

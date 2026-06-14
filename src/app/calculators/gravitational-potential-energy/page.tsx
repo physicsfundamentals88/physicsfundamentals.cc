@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Gravitational Potential Energy Calculator | PhysicsLab",
+  title: "Gravitational Potential Energy Calculator | Physics Fundamentals",
   description: "Find the potential energy of an object at a certain height above the ground using U = mgh. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/gravitational-potential-energy",

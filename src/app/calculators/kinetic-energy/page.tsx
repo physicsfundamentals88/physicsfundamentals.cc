@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Kinetic Energy Calculator | PhysicsLab",
+  title: "Kinetic Energy Calculator | Physics Fundamentals",
   description: "Compute kinetic energy from mass and velocity, or find the required velocity and mass for a target energy level. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/kinetic-energy",

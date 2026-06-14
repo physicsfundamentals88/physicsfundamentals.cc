@@ -9,8 +9,8 @@ import React from "react";
 import Breadcrumbs from "@components/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "HTML Sitemap | PhysicsLab",
-  description: "Browse the HTML sitemap of PhysicsLab to discover all our interactive physics simulations, step-by-step solvers, topic hubs, and educational articles.",
+  title: "HTML Sitemap | Physics Fundamentals",
+  description: "Browse the HTML sitemap of Physics Fundamentals to discover all our interactive physics simulations, step-by-step solvers, topic hubs, and educational articles.",
   alternates: {
     canonical: "/sitemap",
   },
@@ -100,7 +100,7 @@ export default async function HtmlSitemapPage() {
             className="text-[16px] text-slate-500 leading-relaxed mt-2"
             style={{ fontFamily: "var(--font-dm-sans)" }}
           >
-            A complete directory of all pages, calculators, simulations, topics, and blog posts published on PhysicsLab. You can also view the XML index at <a href="/sitemap.xml" className="text-blue-600 hover:underline">sitemap.xml</a>.
+            A complete directory of all pages, calculators, simulations, topics, and blog posts published on Physics Fundamentals. You can also view the XML index at <a href="/sitemap.xml" className="text-blue-600 hover:underline">sitemap.xml</a>.
           </p>
         </div>
       </div>

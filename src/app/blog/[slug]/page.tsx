@@ -91,11 +91,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     "dateModified": article.updatedAt ? new Date(article.updatedAt).toISOString() : new Date().toISOString(),
     "author": {
       "@type": "Person",
-      "name": article.author || "PhysicsLab Team"
+      "name": article.author || "Physics Fundamentals Team"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "PhysicsLab",
+      "name": "Physics Fundamentals",
       "logo": {
         "@type": "ImageObject",
         "url": "https://physicslab.app/og-image.png"

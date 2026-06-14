@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Free Fall Calculator | PhysicsLab",
+  title: "Free Fall Calculator | Physics Fundamentals",
   description: "Calculates distance, velocity, and time for objects in free fall. Uses Earth's standard gravity by default. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/free-fall",

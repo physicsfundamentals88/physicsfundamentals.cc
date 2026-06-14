@@ -3,8 +3,8 @@ import Footer from "@components/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | PhysicsLab",
-  description: "Read the Terms and Conditions for using PhysicsLab's interactive learning platform.",
+  title: "Terms & Conditions | Physics Fundamentals",
+  description: "Read the Terms and Conditions for using Physics Fundamentals' interactive learning platform.",
 };
 
 export default function TermsConditions() {

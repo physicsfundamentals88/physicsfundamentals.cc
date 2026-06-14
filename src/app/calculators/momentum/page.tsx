@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Momentum Calculator | PhysicsLab",
+  title: "Momentum Calculator | Physics Fundamentals",
   description: "Solve for momentum (p = mv) given mass and velocity, or calculate the impulse from a force over time. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/momentum",

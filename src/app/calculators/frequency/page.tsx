@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Frequency Calculator | PhysicsLab",
+  title: "Frequency Calculator | Physics Fundamentals",
   description: "Convert between frequency, period, and angular frequency for oscillating systems. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/frequency",

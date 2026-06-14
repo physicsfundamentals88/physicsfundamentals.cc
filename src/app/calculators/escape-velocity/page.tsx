@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Escape Velocity Calculator | PhysicsLab",
+  title: "Escape Velocity Calculator | Physics Fundamentals",
   description: "Calculate the minimum speed an object needs to escape the gravitational pull of a celestial body. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/escape-velocity",

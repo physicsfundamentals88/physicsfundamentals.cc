@@ -9,8 +9,8 @@ import { type Article } from "@/db/schema";
 import { 
   Clock, 
   Calendar, 
-  ChevronDown, 
-  Share2
+  ChevronDown,
+  List
 } from "lucide-react";
 
 interface PostClientProps {
@@ -18,9 +18,19 @@ interface PostClientProps {
   latestArticles: { title: string; date: string; category: string; href: string; heroImage?: string | null }[];
 }
 
+function getCategorySlug(categoryName: string) {
+  if (!categoryName) return "classical-mechanics";
+  const cat = categoryName.toLowerCase();
+  if (cat.includes("mechanic")) return "classical-mechanics";
+  if (cat.includes("electro")) return "electromagnetism";
+  if (cat.includes("thermo")) return "thermodynamics";
+  if (cat.includes("wave") || cat.includes("optic")) return "waves-optics";
+  return "classical-mechanics";
+}
+
 export default function PostClient({ article, latestArticles }: PostClientProps) {
   const [activeSection, setActiveSection] = useState("");
-  const [tocOpen, setTocOpen] = useState(false);
+  const [tocOpen, setTocOpen] = useState(true); // Default open for desktop-like feel
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -54,138 +64,187 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
     .filter((a) => !a.href.endsWith(`/${article.slug}`))
     .slice(0, 3);
 
+  const categorySlug = getCategorySlug(article.category);
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#f5f7fb] text-slate-800 selection:bg-blue-100 selection:text-blue-900">
+    <div className="flex flex-col min-h-screen bg-[#fafafb] text-slate-800 selection:bg-blue-100 selection:text-blue-900 font-sans">
       <Navbar />
 
-      {/* Hero Section - Full-bleed dark blue/black hero block, height exactly 400px */}
-      <section className="bg-[#0b1329] text-white pt-[76px] h-[400px] flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.01] bg-[radial-gradient(circle_at_center,white_0%,transparent_80%)]" />
-        <div className="max-w-[960px] mx-auto px-6 text-center w-full">
-          <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-white text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight max-w-[900px] mx-auto font-sans"
-          >
-            {article.title}
-          </motion.h1>
-        </div>
-      </section>
-
       {/* Main Content Area */}
-      <div className="pb-24">
-        <div className="max-w-[960px] mx-auto px-6">
+      <div className="pb-24 pt-[106px]">
+        <div className="max-w-[1140px] mx-auto px-6">
           
-          {/* Featured Image - Centered wide block below hero, uncropped with blurred backdrop */}
-          <div className="relative mt-8 mb-12 border border-slate-200/50 shadow-sm bg-slate-950 overflow-hidden rounded-none h-[300px] sm:h-[400px] md:h-[480px] flex items-center justify-center">
+          {/* Breadcrumb Navigation */}
+          <nav className="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-6">
+            <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+            <span>/</span>
+            <Link href="/blog" className="hover:text-blue-600 transition-colors">Blog</Link>
+            <span>/</span>
+            <Link href={`/category/${categorySlug}`} className="hover:text-blue-600 transition-colors">{article.category}</Link>
+          </nav>
+
+          {/* Article Header Info (Category, Title, Metadata) */}
+          <header className="mb-8">
+            <span className="inline-block text-[10px] font-black text-blue-600 bg-blue-50 border border-blue-100/60 px-3.5 py-1 rounded-full uppercase tracking-wider mb-4">
+              {article.category}
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl text-slate-950 leading-[1.1] tracking-tight mb-6" style={{ fontFamily: "var(--font-instrument-serif), Georgia, serif", fontWeight: 400 }}>
+              {article.title}
+            </h1>
+            
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 font-medium">
+              <div className="flex items-center gap-2">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-extrabold text-[10px] uppercase shadow-sm ${article.authorBg || "bg-blue-600"}`}>
+                  {article.authorInitials || "PL"}
+                </div>
+                <span className="font-extrabold text-slate-700">{article.author || "PhysicsLab Team"}</span>
+              </div>
+              <span className="text-slate-300">•</span>
+              <div className="flex items-center gap-1.5">
+                <Calendar size={14} className="text-slate-400" />
+                <span>{article.date}</span>
+              </div>
+              <span className="text-slate-300">•</span>
+              <div className="flex items-center gap-1.5">
+                <Clock size={14} className="text-slate-400" />
+                <span>{article.readTime}</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Featured Image */}
+          <div className="relative aspect-[16/7] md:aspect-[21/9] w-full rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm bg-slate-900 mb-12">
             {article.heroImage ? (
-              <>
-                <div 
-                  className="absolute inset-0 bg-cover bg-center blur-3xl opacity-40 scale-105 pointer-events-none"
-                  style={{ backgroundImage: `url(${article.heroImage})` }}
-                />
-                <img src={article.heroImage} alt={article.title} className="relative z-10 max-w-full max-h-full object-contain" />
-              </>
+              <img src={article.heroImage} alt={article.title} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-indigo-950 text-indigo-100/10 font-bold text-5xl tracking-widest uppercase italic select-none p-10 text-center">
+              <div className="w-full h-full bg-gradient-to-br from-[#0c1524] to-[#1e293b] flex items-center justify-center p-8 text-center text-white/5 font-black text-4xl uppercase select-none font-serif tracking-wider leading-none">
                 {article.title}
               </div>
             )}
           </div>
 
-          {/* Two-Column Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_310px] gap-10 items-start">
+          {/* Two-Column Grid: Content & Sidebar */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12 items-start">
             
-            {/* LEFT COLUMN: Article content */}
-            <article className="min-w-0">
+            {/* LEFT COLUMN: Article Content */}
+            <div className="min-w-0">
               
-              {/* Category, Date & Read Time */}
-              <div className="flex flex-wrap items-center gap-2 mb-6">
-                <span className="text-[10px] font-extrabold text-[#2563eb] bg-[#eff6ff] px-2.5 py-1 rounded text-center uppercase tracking-wider">
-                  {article.category}
-                </span>
-                <span className="text-slate-300 mx-1">•</span>
-                <span className="text-[12px] text-slate-500 font-bold">Published {article.date}</span>
-                <span className="text-slate-300 mx-1">•</span>
-                <span className="text-[12px] text-slate-500 font-bold">{article.readTime}</span>
-              </div>
-
-              {/* Headline Title */}
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight mb-5">
-                {article.title}
-              </h2>
+              {/* Collapsible Table of Contents (Inline, helpful for Mobile/Tablet) */}
+              {tocItems.length > 0 && (
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-5 mb-8 max-w-[540px]">
+                  <button 
+                    onClick={() => setTocOpen(!tocOpen)}
+                    className="w-full flex items-center justify-between font-black text-slate-700 text-xs tracking-wider uppercase"
+                  >
+                    <span className="flex items-center gap-2">
+                      <List size={15} className="text-slate-500" />
+                      Table of Contents
+                    </span>
+                    <ChevronDown size={16} className={`text-slate-500 transition-transform ${tocOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {tocOpen && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <ul className="mt-4 border-t border-slate-200 pt-3 flex flex-col gap-2.5 pl-1.5">
+                          {tocItems.map((item: any, idx: number) => (
+                            <li key={item.id}>
+                              <a
+                                href={`#${item.id}`}
+                                className="text-[13px] text-slate-600 hover:text-blue-600 transition-colors font-medium flex items-center gap-2"
+                              >
+                                <span className="text-[11px] text-slate-400 font-mono font-bold">0{idx + 1}.</span>
+                                {item.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
 
               {/* Excerpt Lead Paragraph */}
               {article.excerpt && (
-                <p className="text-[15.5px] leading-[1.7] text-slate-500 font-normal mb-8">
+                <p className="text-lg md:text-xl leading-[1.6] text-slate-600 mb-8 font-normal">
                   {article.excerpt}
                 </p>
               )}
 
-              {/* Article Content */}
+              {/* Article content (HTML-based or sections-based) */}
               {article.content ? (
                 <>
                   <style>{`
-                    .article-body h1 { 
-                      font-size: 1.65rem; 
-                      font-weight: 800; 
-                      color: #0f172a; 
-                      margin-top: 2.25rem; 
-                      margin-bottom: 1rem; 
+                    .article-body {
+                      font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+                      font-size: 1.1rem;
+                      line-height: 1.85;
+                      color: #1e293b;
+                    }
+                    .article-body h1,
+                    .article-body h2,
+                    .article-body h3,
+                    .article-body h4 {
+                      color: #0f172a;
+                      font-family: var(--font-instrument-serif), Georgia, Cambria, serif;
+                      font-weight: 400;
+                      letter-spacing: -0.01em;
+                    }
+                    .article-body h1 {
+                      font-size: 2.5rem;
+                      margin-top: 3.5rem;
+                      margin-bottom: 1.5rem;
+                      line-height: 1.15;
                     }
                     .article-body h2 { 
-                      font-size: 1.45rem; 
-                      font-weight: 800; 
-                      color: #0f172a; 
-                      margin-top: 2rem; 
-                      margin-bottom: 1rem; 
+                      font-size: 2rem; 
+                      margin-top: 3rem; 
+                      margin-bottom: 1.25rem; 
+                      line-height: 1.2;
+                      border-bottom: 1px solid #e2e8f0;
+                      padding-bottom: 0.5rem;
                     }
                     .article-body h3 { 
-                      font-size: 1.25rem; 
-                      font-weight: 700; 
-                      color: #1e293b; 
-                      margin-top: 1.5rem; 
-                      margin-bottom: 0.75rem; 
+                      font-size: 1.5rem; 
+                      margin-top: 2.25rem; 
+                      margin-bottom: 0.85rem; 
+                      line-height: 1.25;
                     }
                     .article-body p { 
-                      font-size: 1rem; 
-                      line-height: 1.75; 
-                      color: #334155; 
-                      margin-bottom: 1.25rem; 
+                      margin-bottom: 1.5rem; 
                     }
                     .article-body pre {
-                      background: #0f172a;
-                      border-radius: 0.75rem;
-                      padding: 1.5rem;
-                      margin: 2rem 0;
+                      background: #f8fafc;
+                      border-radius: 1rem;
+                      padding: 1.25rem 2rem;
+                      margin: 1.25rem 0;
                       text-align: center;
                       overflow-x: auto;
-                      border: 1px solid rgba(255,255,255,0.05);
-                    }
-                    .article-body pre::before {
-                      content: '📐 Equation';
-                      display: block;
-                      font-size: 0.65rem;
-                      font-weight: 800;
-                      letter-spacing: 0.15em;
-                      text-transform: uppercase;
-                      color: rgba(255,255,255,0.3);
-                      margin-bottom: 0.5rem;
+                      border: 1px solid #e2e8f0;
+                      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
                     }
                     .article-body pre code {
-                      font-size: 1.2rem;
-                      font-weight: 700;
-                      color: #fbbf24;
-                      font-family: 'Georgia', serif;
+                      font-size: 1.15rem;
+                      font-weight: 500;
+                      color: #0f172a;
+                      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
                       background: none;
                       padding: 0;
+                      letter-spacing: 0.02em;
+                      border: none;
                     }
                     .article-body :not(pre) > code {
                       background: #f1f5f9;
                       color: #0f172a;
-                      padding: 0.15rem 0.35rem;
-                      border-radius: 0.25rem;
+                      padding: 0.2rem 0.4rem;
+                      border-radius: 0.35rem;
                       font-size: 0.9em;
                       font-weight: 600;
                       border: 1px solid #e2e8f0;
@@ -193,30 +252,30 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                     .article-body blockquote {
                       border-left: 4px solid #2563eb;
                       background: #f8fafc;
-                      border-radius: 0 0.5rem 0.5rem 0;
-                      padding: 1.25rem;
+                      border-radius: 0 0.75rem 0.75rem 0;
+                      padding: 1.5rem;
                       margin: 2rem 0;
                       font-style: italic;
                       color: #475569;
+                      font-size: 1.1rem;
+                      line-height: 1.7;
                     }
                     .article-body img { 
                       border-radius: 0.75rem; 
                       max-width: 100%; 
-                      margin: 2rem 0; 
+                      margin: 2.5rem auto; 
                       border: 1px solid #e2e8f0;
+                      display: block;
                     }
                     .article-body ul { 
                       list-style-type: none; 
                       padding-left: 0; 
-                      margin-bottom: 1.25rem; 
-                      color: #334155; 
+                      margin-bottom: 1.5rem; 
                     }
                     .article-body ul li { 
                       position: relative; 
                       padding-left: 1.75rem; 
                       margin-bottom: 0.75rem; 
-                      font-size: 1.025rem; 
-                      line-height: 1.7; 
                     }
                     .article-body ul li::before {
                       content: '✓'; 
@@ -229,17 +288,17 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                     }
                     .article-body ol {
                       padding-left: 1.5rem;
-                      margin-bottom: 1.25rem;
-                      color: #334155;
+                      margin-bottom: 1.5rem;
                     }
                     .article-body ol li {
-                      margin-bottom: 0.5rem;
-                      line-height: 1.7;
+                      margin-bottom: 0.75rem;
+                      padding-left: 0.25rem;
                     }
                     .article-body a { 
                       color: #2563eb; 
                       text-decoration: underline; 
                       text-underline-offset: 3px; 
+                      font-weight: 600;
                     }
                     .article-body a:hover {
                       color: #1d4ed8;
@@ -247,26 +306,26 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                     .article-body table {
                       width: 100%;
                       border-collapse: collapse;
-                      margin: 2rem 0;
+                      margin: 2.5rem 0;
                       font-size: 0.95rem;
                       text-align: left;
                       border-radius: 0.75rem;
                       overflow: hidden;
-                      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+                      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
                       border: 1px solid #e2e8f0;
                     }
                     .article-body th {
                       background-color: #0f172a;
                       color: #ffffff;
                       font-weight: 700;
-                      padding: 0.75rem 1rem;
-                      font-size: 0.9rem;
+                      padding: 0.85rem 1.15rem;
+                      font-size: 0.85rem;
                       text-transform: uppercase;
                       letter-spacing: 0.05em;
                       border: 1px solid #334155;
                     }
                     .article-body td {
-                      padding: 0.75rem 1rem;
+                      padding: 0.85rem 1.15rem;
                       border-bottom: 1px solid #e2e8f0;
                       border-right: 1px solid #e2e8f0;
                       color: #475569;
@@ -292,13 +351,15 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                   {(article.sections as any[]).map((section: any, idx: number) => {
                     switch (section.type) {
                       case "h2":
-                        return <h2 key={idx} id={section.id} className="text-xl sm:text-2xl font-bold text-slate-900 mt-10 mb-4">{section.content}</h2>;
+                        return <h2 key={idx} id={section.id} className="text-2xl font-bold text-slate-900 mt-10 mb-4 font-serif border-b border-slate-100 pb-2">{section.content}</h2>;
                       case "p":
-                        return <p key={idx} className="text-[16px] leading-[1.75] text-slate-600 mb-4">{section.content}</p>;
+                        return <p key={idx} className="text-[16px] leading-[1.8] text-slate-600 mb-4">{section.content}</p>;
                       case "formula":
                         return (
-                          <div key={idx} className="my-8 p-6 rounded-xl bg-slate-950 text-amber-500 text-center text-xl font-serif">
-                            <span className="block text-[10px] text-slate-500 uppercase tracking-widest mb-2">Equation</span>
+                          <div 
+                            key={idx} 
+                            className="my-4 py-5 px-8 rounded-2xl bg-[#f8fafc] border border-slate-200/80 text-[#0f172a] text-center font-mono text-[1.15rem] font-medium shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]"
+                          >
                             {section.content}
                           </div>
                         );
@@ -321,133 +382,114 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                   })}
                 </div>
               )}
-            </article>
+            </div>
 
-            {/* RIGHT COLUMN: Sidebar Cards */}
-            <aside className="space-y-6">
+            {/* RIGHT COLUMN: Sidebar (Sticky on Desktop) */}
+            <aside className="lg:sticky lg:top-[100px] space-y-8 pb-12">
               
-              {/* TABLE OF CONTENTS */}
-              <div className="bg-[#eff3f9] rounded-2xl p-5 border border-slate-200/40">
-                <p className="text-[10px] font-black tracking-wider text-slate-500 uppercase mb-3">
-                  Table of Contents
-                </p>
-                <div className="relative">
-                  <button 
-                    onClick={() => setTocOpen(!tocOpen)}
-                    className="w-full flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3 text-[13px] font-bold text-slate-800 hover:bg-slate-50 transition-colors shadow-sm"
-                  >
-                    <span className="truncate">{activeLabel}</span>
-                    <ChevronDown size={16} className={`text-slate-500 transition-transform ${tocOpen ? "rotate-180" : ""}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {tocOpen && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: -4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute z-20 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden py-1.5"
-                      >
-                        {tocItems.map((item: any) => (
-                          <a
-                            key={item.id}
-                            href={`#${item.id}`}
-                            onClick={() => setTocOpen(false)}
-                            className={`block text-[12.5px] px-4 py-2 hover:bg-slate-50 transition-colors ${
-                              activeSection === item.id 
-                                ? "text-blue-600 font-extrabold bg-blue-50/50" 
-                                : "text-slate-600 hover:text-slate-900"
-                            }`}
-                          >
-                            {item.label}
-                          </a>
-                        ))}
-                        {tocItems.length === 0 && (
-                          <p className="text-[12px] text-slate-400 px-4 py-2 italic">No sections found</p>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+              {/* Dynamic Scroll-aware Table of Contents Widget */}
+              {tocItems.length > 0 && (
+                <div className="hidden lg:block bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
+                  <h3 className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-4">
+                    On This Page
+                  </h3>
+                  <nav className="flex flex-col gap-3">
+                    {tocItems.map((item: any) => {
+                      const isActive = activeSection === item.id;
+                      return (
+                        <a
+                          key={item.id}
+                          href={`#${item.id}`}
+                          className={`text-[13px] font-semibold transition-all pl-3 border-l-2 ${
+                            isActive 
+                              ? "text-blue-600 border-blue-600 font-bold" 
+                              : "text-slate-500 border-slate-100 hover:text-slate-800 hover:border-slate-300"
+                          }`}
+                        >
+                          {item.label}
+                        </a>
+                      );
+                    })}
+                  </nav>
                 </div>
-              </div>
+              )}
 
-              {/* LATEST POSTS */}
-              <div className="bg-[#eff3f9] rounded-2xl p-5 border border-slate-200/40">
-                <p className="text-[10px] font-black tracking-wider text-slate-500 uppercase mb-4">
-                  Latest Posts
-                </p>
-                <div className="flex flex-col gap-4">
+              {/* Latest Posts List Widget */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
+                <h3 className="text-[10px] font-black tracking-widest text-slate-400 uppercase mb-5">
+                  Latest Articles
+                </h3>
+                <div className="flex flex-col gap-5">
                   {latestArticles.map((a, i) => (
-                    <Link key={i} href={a.href} className="flex gap-3 items-center group">
-                      <div className="w-14 h-14 rounded-lg bg-slate-200 overflow-hidden shrink-0 border border-slate-200/50">
+                    <Link key={i} href={a.href} className="flex gap-3.5 group items-start">
+                      <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200/50">
                         {a.heroImage ? (
                           <img src={a.heroImage} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-[10px] text-white/20 font-bold select-none uppercase">
+                          <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-[9px] text-white/30 font-bold uppercase select-none">
                             PL
                           </div>
                         )}
                       </div>
                       <div className="min-w-0">
-                        <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest block mb-0.5">{a.category}</span>
-                        <h4 className="text-[19px] font-bold text-slate-800 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
+                        <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest block mb-0.5">
+                          {a.category}
+                        </span>
+                        <h4 className="text-[13.5px] font-bold text-slate-800 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
                           {a.title}
                         </h4>
+                        <span className="text-[10.5px] text-slate-400 mt-1 block">{a.date}</span>
                       </div>
                     </Link>
                   ))}
                   {latestArticles.length === 0 && (
-                    <p className="text-[11px] text-slate-400 italic">No posts found</p>
+                    <p className="text-[12px] text-slate-400 italic">No posts found</p>
                   )}
                 </div>
               </div>
-
             </aside>
           </div>
 
+          {/* Related Articles Section */}
+          {related.length > 0 && (
+            <section className="mt-20 pt-16 border-t border-slate-200">
+              <h3 className="text-2xl font-black text-slate-900 mb-8 font-serif">
+                Related Articles
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {related.map((a, i) => (
+                  <div key={i} className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                    <div className="aspect-[16/10] w-full bg-[#0b1221] overflow-hidden flex items-center justify-center relative border-b border-slate-100">
+                      {a.heroImage ? (
+                        <img src={a.heroImage} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-xs text-white/10 font-bold uppercase italic select-none">
+                          {a.category}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-5 flex flex-col flex-1">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">
+                        {a.category}
+                      </span>
+                      <h4 className="text-[14.5px] font-extrabold text-slate-900 leading-snug mb-5 flex-1 line-clamp-2 hover:text-blue-600 transition-colors">
+                        <Link href={a.href}>{a.title}</Link>
+                      </h4>
+                      <Link 
+                        href={a.href}
+                        className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1"
+                      >
+                        Read Article &rarr;
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
         </div>
       </div>
-
-      {/* RELATED ARTICLES */}
-      {related.length > 0 && (
-        <section className="bg-[#edf2f9] border-t border-slate-200/50 py-16">
-          <div className="max-w-[960px] mx-auto px-6">
-            <h3 className="text-[24px] font-extrabold text-slate-900 mb-8">
-              Related Articles
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {related.map((a, i) => (
-                <div key={i} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
-                  <div className="h-40 w-full bg-[#0b1221] overflow-hidden flex items-center justify-center relative">
-                    {a.heroImage ? (
-                      <img src={a.heroImage} alt="" className="w-full h-full object-contain" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-[11px] text-white/10 font-bold uppercase italic select-none">
-                        {a.category}
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5 flex flex-col flex-1">
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">
-                      {a.category}
-                    </span>
-                    <h4 className="text-[14px] font-extrabold text-slate-900 leading-snug mb-5 flex-1 line-clamp-2">
-                      {a.title}
-                    </h4>
-                    <Link 
-                      href={a.href}
-                      className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] px-4 py-2 w-fit rounded-lg transition-colors inline-block"
-                    >
-                      Read More
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <Footer />
     </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Capacitance Calculator | PhysicsLab",
+  title: "Capacitance Calculator | Physics Fundamentals",
   description: "Solve for capacitance, charge, or voltage in a capacitor using the formula C = Q/V. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/capacitance",

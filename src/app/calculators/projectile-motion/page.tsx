@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Projectile Motion Calculator | PhysicsLab",
+  title: "Projectile Motion Calculator | Physics Fundamentals",
   description: "Calculate max height, time of flight, range, and current trajectory position given an initial velocity and angle. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/projectile-motion",

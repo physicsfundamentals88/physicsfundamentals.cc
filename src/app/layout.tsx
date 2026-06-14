@@ -25,11 +25,11 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: "PhysicsLab – Interactive Physics Simulations & Visual Learning",
-    template: "%s | PhysicsLab",
+    default: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
+    template: "%s | Physics Fundamentals",
   },
   description:
-    "Explore gravity, pendulums, collisions, waves, and orbital mechanics through beautiful interactive simulations. Learn physics visually, at your own pace.",
+    "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
   keywords: [
     "physics simulations",
     "interactive physics",
@@ -40,31 +40,31 @@ export const metadata: Metadata = {
     "orbital mechanics",
     "educational physics platform",
   ],
-  authors: [{ name: "PhysicsLab Team" }],
-  creator: "PhysicsLab",
+  authors: [{ name: "Physics Fundamentals Team" }],
+  creator: "Physics Fundamentals",
   metadataBase: new URL("https://physicslab.app"),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://physicslab.app",
-    title: "PhysicsLab – Interactive Physics Simulations & Visual Learning",
+    title: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
     description:
-      "Explore gravity, pendulums, collisions, waves, and orbital mechanics through beautiful interactive simulations.",
-    siteName: "PhysicsLab",
+      "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
+    siteName: "Physics Fundamentals",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "PhysicsLab – Visual Physics Learning Platform",
+        alt: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PhysicsLab – Interactive Physics Simulations",
+    title: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
     description:
-      "Learn physics through real-time interactive simulations. Gravity, waves, orbital mechanics & more.",
+      "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -83,10 +83,10 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  name: "PhysicsLab",
+  name: "Physics Fundamentals",
   url: "https://physicslab.app",
   description:
-    "An interactive physics learning platform with real-time simulations covering gravity, pendulums, collisions, waves, and orbital mechanics.",
+    "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
   educationalCredentialAwarded: "Physics Knowledge",
   teaches: [
     "Gravity",

@@ -3,8 +3,8 @@ import Footer from "@components/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | PhysicsLab",
-  description: "Read the Privacy Policy for PhysicsLab to understand how we handle your data and protect your privacy.",
+  title: "Privacy Policy | Physics Fundamentals",
+  description: "Read the Privacy Policy for Physics Fundamentals to understand how we handle your data and protect your privacy.",
 };
 
 export default function PrivacyPolicy() {

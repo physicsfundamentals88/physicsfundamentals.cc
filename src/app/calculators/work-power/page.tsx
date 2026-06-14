@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Work & Power Calculator | PhysicsLab",
+  title: "Work & Power Calculator | Physics Fundamentals",
   description: "Calculate mechanical work from force and distance, and power by dividing work by time taken. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/work-power",

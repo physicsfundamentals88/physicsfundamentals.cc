@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Snell's Law Calculator | PhysicsLab",
+  title: "Snell's Law Calculator | Physics Fundamentals",
   description: "Calculate angles of refraction between two different mediums based on their refractive indices. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/snells-law",

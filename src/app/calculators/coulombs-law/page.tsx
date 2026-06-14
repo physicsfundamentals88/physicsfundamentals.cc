@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Coulomb's Law Calculator | PhysicsLab",
+  title: "Coulomb's Law Calculator | Physics Fundamentals",
   description: "Determine the electrostatic force between two point charges separated by a specific distance in a vacuum. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/coulombs-law",

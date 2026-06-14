@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Client from "./Client";
 
 export const metadata: Metadata = {
-  title: "Doppler Effect Calculator | PhysicsLab",
+  title: "Doppler Effect Calculator | Physics Fundamentals",
   description: "Find the observed frequency of sound waves when the source or observer are moving relative to each other. Free online physics calculator with step-by-step solutions.",
   alternates: {
     canonical: "/calculators/doppler-effect",
