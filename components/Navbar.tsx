@@ -46,7 +46,7 @@ export default function Navbar() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[76px] flex items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
-            <img src="/logo.png" alt="Physics Fundamentals" className="h-14 w-auto object-contain" />
+            <img src="/logo.png" alt="Physics Fundamentals" className="h-14 w-auto object-contain" fetchPriority="high" />
           </Link>
 
           {/* nav links */}

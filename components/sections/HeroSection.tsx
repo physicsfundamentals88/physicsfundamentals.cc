@@ -16,13 +16,13 @@ export default function HeroSection() {
         {/* Animated Physics Orbital System */}
         <div className="absolute top-[40%] left-1/2 w-[1100px] h-[1100px] -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none select-none">
           {/* Outer Ring */}
-          <div className="absolute inset-0 rounded-full border border-white/5 border-t-blue-400/50 animate-[spin_30s_linear_infinite]" />
+          <div className="absolute inset-0 rounded-full border border-white/5 border-t-blue-400/50 animate-[spin_30s_linear_infinite]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
           {/* Middle Ring 1 */}
-          <div className="absolute inset-[150px] rounded-full border border-white/5 border-r-indigo-400/50 animate-[spin_20s_linear_infinite_reverse]" />
+          <div className="absolute inset-[150px] rounded-full border border-white/5 border-r-indigo-400/50 animate-[spin_20s_linear_infinite_reverse]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
           {/* Middle Ring 2 */}
-          <div className="absolute inset-[300px] rounded-full border border-white/5 border-b-purple-400/50 animate-[spin_15s_linear_infinite]" />
+          <div className="absolute inset-[300px] rounded-full border border-white/5 border-b-purple-400/50 animate-[spin_15s_linear_infinite]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
           {/* Inner Ring */}
-          <div className="absolute inset-[400px] rounded-full border border-white/5 border-l-cyan-400/50 animate-[spin_10s_linear_infinite_reverse]" />
+          <div className="absolute inset-[400px] rounded-full border border-white/5 border-l-cyan-400/50 animate-[spin_10s_linear_infinite_reverse]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
           
           {/* Central Core glow */}
           <div className="absolute inset-[450px] rounded-full bg-blue-500/10 blur-3xl animate-pulse" />
