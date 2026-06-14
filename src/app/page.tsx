@@ -9,9 +9,6 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 };
-import { getDb } from "@/db";
-import { articles } from "@/db/schema";
-import { desc, ne, and } from "drizzle-orm";
 import dynamic from "next/dynamic";
 import HeroSection from "@components/sections/HeroSection";
 
@@ -25,25 +22,7 @@ const FAQSection = dynamic(() => import("@components/sections/FAQSection"));
 const EarlyAccessSection = dynamic(() => import("@components/sections/EarlyAccessSection"));
 const ExploreSection = dynamic(() => import("@components/sections/ExploreSection"));
 
-export default async function Home() {
-  let latestArticles: any[] = [];
-  try {
-    const db = getDb();
-    latestArticles = await db
-      .select()
-      .from(articles)
-      .where(
-        and(
-          ne(articles.status, "Draft"),
-          ne(articles.status, "draft")
-        )
-      )
-      .orderBy(desc(articles.createdAt))
-      .limit(3);
-  } catch (error) {
-    console.error("Failed to fetch latest articles for home page:", error);
-  }
-
+export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -53,7 +32,7 @@ export default async function Home() {
         <HowItWorksSection />
         <CurriculumSection />
         <WaitlistSection />
-        <LatestArticlesSection dbArticles={latestArticles} />
+        <LatestArticlesSection />
         <WhatAreFundamentalsSection />
         <FAQSection />
         <EarlyAccessSection />
@@ -63,3 +42,4 @@ export default async function Home() {
     </div>
   );
 }
+

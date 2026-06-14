@@ -150,15 +150,39 @@ interface LatestArticlesSectionProps {
   dbArticles?: any[];
 }
 
-export default function LatestArticlesSection({ dbArticles = [] }: LatestArticlesSectionProps) {
+export default function LatestArticlesSection({ dbArticles: initialArticles = [] }: LatestArticlesSectionProps) {
   const [mounted, setMounted] = useState(false);
+  const [dbArticles, setDbArticles] = useState<any[]>(initialArticles);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Fetch latest articles client-side to keep the initial TTFB extremely low
+    if (initialArticles.length === 0) {
+      fetch("/api/blog")
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch");
+          return res.json();
+        })
+        .then((data) => {
+          if (Array.isArray(data)) {
+            // Map keys for compatibility if needed
+            const formatted = data.slice(0, 3).map((art: any) => ({
+              ...art,
+              href: `/blog/${art.slug}`,
+            }));
+            setDbArticles(formatted);
+          }
+        })
+        .catch((err) => {
+          console.error("Client-side article fetch failed:", err);
+        });
+    }
+  }, [initialArticles]);
 
   // Hydration safety: use static mock articles on server-side and initial render
-  const displayArticles = (mounted && dbArticles.length > 0) ? dbArticles.slice(0, 3) : articles.slice(0, 3);
+  const displayArticles = (mounted && dbArticles.length > 0) ? dbArticles : articles.slice(0, 3);
+
 
   return (
     <section className="py-24 bg-white relative">
