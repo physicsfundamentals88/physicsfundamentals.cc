@@ -103,71 +103,75 @@ export default function BlogClient({ initialArticles }: BlogClientProps) {
         <div className="max-w-[1200px] mx-auto px-6 sm:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             {filtered.map((article, index) => (
-              <motion.article
-                key={article.slug}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: index * 0.07 }}
-                className="bg-white rounded-[20px] overflow-hidden border border-slate-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              <Link 
+                key={article.slug} 
+                href={`/blog/${article.slug}`}
+                className="group flex flex-col h-full"
               >
-                <div className="h-[200px] relative w-full bg-[#0b1221] overflow-hidden flex items-center justify-center">
-                  {article.heroImage ? (
-                    <img 
-                      src={article.heroImage} 
-                      alt={article.title} 
-                      className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
-                    />
-                  ) : (
-                    <>
-                      <div className="absolute inset-0 opacity-20 pointer-events-none">
-                         <div className="w-full h-full" style={{ backgroundImage: "radial-gradient(circle at center, #3b82f6 0%, transparent 70%)", opacity: 0.2 }}></div>
-                      </div>
-                      <div className="relative z-10 text-center p-6">
-                         <span className="text-[10px] text-blue-400 tracking-[0.2em] font-bold block mb-2">{article.category}</span>
-                         <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-center gap-2 mb-4" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${article.authorBg || 'bg-blue-600'} text-white text-[9px] font-bold shrink-0`}>
-                      {article.authorInitials || 'PL'}
-                    </div>
-                    <span className="text-[13px] text-slate-400">{article.date}</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-300 shrink-0" />
-                    <span className="text-[13px] text-slate-400">{article.readTime}</span>
+                <motion.article
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.45, delay: index * 0.07 }}
+                  className="bg-white rounded-[20px] overflow-hidden border border-slate-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full w-full"
+                >
+                  <div className="h-[200px] relative w-full bg-[#0b1221] overflow-hidden flex items-center justify-center">
+                    {article.heroImage ? (
+                      <img 
+                        src={article.heroImage} 
+                        alt={article.title} 
+                        className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 opacity-20 pointer-events-none">
+                           <div className="w-full h-full" style={{ backgroundImage: "radial-gradient(circle at center, #3b82f6 0%, transparent 70%)", opacity: 0.2 }}></div>
+                        </div>
+                        <div className="relative z-10 text-center p-6">
+                           <span className="text-[10px] text-blue-400 tracking-[0.2em] font-bold block mb-2">{article.category}</span>
+                           <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  <h2
-                    className="text-[17px] leading-[1.45] font-semibold text-slate-900 mb-3"
-                    style={{ fontFamily: "var(--font-dm-sans)" }}
-                  >
-                    {article.title}
-                  </h2>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex items-center gap-2 mb-4" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center ${article.authorBg || 'bg-blue-600'} text-white text-[9px] font-bold shrink-0`}>
+                        {article.authorInitials || 'PL'}
+                      </div>
+                      <span className="text-[13px] text-slate-400">{article.date}</span>
+                      <span className="w-1 h-1 rounded-full bg-slate-300 shrink-0" />
+                      <span className="text-[13px] text-slate-400">{article.readTime}</span>
+                    </div>
 
-                  <p
-                    className="text-[14px] leading-[1.75] text-slate-500 mb-6 flex-1 line-clamp-3"
-                    style={{ fontFamily: "var(--font-dm-sans)" }}
-                  >
-                    {article.excerpt}
-                  </p>
+                    <h2
+                      className="text-[17px] leading-[1.45] font-semibold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors"
+                      style={{ fontFamily: "var(--font-dm-sans)" }}
+                    >
+                      {article.title}
+                    </h2>
 
-                  <Link
-                    href={`/blog/${article.slug}`}
-                    className="flex items-center gap-1.5 text-blue-600 font-medium text-[14px] bg-transparent hover:bg-blue-50 px-4 py-2.5 -ml-4 rounded-full transition-all duration-300 w-fit group"
-                    style={{ fontFamily: "var(--font-dm-sans)" }}
-                  >
-                    Read article
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
-                  </Link>
-                </div>
-              </motion.article>
+                    <p
+                      className="text-[14px] leading-[1.75] text-slate-500 mb-6 flex-1 line-clamp-3"
+                      style={{ fontFamily: "var(--font-dm-sans)" }}
+                    >
+                      {article.excerpt}
+                    </p>
+
+                    <div
+                      className="flex items-center gap-1.5 text-blue-600 font-medium text-[14px] rounded-full transition-all duration-300 w-fit"
+                      style={{ fontFamily: "var(--font-dm-sans)" }}
+                    >
+                      Read article
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-1">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
+                    </div>
+                  </div>
+                </motion.article>
+              </Link>
             ))}
           </div>
 
