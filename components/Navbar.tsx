@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X, Play } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -101,7 +100,9 @@ export default function Navbar() {
                 border: "1px solid rgba(255,255,255,0.05)",
               }}
             >
-              <Play className="fill-blue-400 w-3 h-3 text-blue-400" />
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3 text-blue-400">
+                <path d="M8 5v14l11-7z" />
+              </svg>
               Play Games
             </Link>
             <Link
@@ -127,7 +128,18 @@ export default function Navbar() {
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-white transition-colors bg-white/5 border border-white/10"
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="4" y1="18" x2="20" y2="18" />
+              </svg>
+            )}
           </button>
         </nav>
       </header>
@@ -168,7 +180,9 @@ export default function Navbar() {
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold"
                   style={{ color: "#ffffff", border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)" }}
                 >
-                  <Play style={{ width: 11, height: 11, fill: "currentColor" }} />
+                  <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 11, height: 11 }}>
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
                   Play Games
                 </Link>
                 <Link

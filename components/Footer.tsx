@@ -1,6 +1,5 @@
 "use client";
 
-import { Atom } from "lucide-react";
 import Link from "next/link";
 
 const footerLinks = {
