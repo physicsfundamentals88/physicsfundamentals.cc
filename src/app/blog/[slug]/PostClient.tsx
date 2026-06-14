@@ -31,7 +31,32 @@ function getCategorySlug(categoryName: string) {
 export default function PostClient({ article, latestArticles }: PostClientProps) {
   const [activeSection, setActiveSection] = useState("");
   const [tocOpen, setTocOpen] = useState(true); // Default open for desktop-like feel
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    // Select all images inside the article body and add click listeners to open them in lightbox
+    const handleImageClick = (e: Event) => {
+      const target = e.target as HTMLImageElement;
+      if (target && target.src) {
+        setLightboxImage(target.src);
+      }
+    };
+
+    const articleBody = document.querySelector(".article-body");
+    const images = articleBody?.querySelectorAll("img");
+    
+    images?.forEach((img) => {
+      img.style.cursor = "zoom-in";
+      img.addEventListener("click", handleImageClick);
+    });
+
+    return () => {
+      images?.forEach((img) => {
+        img.removeEventListener("click", handleImageClick);
+      });
+    };
+  }, [article.content, article.sections]);
 
   useEffect(() => {
     const tocItems = (article.toc as any[]) || [];
@@ -115,7 +140,12 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
           {/* Featured Image */}
           <div className="relative aspect-[16/7] md:aspect-[21/9] w-full rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm bg-slate-900 mb-12">
             {article.heroImage ? (
-              <img src={article.heroImage} alt={article.title} className="w-full h-full object-cover" />
+              <img 
+                src={article.heroImage} 
+                alt={article.title} 
+                className="w-full h-full object-cover cursor-zoom-in" 
+                onClick={() => setLightboxImage(article.heroImage)}
+              />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-[#0c1524] to-[#1e293b] flex items-center justify-center p-8 text-center text-white/5 font-black text-4xl uppercase select-none font-serif tracking-wider leading-none">
                 {article.title}
@@ -490,6 +520,48 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
 
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightboxImage(null)}
+            className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+          >
+            {/* Close button */}
+            <button 
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all"
+              aria-label="Close image viewer"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            
+            {/* Zoomed Image */}
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative max-w-full max-h-[85vh] md:max-h-[90vh] overflow-hidden rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+            >
+              <img 
+                src={lightboxImage} 
+                alt="Fullscreen view" 
+                className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>
