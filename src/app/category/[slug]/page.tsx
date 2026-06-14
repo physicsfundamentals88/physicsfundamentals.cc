@@ -38,6 +38,20 @@ const categoryMapping: Record<string, { name: string; desc: string; color: strin
     color: "#ec4899",
     bg: "rgba(236,72,153,0.1)",
     icon: "🌊"
+  },
+  "kinematics": {
+    name: "Kinematics",
+    desc: "Study the motion of points, objects, and groups of objects without reference to the causes of motion.",
+    color: "#10b981",
+    bg: "rgba(16,185,129,0.1)",
+    icon: "⏱️"
+  },
+  "modern-physics": {
+    name: "Modern Physics",
+    desc: "Delve into quantum mechanics, relativity, atomic structure, and modern theories of the universe.",
+    color: "#a855f7",
+    bg: "rgba(168,85,247,0.1)",
+    icon: "⚛️"
   }
 };
 

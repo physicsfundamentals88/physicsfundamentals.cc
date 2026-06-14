@@ -50,7 +50,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   const [featuredImage, setFeaturedImage] = useState<string | null>(null);
   const [category, setCategory] = useState("Uncategorized");
   const [categoriesList, setCategoriesList] = useState<string[]>([
-    "Uncategorized", "Electromagnetism", "Thermodynamics", "Quantum Physics", "Classical Mechanics", "Optics", "Nuclear Physics"
+    "Uncategorized", "Classical Mechanics", "Thermodynamics", "Waves & Optics", "Electromagnetism", "Kinematics", "Modern Physics"
   ]);
   const [newCatInput, setNewCatInput] = useState("");
   const [metaTitle, setMetaTitle] = useState("");
@@ -65,7 +65,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
 
   // Load categories
   useEffect(() => {
-    const saved = localStorage.getItem("sa_categories_list");
+    const saved = localStorage.getItem("sa_categories_list_v2");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -100,7 +100,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
     setCategory(name);
 
     // Save to localStorage
-    const saved = localStorage.getItem("sa_categories_list");
+    const saved = localStorage.getItem("sa_categories_list_v2");
     let fullCats = [];
     if (saved) {
       try {
@@ -121,7 +121,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
         description: "",
       };
       fullCats.push(newCatObj);
-      localStorage.setItem("sa_categories_list", JSON.stringify(fullCats));
+      localStorage.setItem("sa_categories_list_v2", JSON.stringify(fullCats));
     }
     setNewCatInput("");
   };

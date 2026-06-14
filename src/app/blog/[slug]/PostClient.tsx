@@ -25,6 +25,8 @@ function getCategorySlug(categoryName: string) {
   if (cat.includes("electro")) return "electromagnetism";
   if (cat.includes("thermo")) return "thermodynamics";
   if (cat.includes("wave") || cat.includes("optic")) return "waves-optics";
+  if (cat.includes("kinematic")) return "kinematics";
+  if (cat.includes("modern") || cat.includes("quantum")) return "modern-physics";
   return "classical-mechanics";
 }
 

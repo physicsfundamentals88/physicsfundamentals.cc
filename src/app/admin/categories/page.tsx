@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import { Edit3, Trash2 } from "lucide-react";
 
 const defaultCategories = [
-  { id: 1, name: "Electromagnetism", slug: "electromagnetism", count: 12, description: "Study of electromagnetic fields and forces" },
-  { id: 2, name: "Thermodynamics", slug: "thermodynamics", count: 8, description: "Heat, temperature, and energy transfer" },
-  { id: 3, name: "Quantum Physics", slug: "quantum-physics", count: 5, description: "Subatomic phenomena and wave-particle duality" },
-  { id: 4, name: "Classical Mechanics", slug: "mechanics", count: 15, description: "Motion, forces and classical systems" },
+  { id: 1, name: "Classical Mechanics", slug: "classical-mechanics", count: 0, description: "Newtonian dynamics, forces, motion, and gravity" },
+  { id: 2, name: "Thermodynamics", slug: "thermodynamics", count: 0, description: "Heat, temperature, entropy, and energy systems" },
+  { id: 3, name: "Waves & Optics", slug: "waves-optics", count: 0, description: "Wave propagation, acoustics, light, and refraction" },
+  { id: 4, name: "Electromagnetism", slug: "electromagnetism", count: 0, description: "Electric charges, magnetic fields, and circuits" },
+  { id: 5, name: "Kinematics", slug: "kinematics", count: 0, description: "Motion of points, bodies, and equations of motion" },
+  { id: 6, name: "Modern Physics", slug: "modern-physics", count: 0, description: "Quantum mechanics, relativity, and atomic physics" }
 ];
 
 export default function CategoriesPage() {
@@ -34,7 +36,7 @@ export default function CategoriesPage() {
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem("sa_categories_list");
+    const saved = localStorage.getItem("sa_categories_list_v2");
     if (saved) {
       try {
         setCategories(JSON.parse(saved));
@@ -42,7 +44,7 @@ export default function CategoriesPage() {
         console.error("Failed to parse saved categories:", e);
       }
     } else {
-      localStorage.setItem("sa_categories_list", JSON.stringify(defaultCategories));
+      localStorage.setItem("sa_categories_list_v2", JSON.stringify(defaultCategories));
     }
   }, []);
 
@@ -58,7 +60,7 @@ export default function CategoriesPage() {
       { id: Date.now(), name: newName.trim(), slug, count: 0, description: newDesc },
     ];
     setCategories(updated);
-    localStorage.setItem("sa_categories_list", JSON.stringify(updated));
+    localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
     setNewName(""); setNewSlug(""); setNewDesc(""); setNewParent("None");
   };
 
@@ -66,7 +68,7 @@ export default function CategoriesPage() {
     if (!confirm("Delete this category?")) return;
     const updated = categories.filter((c) => c.id !== id);
     setCategories(updated);
-    localStorage.setItem("sa_categories_list", JSON.stringify(updated));
+    localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
     if (editingId === id) handleCancel();
   };
 
@@ -87,7 +89,7 @@ export default function CategoriesPage() {
         : c
     );
     setCategories(updated);
-    localStorage.setItem("sa_categories_list", JSON.stringify(updated));
+    localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
     // Reset form
     setNewName("");
     setNewSlug("");
@@ -111,7 +113,7 @@ export default function CategoriesPage() {
       if (!confirm(`Are you sure you want to delete the ${selected.length} selected category(ies)?`)) return;
       const updated = categories.filter((c) => !selected.includes(c.id));
       setCategories(updated);
-      localStorage.setItem("sa_categories_list", JSON.stringify(updated));
+      localStorage.setItem("sa_categories_list_v2", JSON.stringify(updated));
       if (editingId && selected.includes(editingId)) handleCancel();
       setSelected([]);
     }
