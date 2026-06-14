@@ -48,6 +48,16 @@ function LoginContent() {
       setIsLoggedIn(true);
       setUserProfile(JSON.parse(profile));
     }
+
+    // Load Cloudflare Turnstile script
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
   }, []);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -303,6 +313,15 @@ function LoginContent() {
               </div>
             </div>
 
+            {/* Cloudflare Turnstile Verification */}
+            <div className="py-2 flex justify-center">
+              <div 
+                className="cf-turnstile" 
+                data-sitekey="1x00000000000000000000SH"
+                data-theme="dark"
+              />
+            </div>
+
             <button
               type="submit"
               disabled={isLoading}
@@ -372,11 +391,13 @@ function LoginContent() {
               </div>
             </div>
 
-            <div className="py-2">
-              <div className="flex items-center gap-2 p-3 bg-slate-950/30 border border-slate-850 rounded-xl text-slate-400">
-                <ShieldCheck size={18} className="text-[#FACC15] shrink-0" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Secured via local sandbox database</span>
-              </div>
+            {/* Cloudflare Turnstile Verification */}
+            <div className="py-2 flex justify-center">
+              <div 
+                className="cf-turnstile" 
+                data-sitekey="1x00000000000000000000SH"
+                data-theme="dark"
+              />
             </div>
 
             <button

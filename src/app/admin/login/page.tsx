@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Lock, User, ShieldCheck, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,18 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,13 +101,13 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
-            {/* Turnstile Widget Placeholder */}
-            <div className="py-2">
-               <div className="flex flex-col items-center justify-center p-4 bg-slate-950/30 border border-dashed border-slate-800 rounded-xl">
-                  <ShieldCheck size={24} className="text-slate-700 mb-2" />
-                  <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Wrangler Bot Protection Active</span>
-                  <div className="mt-2 text-[9px] text-slate-500">Wait for Cloudstile deployment to finalize...</div>
-               </div>
+            {/* Cloudflare Turnstile Verification */}
+            <div className="py-2 flex justify-center">
+              <div 
+                className="cf-turnstile" 
+                data-sitekey="1x00000000000000000000SH"
+                data-theme="dark"
+              />
             </div>
 
             <button 
