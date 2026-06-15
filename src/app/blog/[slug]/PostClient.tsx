@@ -30,6 +30,22 @@ function getCategorySlug(categoryName: string) {
   return "classical-mechanics";
 }
 
+function processContent(html: string) {
+  if (!html) return "";
+  
+  // Convert block equations: <p>$$Equation$$</p> to <pre><code>Equation</code></pre>
+  let processed = html.replace(/<p>\s*\$\$([\s\S]*?)\$\$\s*<\/p>/g, (_match, equation) => {
+    return `<pre><code>${equation.trim()}</code></pre>`;
+  });
+
+  // Convert inline equations: $Equation$ to <code>Equation</code>
+  processed = processed.replace(/\$([^$\n]+?)\$/g, (_match, inlineEq) => {
+    return `<code>${inlineEq.trim()}</code>`;
+  });
+
+  return processed;
+}
+
 export default function PostClient({ article, latestArticles }: PostClientProps) {
   const [activeSection, setActiveSection] = useState("");
   const [tocOpen, setTocOpen] = useState(true); // Default open for desktop-like feel
@@ -203,13 +219,6 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                 </div>
               )}
 
-              {/* Excerpt Lead Paragraph */}
-              {article.excerpt && (
-                <p className="text-lg md:text-xl leading-[1.6] text-slate-600 mb-8 font-normal">
-                  {article.excerpt}
-                </p>
-              )}
-
               {/* Article content (HTML-based or sections-based) */}
               {article.content ? (
                 <>
@@ -374,7 +383,7 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                   `}</style>
                   <div 
                     className="article-body"
-                    dangerouslySetInnerHTML={{ __html: article.content }}
+                    dangerouslySetInnerHTML={{ __html: processContent(article.content) }}
                   />
                 </>
               ) : (
