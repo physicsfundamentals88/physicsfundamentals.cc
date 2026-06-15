@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
@@ -17,15 +16,9 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-white" aria-label="Frequently asked questions">
       <div className="max-w-[700px] mx-auto px-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12">
           <span 
             className="uppercase font-bold tracking-[0.2em] mb-4 block" 
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "11px", color: "rgb(59, 130, 246)" }}
@@ -38,36 +31,43 @@ export default function FAQSection() {
           >
             Frequently Asked Questions
           </h2>
-        </motion.div>
+        </div>
 
-        <div className="flex flex-col">
-          {faqs.map((faq, i) => (
-            <div key={i} className={`border-b border-slate-100 transition-colors ${openIndex === i ? 'border-transparent' : ''}`}>
-               <button 
-                 onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
-                 className={`w-full flex items-center justify-between py-5 text-left transition-all ${openIndex === i ? 'text-blue-600 bg-blue-50/50 border border-blue-400 rounded-lg px-4 -mx-4 mt-2 shadow-sm' : 'text-slate-800 px-0 hover:text-blue-600'}`}
-                 style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 600, fontSize: "15px" }}
-               >
-                 {faq.question}
-                 <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${openIndex === i ? 'rotate-180 text-blue-500' : ''}`} />
-               </button>
-               <AnimatePresence>
-                 {openIndex === i && (
-                   <motion.div
-                     initial={{ height: 0, opacity: 0 }}
-                     animate={{ height: "auto", opacity: 1 }}
-                     exit={{ height: 0, opacity: 0 }}
-                     transition={{ duration: 0.2 }}
-                     className="overflow-hidden"
-                   >
-                     <div className="pb-5 pt-2 text-slate-500 leading-relaxed text-[15px] px-0" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                       {faq.answer}
-                     </div>
-                   </motion.div>
-                 )}
-               </AnimatePresence>
-            </div>
-          ))}
+        <div className="flex flex-col" role="list">
+          {faqs.map((faq, i) => {
+            const isOpen = openIndex === i;
+            const panelId = `faq-panel-${i}`;
+            const headerId = `faq-header-${i}`;
+            return (
+              <div key={i} className={`border-b border-slate-100 transition-colors ${isOpen ? 'border-transparent' : ''}`} role="listitem">
+                 <button 
+                   id={headerId}
+                   onClick={() => setOpenIndex(isOpen ? -1 : i)}
+                   className={`w-full flex items-center justify-between py-5 text-left transition-all ${isOpen ? 'text-blue-600 bg-blue-50/50 border border-blue-400 rounded-lg px-4 -mx-4 mt-2 shadow-sm' : 'text-slate-800 px-0 hover:text-blue-600'}`}
+                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 600, fontSize: "15px" }}
+                   aria-expanded={isOpen}
+                   aria-controls={panelId}
+                 >
+                   {faq.question}
+                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform shrink-0 ml-2 ${isOpen ? 'rotate-180 text-blue-500' : ''}`} aria-hidden="true" />
+                 </button>
+                 <div
+                   id={panelId}
+                   role="region"
+                   aria-labelledby={headerId}
+                   className="overflow-hidden transition-all duration-200"
+                   style={{
+                     maxHeight: isOpen ? '300px' : '0px',
+                     opacity: isOpen ? 1 : 0,
+                   }}
+                 >
+                   <div className="pb-5 pt-2 text-[#64748b] leading-relaxed text-[15px] px-0" style={{ fontFamily: "var(--font-dm-sans)" }}>
+                     {faq.answer}
+                   </div>
+                 </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

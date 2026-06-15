@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 const fundamentals = [
@@ -12,7 +11,7 @@ const fundamentals = [
       </>
     ),
     linkText: "ALL MECHANICS ARTICLES",
-    linkUrl: "#"
+    linkUrl: "/blog"
   },
   {
     title: "Waves & Optics",
@@ -22,7 +21,7 @@ const fundamentals = [
       </>
     ),
     linkText: "ALL WAVES ARTICLES",
-    linkUrl: "#"
+    linkUrl: "/blog"
   },
   {
     title: "Energy & Thermodynamics",
@@ -32,31 +31,25 @@ const fundamentals = [
       </>
     ),
     linkText: "ALL THERMODYNAMICS ARTICLES",
-    linkUrl: "#"
+    linkUrl: "/blog"
   },
   {
     title: "Forces & Conservation Laws",
     description: (
       <>
-        Explore the immutable principles of momentum and gravity. Investigate collision mathematics, apply <span className="text-blue-500">Newton's universal law of gravitation</span> to planetary motion, and understand why <span className="text-blue-500">conservation laws</span> form the backbone of modern physics.
+        Explore the immutable principles of momentum and gravity. Investigate collision mathematics, apply <span className="text-blue-500">Newton&apos;s universal law of gravitation</span> to planetary motion, and understand why <span className="text-blue-500">conservation laws</span> form the backbone of modern physics.
       </>
     ),
     linkText: "ALL FORCES ARTICLES",
-    linkUrl: "#"
+    linkUrl: "/blog"
   }
 ];
 
 export default function WhatAreFundamentalsSection() {
   return (
-    <section className="py-24 bg-[#f8fafc]">
+    <section className="py-24 bg-[#f8fafc]" aria-label="Core physics principles">
       <div className="max-w-[1000px] mx-auto px-6 sm:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16 flex flex-col items-center"
-        >
+        <div className="text-center mb-16 flex flex-col items-center">
           <h2 
             className="text-[clamp(28px,4vw,36px)] leading-[1.2] mb-5 tracking-tight"
             style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 700, color: "rgb(15, 23, 42)" }}
@@ -69,16 +62,12 @@ export default function WhatAreFundamentalsSection() {
           >
             Our modular approach breaks down complex natural laws into accessible concepts. Grasping these fundamental frameworks prepares you for advanced physics and engineering studies.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {fundamentals.map((item, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-white rounded-[16px] p-8 flex flex-col border border-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-slate-200"
               style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.03)" }}
             >
@@ -100,12 +89,12 @@ export default function WhatAreFundamentalsSection() {
                 style={{ fontFamily: "var(--font-dm-sans)" }}
               >
                 {item.linkText}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover/link:translate-x-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover/link:translate-x-1" aria-hidden="true">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                   <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

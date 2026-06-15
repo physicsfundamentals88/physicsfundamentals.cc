@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 const curricula = [
@@ -32,15 +31,9 @@ const curricula = [
 
 export default function CurriculumSection() {
   return (
-    <section id="curriculum" className="py-24 bg-white">
+    <section id="curriculum" className="py-24 bg-white" aria-label="Learning pathways">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16 flex flex-col items-center"
-        >
+        <div className="text-center mb-16 flex flex-col items-center">
           <span 
             className="uppercase font-bold tracking-[0.2em] mb-4 block"
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "rgb(59, 130, 246)" }}
@@ -59,16 +52,12 @@ export default function CurriculumSection() {
           >
             Explore our comprehensive interactive syllabus. We break down complex topics—from Newtonian kinematics and forces to electromagnetic fields and thermodynamics—to build genuine physical intuition.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {curricula.map((item, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
               className="bg-white rounded-[20px] p-6 lg:p-8 flex flex-col border border-slate-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-100"
               style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.04)" }}
             >
@@ -82,6 +71,7 @@ export default function CurriculumSection() {
                 <span 
                   className="bg-[#eff6ff] text-blue-500 text-[9px] font-bold tracking-[0.1em] px-2.5 py-1 rounded-[6px] shrink-0 uppercase"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
+                  aria-label="Status: Live"
                 >
                   LIVE
                 </span>
@@ -92,20 +82,14 @@ export default function CurriculumSection() {
               >
                 {item.topics}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* See full roadmap CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-12 flex justify-center"
-        >
+        <div className="mt-12 flex justify-center">
           <Link
-            href="#"
+            href="/roadmap"
             className="flex items-center gap-2 text-blue-600 font-medium text-[15px] px-6 py-3 rounded-full bg-transparent hover:bg-blue-50 transition-all duration-300 group"
             style={{ fontFamily: "var(--font-dm-sans)" }}
           >
@@ -114,12 +98,13 @@ export default function CurriculumSection() {
               width="14" height="14" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
               className="transition-transform group-hover:translate-x-1"
+              aria-hidden="true"
             >
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </Link>
-        </motion.div>
+        </div>
 
       </div>
     </section>

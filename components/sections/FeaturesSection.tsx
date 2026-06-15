@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -9,9 +8,9 @@ const concepts = [
     category: "CLASSICAL MECHANICS",
     title: "Newton's Laws of Motion",
     description: "Detailed explanation of exactly how every force and interaction works, starting from first classical mechanics principles to predict rocket trajectories.",
-    link: "#",
+    link: "/blog",
     Illustration: () => (
-      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <rect x="75" y="40" width="50" height="40" rx="4" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="2" />
         <path d="M125 60 L165 60" stroke="#f59e0b" strokeWidth="3" markerEnd="url(#arrow-amber)" />
         <path d="M75 60 L35 60" stroke="#f59e0b" strokeWidth="3" markerEnd="url(#arrow-amber)" />
@@ -31,9 +30,9 @@ const concepts = [
     category: "WAVES & OPTICS",
     title: "Transverse Waves Explained",
     description: "Definition, labeled diagram, wavelength, amplitude, frequency, polarization — with real examples from light to guitar strings. 6,800 words.",
-    link: "#",
+    link: "/blog",
     Illustration: () => (
-      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M20 50 Q 50 10, 80 50 T 140 50 T 200 50" stroke="#3b82f6" strokeWidth="3" fill="transparent" />
         <path d="M20 50 L 200 50" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4 4" />
         <path d="M80 50 L 140 50" stroke="#22c55e" strokeWidth="2" markerEnd="url(#arrow-green)" markerStart="url(#arrow-green-start)" />
@@ -53,9 +52,9 @@ const concepts = [
     category: "THERMODYNAMICS",
     title: "What Is Energy?",
     description: "Kinetic, potential, and thermal energy explained. The conservation of energy law and why it is the most important principle in all of physics.",
-    link: "#",
+    link: "/blog",
     Illustration: () => (
-      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <circle cx="100" cy="50" r="12" fill="#3b82f6" />
         <circle cx="50" cy="50" r="8" fill="#f59e0b" />
         <circle cx="150" cy="50" r="8" fill="#f59e0b" />
@@ -71,13 +70,13 @@ const concepts = [
     category: "CLASSICAL MECHANICS",
     title: "Projectile Motion",
     description: "Range, max height, time of flight equations with full worked examples. Why 45° maximises range and common exam mistakes corrected.",
-    link: "#",
+    link: "/blog",
     Illustration: () => (
-      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M 20 80 Q 100 0, 180 80" stroke="#3b82f6" strokeWidth="3" fill="transparent" />
         <path d="M 20 80 L 180 80" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4 4" />
         <circle cx="20" cy="80" r="6" fill="#3b82f6" />
-        <path d="M 20 80 L 60 40" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#arrow-amber)" />
+        <path d="M 20 80 L 60 40" stroke="#f59e0b" strokeWidth="2" />
         <path d="M 100 80 L 100 40" stroke="#ef4444" strokeWidth="1" strokeDasharray="2 2" />
         <text x="100" y="35" fill="#ef4444" fontSize="8" textAnchor="middle" fontWeight="bold">H</text>
         <text x="35" y="50" fill="#f59e0b" fontSize="8" textAnchor="middle" fontWeight="bold">V₀</text>
@@ -89,9 +88,9 @@ const concepts = [
     category: "WAVES & OPTICS",
     title: "Wave Speed, Frequency & Wavelength",
     description: "The universal wave equation v = fλ explained from first principles. From sound waves to light — worked examples and Doppler effect.",
-    link: "#",
+    link: "/blog",
     Illustration: () => (
-      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <text x="100" y="35" fill="#0f172a" fontSize="20" textAnchor="middle" fontWeight="bold" fontFamily="var(--font-dm-sans)">v = fλ</text>
         <rect x="30" y="50" width="40" height="20" rx="4" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1" />
         <text x="50" y="64" fill="#3b82f6" fontSize="12" textAnchor="middle" fontWeight="bold">v</text>
@@ -109,9 +108,9 @@ const concepts = [
     category: "CLASSICAL MECHANICS",
     title: "Conservation of Momentum",
     description: "The principle behind every collision. Elastic vs inelastic collisions, centre of mass, worked examples, and why momentum never disappears.",
-    link: "#",
+    link: "/blog",
     Illustration: () => (
-      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg className="w-full h-full" viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <text x="60" y="20" fill="#94a3b8" fontSize="8" textAnchor="middle" letterSpacing="1">BEFORE</text>
         <text x="140" y="20" fill="#94a3b8" fontSize="8" textAnchor="middle" letterSpacing="1">AFTER</text>
         <circle cx="30" cy="50" r="10" fill="#60a5fa" />
@@ -120,7 +119,7 @@ const concepts = [
         <path d="M 45 50 L 55 50" stroke="#f59e0b" strokeWidth="2" markerEnd="url(#arrow-amber)" />
         <path d="M 150 50 L 170 50" stroke="#10b981" strokeWidth="2" markerEnd="url(#arrow-green)" />
         <path d="M 90 50 L 105 50" stroke="#cbd5e1" strokeWidth="1" markerEnd="url(#arrow-gray)" />
-        <text x="100" y="80" fill="#0f172a" fontSize="8" textAnchor="middle" fontWeight="bold">p₁ + p₂ = p₁' + p₂'</text>
+        <text x="100" y="80" fill="#0f172a" fontSize="8" textAnchor="middle" fontWeight="bold">p₁ + p₂ = p₁&apos; + p₂&apos;</text>
         <text x="100" y="90" fill="#64748b" fontSize="7" textAnchor="middle">Total momentum is conserved</text>
         <defs>
           <marker id="arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
@@ -134,16 +133,10 @@ const concepts = [
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="py-24 bg-white">
+    <section id="features" className="py-24 bg-white" aria-label="Core physics concepts">
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16 flex flex-col items-center"
-        >
+        <div className="text-center mb-16 flex flex-col items-center">
           <span 
             className="uppercase font-bold tracking-[0.2em] mb-4 block"
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "14px", color: "rgb(59, 130, 246)" }}
@@ -162,22 +155,18 @@ export default function FeaturesSection() {
           >
             Physics fundamentals are precise descriptions of how every force and matter exists, moves, and interacts. Every branch of science and engineering builds on these foundations.
           </p>
-        </motion.div>
+        </div>
 
         {/* Grid Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {concepts.map((concept, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="group bg-white rounded-[24px] overflow-hidden border border-slate-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 flex flex-col"
               style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.05)" }}
             >
               {/* Card Illustration Area */}
-              <div className="h-[200px] bg-[#f8fafc] w-full flex items-center justify-center p-6 border-b border-slate-100 relative overflow-hidden">
+              <div className="h-[200px] bg-[#f8fafc] w-full flex items-center justify-center p-6 border-b border-slate-100 relative overflow-hidden" aria-hidden="true">
                 <concept.Illustration />
               </div>
 
@@ -207,10 +196,10 @@ export default function FeaturesSection() {
                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 500, fontSize: "15px" }}
                 >
                   Read the guide
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" aria-hidden="true" />
                 </Link>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -222,7 +211,7 @@ export default function FeaturesSection() {
             style={{ fontFamily: "var(--font-dm-sans)" }}
           >
             Browse all physics articles
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
           </Link>
         </div>
       </div>

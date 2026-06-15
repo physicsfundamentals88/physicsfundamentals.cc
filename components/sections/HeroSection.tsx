@@ -8,75 +8,23 @@ export default function HeroSection() {
       id="home"
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-center px-4 mt-[70px] pt-[40px] pb-[40px]"
       style={{ background: "#0a0f1e" }}
+      aria-label="Hero section – Physics learning platform"
     >
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(16px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .animate-fade-in-down {
-          opacity: 0;
-          animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .animate-fade-in-up {
-          opacity: 0;
-          animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        .animate-fade-in {
-          opacity: 0;
-          animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}} />
-
       {/* ── Background glows ── */}
-      <div className="absolute inset-0 pointer-events-none select-none">
-        {/* Animated Physics Orbital System */}
-        <div className="absolute top-[40%] left-1/2 w-[1100px] h-[1100px] -translate-x-1/2 -translate-y-1/2 opacity-30 pointer-events-none select-none">
+      <div className="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        {/* Simplified Orbital System – fewer elements, CSS-only, prefer-reduced-motion aware */}
+        <div className="absolute top-[40%] left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 opacity-25 pointer-events-none select-none hero-orbits">
           {/* Outer Ring */}
-          <div className="absolute inset-0 rounded-full border border-white/5 border-t-blue-400/50 animate-[spin_30s_linear_infinite]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
-          {/* Middle Ring 1 */}
-          <div className="absolute inset-[150px] rounded-full border border-white/5 border-r-indigo-400/50 animate-[spin_20s_linear_infinite_reverse]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
-          {/* Middle Ring 2 */}
-          <div className="absolute inset-[300px] rounded-full border border-white/5 border-b-purple-400/50 animate-[spin_15s_linear_infinite]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
+          <div className="absolute inset-0 rounded-full border border-white/5 border-t-blue-400/40 hero-spin-30" />
+          {/* Middle Ring */}
+          <div className="absolute inset-[200px] rounded-full border border-white/5 border-r-indigo-400/40 hero-spin-20-rev" />
           {/* Inner Ring */}
-          <div className="absolute inset-[400px] rounded-full border border-white/5 border-l-cyan-400/50 animate-[spin_10s_linear_infinite_reverse]" style={{ transform: "translate3d(0, 0, 0)", willChange: "transform" }} />
-          
-          {/* Central Core glow */}
-          <div className="absolute inset-[450px] rounded-full bg-blue-500/10 blur-3xl animate-pulse" />
+          <div className="absolute inset-[350px] rounded-full border border-white/5 border-l-cyan-400/40 hero-spin-15" />
         </div>
-        
+
         {/* Top-center diffuse blue glow */}
         <div
-          className="absolute left-1/2 -translate-x-1/2 top-0 w-[900px] h-[600px] rounded-full opacity-30"
+          className="absolute left-1/2 -translate-x-1/2 top-0 w-[700px] h-[500px] rounded-full opacity-25"
           style={{
             background:
               "radial-gradient(ellipse at 50% 0%, rgba(56,97,172,0.55) 0%, transparent 70%)",
@@ -84,26 +32,24 @@ export default function HeroSection() {
         />
         {/* Subtle left accent */}
         <div
-          className="absolute left-0 top-1/3 w-[400px] h-[400px] rounded-full opacity-10"
+          className="absolute left-0 top-1/3 w-[300px] h-[300px] rounded-full opacity-10"
           style={{
             background:
               "radial-gradient(ellipse at 0% 50%, rgba(30,60,120,0.8) 0%, transparent 70%)",
           }}
         />
-        {/* Floating particle dots */}
-        {[...Array(28)].map((_, i) => (
+        {/* Reduced floating particles – 8 instead of 28 */}
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
           <span
             key={i}
-            className="absolute rounded-full"
+            className="absolute rounded-full hero-particle"
             style={{
               width: `${1 + (i % 3)}px`,
               height: `${1 + (i % 3)}px`,
-              top: `${5 + ((i * 17 + 7) % 90)}%`,
-              left: `${3 + ((i * 23 + 11) % 94)}%`,
-              background: "rgba(255,255,255,0.15)",
-              opacity: 0.08 + (i % 5) * 0.05,
-              animation: `float ${5 + (i % 4)}s ease-in-out infinite`,
-              animationDelay: `${i * 0.3}s`,
+              top: `${10 + ((i * 23 + 7) % 80)}%`,
+              left: `${5 + ((i * 29 + 11) % 90)}%`,
+              background: "rgba(255,255,255,0.18)",
+              animationDelay: `${i * 0.7}s`,
             }}
           />
         ))}
@@ -114,11 +60,11 @@ export default function HeroSection() {
 
         {/* Badge */}
         <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm animate-fade-in-down"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] hero-anim-down"
           style={{ fontFamily: "var(--font-dm-sans)", fontSize: 13, fontWeight: 500, color: "rgb(191,219,254)" }}
         >
           {/* Animated green dot */}
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-2 w-2" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-400" />
           </span>
@@ -134,9 +80,8 @@ export default function HeroSection() {
             lineHeight: 1.05,
             letterSpacing: "-0.01em",
             color: "#ffffff",
-            animationDelay: "0.1s",
           }}
-          className="mt-2 animate-fade-in-up"
+          className="mt-2 hero-anim-up"
         >
           {"Understand "}
           <span style={{ color: "rgb(96,165,250)", fontStyle: "italic" }}>
@@ -156,9 +101,8 @@ export default function HeroSection() {
             lineHeight: 1.65,
             color: "rgb(191,219,254)",
             maxWidth: 600,
-            animationDelay: "0.2s",
           }}
-          className="animate-fade-in-up"
+          className="hero-anim-up hero-anim-delay-1"
         >
           Interact with virtual labs, run real-time simulations, and explore everything from{" "}
           <span style={{ color: "rgb(96,165,250)" }}>classical mechanics</span>{" "}
@@ -168,8 +112,7 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div
-          className="flex flex-col sm:flex-row gap-3 items-center mt-2 animate-fade-in-up"
-          style={{ animationDelay: "0.3s" }}
+          className="flex flex-col sm:flex-row gap-3 items-center mt-2 hero-anim-up hero-anim-delay-2"
         >
           {/* Primary: amber */}
           <Link
@@ -188,7 +131,7 @@ export default function HeroSection() {
             }}
           >
             Get Early Access
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }} aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
@@ -220,13 +163,12 @@ export default function HeroSection() {
             fontFamily: "var(--font-dm-sans)",
             fontWeight: 400,
             fontSize: 13,
-            color: "rgb(100,116,139)",
-            animationDelay: "0.4s",
+            color: "rgb(148,163,184)",
           }}
-          className="animate-fade-in"
+          className="hero-anim-fade hero-anim-delay-3"
         >
           Trusted by{" "}
-          <span style={{ fontWeight: 600, color: "rgb(148,163,184)" }}>
+          <span style={{ fontWeight: 600, color: "rgb(203,213,225)" }}>
             500+
           </span>{" "}
           students already on the list

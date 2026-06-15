@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import HeroSection from "@components/sections/HeroSection";
+import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
   title: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
@@ -9,9 +11,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
 };
-import dynamic from "next/dynamic";
-import HeroSection from "@components/sections/HeroSection";
 
+/* Code-split below-fold sections to reduce initial JS bundle.
+   SSR is still enabled so HTML is rendered server-side. */
 const FeaturesSection = dynamic(() => import("@components/sections/FeaturesSection"));
 const HowItWorksSection = dynamic(() => import("@components/sections/HowItWorksSection"));
 const CurriculumSection = dynamic(() => import("@components/sections/CurriculumSection"));
@@ -26,7 +28,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1 bg-[#f8fafc]">
+      <main id="main-content" className="flex-1 bg-[#f8fafc]">
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />
@@ -42,4 +44,3 @@ export default function Home() {
     </div>
   );
 }
-

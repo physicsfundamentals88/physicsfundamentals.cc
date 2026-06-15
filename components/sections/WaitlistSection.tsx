@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Check } from "lucide-react";
 import Link from "next/link";
 
 const leftFeatures = [
@@ -20,16 +18,10 @@ const rightFeatures = [
 
 export default function WaitlistSection() {
   return (
-    <section id="waitlist" className="py-24 bg-[#0a0f1e] my-[40px] relative">
+    <section id="waitlist" className="py-24 bg-[#0a0f1e] my-[40px] relative" aria-label="Waitlist features">
       <div className="max-w-[900px] mx-auto px-6 sm:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20 flex flex-col items-center"
-        >
+        <div className="text-center mb-20 flex flex-col items-center">
           <span 
             className="uppercase font-bold tracking-[0.2em] mb-4 block"
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "12px", color: "rgb(59, 130, 246)" }}
@@ -42,60 +34,44 @@ export default function WaitlistSection() {
           >
             A Complete Arsenal of Tools<br className="hidden md:block"/> for Aspiring Scientists
           </h2>
-        </motion.div>
+        </div>
 
         {/* Feature List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mb-20">
-          <div className="flex flex-col gap-6">
+          <ul className="flex flex-col gap-6" role="list">
             {leftFeatures.map((feature, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="flex items-start gap-4"
-              >
-                <Check className="w-[18px] h-[18px] text-[#3b82f6] shrink-0 mt-[4px]" strokeWidth={3} />
+              <li key={idx} className="flex items-start gap-4">
+                <svg className="w-[18px] h-[18px] text-[#3b82f6] shrink-0 mt-[4px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
                 <span 
                   className="text-[16px] leading-[28px]"
                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(226, 232, 240)" }}
                 >
                   {feature}
                 </span>
-              </motion.div>
+              </li>
             ))}
-          </div>
-          <div className="flex flex-col gap-6">
+          </ul>
+          <ul className="flex flex-col gap-6" role="list">
             {rightFeatures.map((feature, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="flex items-start gap-4"
-              >
-                <Check className="w-[18px] h-[18px] text-[#3b82f6] shrink-0 mt-[4px]" strokeWidth={3} />
+              <li key={idx} className="flex items-start gap-4">
+                <svg className="w-[18px] h-[18px] text-[#3b82f6] shrink-0 mt-[4px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
                 <span 
                   className="text-[16px] leading-[28px]"
                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(226, 232, 240)" }}
                 >
                   {feature}
                 </span>
-              </motion.div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
 
         {/* CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex justify-center"
-        >
+        <div className="flex justify-center">
           <Link 
             href="#join"
             className="inline-flex items-center justify-center transition-all duration-200 hover:brightness-110 active:scale-95"
@@ -112,7 +88,7 @@ export default function WaitlistSection() {
           >
             Join the waitlist — it&apos;s free
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

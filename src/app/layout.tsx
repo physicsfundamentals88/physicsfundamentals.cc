@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -80,6 +79,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0b1220",
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
@@ -112,7 +117,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${dmSans.variable} ${instrumentSerif.variable} antialiased`}>
       <head>
-        <link rel="preload" href="/logo.png" as="image" fetchPriority="high" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

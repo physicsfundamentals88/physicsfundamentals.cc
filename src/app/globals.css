@@ -422,6 +422,94 @@
   animation: fade-in 0.5s ease-out forwards;
 }
 
+/* ── Hero Section Animations ─────────────────────── */
+@keyframes heroFadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroFadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hero-anim-down {
+  opacity: 0;
+  animation: heroFadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-anim-up {
+  opacity: 0;
+  animation: heroFadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-anim-fade {
+  opacity: 0;
+  animation: heroFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-anim-delay-1 { animation-delay: 0.15s; }
+.hero-anim-delay-2 { animation-delay: 0.25s; }
+.hero-anim-delay-3 { animation-delay: 0.35s; }
+
+/* Hero orbital ring animations */
+.hero-spin-30 { animation: spin 30s linear infinite; }
+.hero-spin-20-rev { animation: spin 20s linear infinite reverse; }
+.hero-spin-15 { animation: spin 15s linear infinite; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Hero particles */
+.hero-particle {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ── Navbar Slide Animation ──────────────────────── */
+@keyframes navSlideDown {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-slide-anim {
+  animation: navSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Accessibility: Reduced Motion ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .hero-orbits { display: none; }
+  .hero-particle { display: none; }
+  .hero-anim-down,
+  .hero-anim-up,
+  .hero-anim-fade { opacity: 1; }
+  .animate-ping { animation: none !important; }
+}
+
+/* ── Screen Reader Only Utility ─────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* =====================================================
    WORDPRESS-STYLE ADMIN PANEL CSS
    ===================================================== */
