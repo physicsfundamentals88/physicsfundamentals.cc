@@ -140,7 +140,7 @@ export default function HeroSection() {
           {/* Secondary: dark bordered */}
           <Link
             id="hero-browse-articles"
-            href="/#features"
+            href="/blog"
             className="flex items-center gap-2 active:scale-95 transition-all duration-200 hover:bg-white/10"
             style={{
               fontFamily: "var(--font-dm-sans)",
