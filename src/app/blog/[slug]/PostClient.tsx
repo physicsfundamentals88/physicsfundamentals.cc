@@ -502,7 +502,7 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                   <div key={i} className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
                     <div className="aspect-[16/10] w-full bg-[#0b1221] overflow-hidden flex items-center justify-center relative border-b border-slate-100">
                       {a.heroImage ? (
-                        <img src={a.heroImage} alt="" className="w-full h-full object-cover" />
+                        <img src={a.heroImage} alt="" className="w-full h-full object-contain" />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-xs text-white/10 font-bold uppercase italic select-none">
                           {a.category}

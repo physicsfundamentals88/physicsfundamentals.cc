@@ -286,7 +286,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
                     <div className="flex gap-4 items-start">
                       {art.heroImage && (
                         <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                          <img src={art.heroImage} alt={art.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          <img src={art.heroImage} alt={art.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                         </div>
                       )}
                       <div>

@@ -226,7 +226,7 @@ export default function LatestArticlesSection({ dbArticles: initialArticles = []
                   <img
                     src={article.heroImage}
                     alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
                     loading="lazy"
                     decoding="async"
                     width="400"
