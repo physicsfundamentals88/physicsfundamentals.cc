@@ -26,6 +26,7 @@ const concepts = [
       </svg>
     )
   },
+
   {
     category: "WAVES & OPTICS",
     title: "Transverse Waves Explained",
@@ -137,19 +138,19 @@ export default function FeaturesSection() {
       <div className="max-w-[1200px] mx-auto px-6 sm:px-8">
         {/* Header */}
         <div className="text-center mb-16 flex flex-col items-center">
-          <span 
+          <span
             className="uppercase font-bold tracking-[0.2em] mb-4 block"
             style={{ fontFamily: "var(--font-dm-sans)", fontSize: "14px", color: "rgb(59, 130, 246)" }}
           >
             Core Concepts
           </span>
-          <h2 
+          <h2
             className="mb-5 text-[clamp(40px,5vw,60px)] leading-[1.1] text-slate-900"
             style={{ fontFamily: "var(--font-instrument-serif)", fontWeight: 400, color: "rgb(15, 23, 42)" }}
           >
             The laws that run our universe
           </h2>
-          <p 
+          <p
             className="max-w-[700px] text-lg leading-relaxed"
             style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(51, 65, 85)" }}
           >
@@ -172,25 +173,25 @@ export default function FeaturesSection() {
 
               {/* Card Content Area */}
               <div className="p-8 flex flex-col flex-1">
-                <div 
+                <div
                   className="inline-block px-3 py-1 bg-[#eff6ff] rounded-full text-blue-600 text-xs font-bold tracking-wider mb-4 self-start"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
                 >
                   {concept.category}
                 </div>
-                <h3 
+                <h3
                   className="text-xl mb-3"
                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 600, color: "rgb(15, 23, 42)" }}
                 >
                   {concept.title}
                 </h3>
-                <p 
+                <p
                   className="text-sm leading-relaxed mb-6 flex-1"
                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 400, color: "rgb(100, 116, 139)" }}
                 >
                   {concept.description}
                 </p>
-                <Link 
+                <Link
                   href={concept.link}
                   className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors group/link mt-auto w-fit"
                   style={{ fontFamily: "var(--font-dm-sans)", fontWeight: 500, fontSize: "15px" }}
@@ -205,7 +206,7 @@ export default function FeaturesSection() {
 
         {/* Bottom CTA */}
         <div className="mt-14 flex justify-center">
-          <Link 
+          <Link
             href="/blog"
             className="flex items-center gap-2 text-blue-600 bg-transparent hover:bg-blue-50 hover:text-blue-700 px-6 py-3 rounded-full transition-all duration-300 font-medium text-[16px] group"
             style={{ fontFamily: "var(--font-dm-sans)" }}
