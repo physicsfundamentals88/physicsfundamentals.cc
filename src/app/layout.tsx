@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import TurnstileGate from "@components/TurnstileGate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -131,9 +130,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[#0b1220] text-[#e2e8f0]" suppressHydrationWarning>
-        <TurnstileGate>
-          {children}
-        </TurnstileGate>
+        {children}
       </body>
     </html>
   );
