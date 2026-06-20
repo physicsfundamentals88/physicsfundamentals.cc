@@ -198,11 +198,11 @@ export default function ContactClient() {
                   For urgent issues, content errors, or press enquiries, you can email us directly.
                 </p>
                 <a
-                  href="mailto:hello@physicsfundamentals.org"
+                  href="mailto:physicsfundamentals88@gmail.com"
                   className="text-[14px] font-semibold text-blue-600 hover:text-blue-700 transition-colors"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
                 >
-                  hello@physicsfundamentals.org
+                  physicsfundamentals88@gmail.com
                 </a>
               </div>
 
