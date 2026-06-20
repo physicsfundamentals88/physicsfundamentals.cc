@@ -29,6 +29,13 @@ export const metadata: Metadata = {
   },
   description:
     "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" }
+    ],
+    apple: "/favicon.png",
+  },
   keywords: [
     "physics simulations",
     "interactive physics",
@@ -115,14 +122,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${dmSans.variable} ${instrumentSerif.variable} antialiased`}>
+    <html lang="en" className={`${inter.variable} ${dmSans.variable} ${instrumentSerif.variable} antialiased`} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#0b1220] text-[#e2e8f0]">
+      <body className="min-h-full flex flex-col bg-[#0b1220] text-[#e2e8f0]" suppressHydrationWarning>
         {children}
       </body>
     </html>

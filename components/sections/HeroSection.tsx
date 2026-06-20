@@ -105,9 +105,22 @@ export default function HeroSection() {
           className="hero-anim-up hero-anim-delay-1"
         >
           Interact with virtual labs, run real-time simulations, and explore everything from{" "}
-          <span style={{ color: "rgb(96,165,250)" }}>classical mechanics</span>{" "}
+          <Link
+            href="/blog?category=classical%20mechanics"
+            className="hover:text-blue-300 transition-colors font-medium"
+            style={{ color: "rgb(96,165,250)" }}
+          >
+            classical mechanics
+          </Link>{" "}
           to{" "}
-          <span style={{ color: "rgb(96,165,250)" }}>quantum physics</span>. A free visual education library built to make complex concepts click.
+          <Link
+            href="/blog?category=modern%20physics"
+            className="hover:text-blue-300 transition-colors font-medium"
+            style={{ color: "rgb(96,165,250)" }}
+          >
+            quantum physics
+          </Link>
+          . A free visual education library built to make complex concepts click.
         </p>
 
         {/* CTA Buttons */}

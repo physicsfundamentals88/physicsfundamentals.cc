@@ -121,6 +121,10 @@ export default function BlogClient({ initialArticles }: BlogClientProps) {
                         src={article.heroImage} 
                         alt={article.title} 
                         className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                        width="600"
+                        height="300"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <>

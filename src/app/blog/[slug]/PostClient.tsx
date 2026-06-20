@@ -156,20 +156,25 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
           </header>
 
           {/* Featured Image */}
-          <div className="relative aspect-[16/7] md:aspect-[21/9] w-full rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm bg-slate-900 mb-12">
-            {article.heroImage ? (
+          {article.heroImage ? (
+            <div className="relative w-full border border-slate-200/80 overflow-hidden shadow-sm mb-12 bg-slate-900">
               <img 
                 src={article.heroImage} 
                 alt={article.title} 
-                className="w-full h-full object-cover cursor-zoom-in" 
+                className="w-full h-auto block cursor-zoom-in" 
                 onClick={() => setLightboxImage(article.heroImage)}
+                width="1200"
+                height="525"
+                fetchPriority="high"
               />
-            ) : (
+            </div>
+          ) : (
+            <div className="relative aspect-[16/7] md:aspect-[21/9] w-full border border-slate-200/80 overflow-hidden shadow-sm bg-slate-900 mb-12">
               <div className="w-full h-full bg-gradient-to-br from-[#0c1524] to-[#1e293b] flex items-center justify-center p-8 text-center text-white/5 font-black text-4xl uppercase select-none font-serif tracking-wider leading-none">
                 {article.title}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Two-Column Grid: Content & Sidebar */}
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12 items-start">
@@ -502,7 +507,15 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                   <div key={i} className="bg-white rounded-2xl border border-slate-200/70 overflow-hidden shadow-sm flex flex-col hover:shadow-md transition-shadow">
                     <div className="aspect-[16/10] w-full bg-[#0b1221] overflow-hidden flex items-center justify-center relative border-b border-slate-100">
                       {a.heroImage ? (
-                        <img src={a.heroImage} alt="" className="w-full h-full object-contain" />
+                        <img 
+                          src={a.heroImage} 
+                          alt="" 
+                          className="w-full h-full object-contain" 
+                          width="600"
+                          height="375"
+                          loading="lazy"
+                          decoding="async"
+                        />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-slate-900 to-indigo-950 flex items-center justify-center text-xs text-white/10 font-bold uppercase italic select-none">
                           {a.category}

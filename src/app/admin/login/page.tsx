@@ -30,19 +30,45 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      // Allow admin or admin@physics.com as username/email with secret password
+      // Allow admin or admin@physics.com as username/email with secret password as a fallback
       if ((username === "admin" || username === "admin@physics.com") && password === "physics2024") {
          localStorage.setItem("admin_logged", "true");
-         // Mock success
+         localStorage.setItem("user_logged", "true");
+         localStorage.setItem("user_profile", JSON.stringify({ name: "Super Admin", email: "admin@physics.com", role: "admin" }));
+         setTimeout(() => {
+            router.push("/admin");
+         }, 1000);
+         return;
+      }
+
+      // Query the database via the API
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: username.trim(),
+          password: password,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Invalid credentials. Please check your username/email and password.");
+      }
+
+      if (data.user?.role === "admin") {
+         localStorage.setItem("admin_logged", "true");
+         localStorage.setItem("user_logged", "true");
+         localStorage.setItem("user_profile", JSON.stringify(data.user));
          setTimeout(() => {
             router.push("/admin");
          }, 1000);
       } else {
-         setError("Invalid credentials. Please check your username/email and password.");
+         setError("Access denied. You do not have administrator privileges.");
          setIsLoading(false);
       }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
       setIsLoading(false);
     }
   };
