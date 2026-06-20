@@ -216,29 +216,6 @@ export default function ContactClient() {
                   We&apos;re a small team of physicists and educators. We read every message and genuinely appreciate well-described bug reports and content suggestions.
                 </p>
               </div>
-
-              {/* Socials */}
-              <div className="bg-white rounded-[20px] p-7 border border-slate-100" style={{ boxShadow: "0 8px 32px -8px rgba(0,0,0,0.04)" }}>
-                <h3 className="text-[16px] font-bold text-slate-900 mb-5" style={{ fontFamily: "var(--font-dm-sans)" }}>Find us online</h3>
-                <ul className="space-y-4">
-                  {socials.map(({ icon: Icon, label, handle, href }) => (
-                    <li key={label}>
-                      <a
-                        href={href}
-                        className="flex items-center gap-3.5 text-slate-600 hover:text-slate-900 transition-colors group"
-                      >
-                        <span className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center shrink-0 text-slate-500 group-hover:bg-slate-100 transition-colors">
-                          <Icon />
-                        </span>
-                        <div>
-                          <div className="text-[13px] font-semibold" style={{ fontFamily: "var(--font-dm-sans)" }}>{label}</div>
-                          <div className="text-[12px] text-slate-400" style={{ fontFamily: "var(--font-dm-sans)" }}>{handle}</div>
-                        </div>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </motion.div>
 
           </div>
