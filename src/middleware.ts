@@ -83,7 +83,7 @@ const ALLOWED_GOOD_BOTS = [
   "bingpreview",
 ];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const userAgent = request.headers.get("user-agent") || "";
   const lowercaseUA = userAgent.toLowerCase();
 
