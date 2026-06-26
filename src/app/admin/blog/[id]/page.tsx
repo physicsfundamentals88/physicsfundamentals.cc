@@ -171,18 +171,10 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
       });
   }, [id]);
 
-  // Auto-sync SEO description and excerpt
-  useEffect(() => {
-    if (content && !loading) {
-      const plain = content.replace(/<[^>]*>/g, "").trim();
-      const gen = plain.substring(0, 155) + (plain.length > 155 ? "..." : "");
-      if (!metaDescription) setMetaDescription(gen);
-      if (!excerpt) setExcerpt(gen);
-    }
-  }, [content, loading]);
 
   const wordCount = content.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
   const readTime = Math.ceil(wordCount / 200);
+
 
   const showNotice = (type: "success" | "error", message: string) => {
     setNotice({ type, message });

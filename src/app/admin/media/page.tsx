@@ -30,6 +30,7 @@ export default function MediaLibraryPage() {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
+  const [search, setSearch] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -66,11 +67,14 @@ export default function MediaLibraryPage() {
       const fd = new FormData();
       fd.append("file", compressedFile);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      if (!res.ok) throw new Error("Upload failed");
-      showNotification("success", "File uploaded successfully!");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Upload failed");
+      }
+      showNotification("success", `"${file.name}" uploaded and compressed successfully!`);
       fetchMedia();
     } catch (error: any) {
-      showNotification("error", error.message);
+      showNotification("error", error.message || "Upload failed. Please try again.");
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -116,7 +120,7 @@ export default function MediaLibraryPage() {
            <h1 className="text-4xl font-black text-[#0F172A] tracking-tight">Media Library</h1>
            <p className="text-[#64748B] font-medium mt-1">Upload and manage images, videos, and educational resources for your articles.</p>
         </div>
-        <input ref={fileRef} type="file" className="hidden" onChange={handleUpload} />
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
         <button 
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
@@ -132,7 +136,9 @@ export default function MediaLibraryPage() {
          <div className="relative flex-1 w-full">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
-               type="text" 
+               type="text"
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
                placeholder="Search media by filename..." 
                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl py-3 pl-12 pr-4 text-sm font-medium focus:border-[#FACC15] focus:bg-white outline-none transition-all"
             />
@@ -160,16 +166,16 @@ export default function MediaLibraryPage() {
                 Array(8).fill(0).map((_, i) => (
                     <div key={i} className="aspect-square bg-slate-100 rounded-2xl animate-pulse" />
                 ))
-            ) : items.length === 0 ? (
+            ) : items.filter(item => !search || item.name.toLowerCase().includes(search.toLowerCase())).length === 0 ? (
                 <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-100 rounded-[32px]">
                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mx-auto mb-4">
                         <ImageIcon size={32} />
                     </div>
-                    <p className="text-[#0F172A] font-black text-lg">No media found</p>
-                    <p className="text-[#64748B] text-sm font-medium mt-1">Upload your first image to get started.</p>
+                    <p className="text-[#0F172A] font-black text-lg">{search ? "No results found" : "No media found"}</p>
+                    <p className="text-[#64748B] text-sm font-medium mt-1">{search ? `No files match "${search}"` : "Upload your first image to get started."}</p>
                 </div>
             ) : (
-                items.map((item) => (
+                items.filter(item => !search || item.name.toLowerCase().includes(search.toLowerCase())).map((item) => (
                     <div 
                         key={item.name} 
                         onClick={() => setSelectedItem(item)}
