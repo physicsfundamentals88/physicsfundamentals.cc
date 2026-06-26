@@ -152,6 +152,7 @@ export default function NewArticlePage() {
 
   const handleSave = async (status: "Published" | "Draft" | "Scheduled", date?: string) => {
     if (!title.trim()) { showNotice("error", "Please add a title before publishing."); return; }
+    if (!slug.trim()) { showNotice("error", "Please add a permalink/slug before saving."); return; }
     if (featuredImage && featuredImage.startsWith("blob:")) {
       showNotice("error", "Featured image is still uploading. Please wait.");
       return;
@@ -297,15 +298,20 @@ export default function NewArticlePage() {
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              if (!slug) setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
             }}
           />
-          {slug && (
-            <div className="wp-slug-row">
-              <span className="wp-slug-label">Permalink:</span>
-              <span className="wp-slug-value">physicsfundamentals.org/blog/{slug}</span>
-            </div>
-          )}
+          <div className="wp-slug-row" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--wp-text-muted)", marginTop: 8 }}>
+            <span className="wp-slug-label" style={{ fontWeight: 600 }}>Permalink:</span>
+            <span>physicsfundamentals.org/blog/</span>
+            <input
+              type="text"
+              className="wp-input"
+              style={{ width: "auto", minWidth: 200, padding: "2px 6px", height: "auto", fontSize: 13, display: "inline-block" }}
+              placeholder="post-url-slug"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-_]+/g, ""))}
+            />
+          </div>
 
           {/* Editor */}
           <div className="wp-editor-area">
