@@ -42,7 +42,12 @@ export default function MediaLibraryPage() {
   const fetchMedia = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/media");
+      const res = await fetch("/api/admin/media?t=" + Date.now(), {
+        headers: {
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache"
+        }
+      });
       const data = await res.json();
       if (Array.isArray(data)) {
         setItems(data);

@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import { compressToWebP } from "@/utils/imageCompressor";
 import Link from "next/link";
-import { CheckCircle2, AlertCircle, Loader2, Upload, ExternalLink } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, Upload, ExternalLink, Download } from "lucide-react";
 
 export default function WatermarkRemoverPage() {
   const [originalUrl, setOriginalUrl] = useState<string | null>(null);
@@ -12,6 +12,7 @@ export default function WatermarkRemoverPage() {
   const [processedSize, setProcessedSize] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedMediaUrl, setUploadedMediaUrl] = useState<string | null>(null);
+  const [processedName, setProcessedName] = useState<string | null>(null);
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +61,7 @@ export default function WatermarkRemoverPage() {
       // Auto-upload to media library
       const baseName = file.name.replace(/\.[^.]+$/, "");
       const webpName = `${baseName}.webp`;
+      setProcessedName(webpName);
       await uploadToMediaLibrary(compressedBlob, webpName);
     } catch (err) {
       console.error(err);
@@ -132,6 +134,7 @@ export default function WatermarkRemoverPage() {
       setProcessedUrl(URL.createObjectURL(compressedBlob));
 
       // Auto-upload to media library
+      setProcessedName(`test-${type}.webp`);
       await uploadToMediaLibrary(compressedBlob, `test-${type}.webp`);
     }, "image/png");
   };
@@ -180,10 +183,23 @@ export default function WatermarkRemoverPage() {
             <p style={{ margin: 0, fontWeight: "bold", color: "#15803d", fontSize: 14 }}>✅ Image saved to Media Library!</p>
             <p style={{ margin: "2px 0 0", fontSize: 12, color: "#166534" }}>You can now use this image in your blog posts via the media library.</p>
           </div>
-          <Link href="/admin/media" style={{ padding: "8px 16px", background: "#16a34a", color: "white", borderRadius: 8, fontWeight: "bold", fontSize: 12, textDecoration: "none", display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
-            <ExternalLink size={14} />
-            Open Media Library
-          </Link>
+          <div style={{ display: "flex", gap: 10 }}>
+            {processedUrl && (
+              <a 
+                href={processedUrl} 
+                download={processedName || "compressed.webp"} 
+                style={{ padding: "8px 16px", background: "#0f172a", color: "white", borderRadius: 8, fontWeight: "bold", fontSize: 12, textDecoration: "none", display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}
+                className="hover:opacity-90 active:scale-95"
+              >
+                <Download size={14} />
+                Download WebP
+              </a>
+            )}
+            <Link href="/admin/media" style={{ padding: "8px 16px", background: "#16a34a", color: "white", borderRadius: 8, fontWeight: "bold", fontSize: 12, textDecoration: "none", display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
+              <ExternalLink size={14} />
+              Open Media Library
+            </Link>
+          </div>
         </div>
       )}
 
@@ -213,7 +229,31 @@ export default function WatermarkRemoverPage() {
               <span style={{ fontSize: 13, fontWeight: "600" }}>Compressing & saving to Media Library...</span>
             </div>
           ) : processedUrl ? (
-            <img src={processedUrl} alt="Processed" style={{ width: "100%", height: "auto", border: "1px solid #cbd5e1", borderRadius: 8 }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <img src={processedUrl} alt="Processed" style={{ width: "100%", height: "auto", border: "1px solid #cbd5e1", borderRadius: 8 }} />
+              <a 
+                href={processedUrl} 
+                download={processedName || "compressed.webp"} 
+                style={{ 
+                  display: "inline-flex", 
+                  alignItems: "center", 
+                  justifyContent: "center",
+                  gap: 8, 
+                  padding: "10px 20px", 
+                  background: "#0f172a", 
+                  color: "white", 
+                  borderRadius: 8, 
+                  fontWeight: "bold", 
+                  fontSize: 13, 
+                  textDecoration: "none",
+                  width: "fit-content"
+                }}
+                className="hover:opacity-90 active:scale-95"
+              >
+                <Download size={16} />
+                Download Compressed WebP
+              </a>
+            </div>
           ) : (
             <div style={{ height: 200, background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed #cbd5e1", borderRadius: 8, color: "#94a3b8" }}>
               No image processed yet
