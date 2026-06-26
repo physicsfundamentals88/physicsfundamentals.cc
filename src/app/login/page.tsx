@@ -106,7 +106,7 @@ function LoginContent() {
 
     try {
       // Direct mock fallback check for primary admin account
-      if ((loginEmail === "admin" || loginEmail === "admin@physics.com") && loginPassword === "physics2024") {
+      if ((loginEmail === "admin" || loginEmail === "admin@physics.com" || loginEmail === "physicsfundamentals88@gmail.com") && loginPassword === "physics2024") {
         localStorage.setItem("admin_logged", "true");
         localStorage.setItem("user_logged", "true");
         const adminProfile = { name: "Super Admin", email: "admin@physics.com", role: "admin" };

@@ -30,8 +30,8 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      // Allow admin or admin@physics.com as username/email with secret password as a fallback
-      if ((username === "admin" || username === "admin@physics.com") && password === "physics2024") {
+      // Allow admin, admin@physics.com, or physicsfundamentals88@gmail.com as username/email with secret password as a fallback
+      if ((username === "admin" || username === "admin@physics.com" || username === "physicsfundamentals88@gmail.com") && password === "physics2024") {
          localStorage.setItem("admin_logged", "true");
          localStorage.setItem("user_logged", "true");
          localStorage.setItem("user_profile", JSON.stringify({ name: "Super Admin", email: "admin@physics.com", role: "admin" }));
