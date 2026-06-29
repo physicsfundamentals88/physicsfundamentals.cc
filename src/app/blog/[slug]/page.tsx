@@ -5,6 +5,7 @@ import { eq, desc } from "drizzle-orm";
 import PostClient from "./PostClient";
 import { notFound } from "next/navigation";
 import React from "react";
+import { renderMath } from "@/lib/renderMath";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -103,13 +104,20 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     }
   };
 
+  // Pre-render math server-side so the client receives plain HTML with KaTeX output
+  const renderedContent = article.content ? renderMath(article.content) : null;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PostClient article={article as any} latestArticles={latestArticles} />
+      <PostClient
+        article={article as any}
+        latestArticles={latestArticles}
+        renderedContent={renderedContent}
+      />
     </>
   );
 }

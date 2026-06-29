@@ -16,6 +16,7 @@ import {
 interface PostClientProps {
   article: Article;
   latestArticles: { title: string; date: string; category: string; href: string; heroImage?: string | null }[];
+  renderedContent: string | null;
 }
 
 function getCategorySlug(categoryName: string) {
@@ -30,23 +31,7 @@ function getCategorySlug(categoryName: string) {
   return "classical-mechanics";
 }
 
-function processContent(html: string) {
-  if (!html) return "";
-  
-  // Convert block equations: <p>$$Equation$$</p> to <pre><code>Equation</code></pre>
-  let processed = html.replace(/<p>\s*\$\$([\s\S]*?)\$\$\s*<\/p>/g, (_match, equation) => {
-    return `<pre><code>${equation.trim()}</code></pre>`;
-  });
-
-  // Convert inline equations: $Equation$ to <code>Equation</code>
-  processed = processed.replace(/\$([^$\n]+?)\$/g, (_match, inlineEq) => {
-    return `<code>${inlineEq.trim()}</code>`;
-  });
-
-  return processed;
-}
-
-export default function PostClient({ article, latestArticles }: PostClientProps) {
+export default function PostClient({ article, latestArticles, renderedContent }: PostClientProps) {
   const [activeSection, setActiveSection] = useState("");
   const [tocOpen, setTocOpen] = useState(true); // Default open for desktop-like feel
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -227,6 +212,11 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
               {/* Article content (HTML-based or sections-based) */}
               {article.content ? (
                 <>
+                  <link
+                    rel="stylesheet"
+                    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+                    crossOrigin="anonymous"
+                  />
                   <style>{`
                     .article-body {
                       font-family: Georgia, Cambria, "Times New Roman", Times, serif;
@@ -285,6 +275,31 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                       padding: 0;
                       letter-spacing: 0.02em;
                       border: none;
+                    }
+                    .article-body .math-block {
+                      background: #f8fafc;
+                      border-radius: 1rem;
+                      padding: 1.25rem 2rem;
+                      margin: 1.5rem 0;
+                      text-align: center;
+                      overflow-x: auto;
+                      border: 1px solid #e2e8f0;
+                      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+                    }
+                    .article-body .math-block .katex-display {
+                      margin: 0;
+                    }
+                    .article-body .math-inline {
+                      font-size: 1em;
+                    }
+                    .article-body .math-error code,
+                    .article-body .math-inline-error {
+                      background: #fff3f3;
+                      border: 1px solid #fca5a5;
+                      color: #b91c1c;
+                      padding: 0.2rem 0.4rem;
+                      border-radius: 0.35rem;
+                      font-size: 0.9em;
                     }
                     .article-body :not(pre) > code {
                       background: #f1f5f9;
@@ -388,7 +403,7 @@ export default function PostClient({ article, latestArticles }: PostClientProps)
                   `}</style>
                   <div 
                     className="article-body"
-                    dangerouslySetInnerHTML={{ __html: processContent(article.content) }}
+                    dangerouslySetInnerHTML={{ __html: renderedContent ?? article.content ?? "" }}
                   />
                 </>
               ) : (
