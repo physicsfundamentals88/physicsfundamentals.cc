@@ -84,6 +84,60 @@ export default function PostClient({ article, latestArticles, renderedContent }:
     return () => observerRef.current?.disconnect();
   }, [article.toc]);
 
+  useEffect(() => {
+    // Dynamically load KaTeX on the client to avoid server-side CPU limits
+    import("katex").then((katexModule) => {
+      const katex = katexModule.default;
+
+      // Find and render all block math placeholders
+      document.querySelectorAll(".math-block[data-math]").forEach((el) => {
+        const math = el.getAttribute("data-math");
+        if (math) {
+          try {
+            // Unescape HTML entities inside data-math attribute
+            const decodedMath = math
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, '"')
+              .replace(/&#039;/g, "'");
+
+            katex.render(decodedMath, el as HTMLElement, {
+              displayMode: true,
+              throwOnError: false,
+            });
+            el.removeAttribute("data-math"); // Mark as rendered
+          } catch (err) {
+            console.error("KaTeX block render error:", err);
+          }
+        }
+      });
+
+      // Find and render all inline math placeholders
+      document.querySelectorAll(".math-inline[data-math]").forEach((el) => {
+        const math = el.getAttribute("data-math");
+        if (math) {
+          try {
+            const decodedMath = math
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, '"')
+              .replace(/&#039;/g, "'");
+
+            katex.render(decodedMath, el as HTMLElement, {
+              displayMode: false,
+              throwOnError: false,
+            });
+            el.removeAttribute("data-math"); // Mark as rendered
+          } catch (err) {
+            console.error("KaTeX inline render error:", err);
+          }
+        }
+      });
+    });
+  }, [renderedContent, article.sections]);
+
   const tocItems = (article.toc as any[]) || [];
   const activeLabel = tocItems.find((item) => item.id === activeSection)?.label || (tocItems[0]?.label ?? "Select Section");
 
@@ -414,10 +468,9 @@ export default function PostClient({ article, latestArticles, renderedContent }:
                         return (
                           <div 
                             key={idx} 
-                            className="my-4 py-5 px-8 rounded-2xl bg-[#f8fafc] border border-slate-200/80 text-[#0f172a] text-center font-mono text-[1.15rem] font-medium shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]"
-                          >
-                            {section.content}
-                          </div>
+                            className="math-block"
+                            data-math={section.content}
+                          />
                         );
                       case "quote":
                         return (
