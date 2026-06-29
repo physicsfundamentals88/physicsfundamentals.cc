@@ -212,11 +212,6 @@ export default function PostClient({ article, latestArticles, renderedContent }:
               {/* Article content (HTML-based or sections-based) */}
               {article.content ? (
                 <>
-                  <link
-                    rel="stylesheet"
-                    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-                    crossOrigin="anonymous"
-                  />
                   <style>{`
                     .article-body {
                       font-family: Georgia, Cambria, "Times New Roman", Times, serif;
