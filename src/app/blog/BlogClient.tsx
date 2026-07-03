@@ -117,15 +117,25 @@ export default function BlogClient({ initialArticles }: BlogClientProps) {
                 >
                   <div className="h-[200px] relative w-full bg-[#0b1221] overflow-hidden flex items-center justify-center">
                     {article.heroImage ? (
-                      <img 
-                        src={article.heroImage} 
-                        alt={article.title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        width="600"
-                        height="300"
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      <>
+                        {/* Blurred backdrop to prevent letterboxes/empty bars */}
+                        <img 
+                          src={article.heroImage} 
+                          alt=""
+                          aria-hidden="true"
+                          className="absolute inset-0 w-full h-full object-cover filter blur-xl opacity-30 scale-105 pointer-events-none"
+                        />
+                        {/* Crisp contained foreground image */}
+                        <img 
+                          src={article.heroImage} 
+                          alt={article.title} 
+                          className="relative z-10 max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                          width="600"
+                          height="300"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </>
                     ) : (
                       <>
                         <div className="absolute inset-0 opacity-20 pointer-events-none">
