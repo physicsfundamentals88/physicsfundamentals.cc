@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const title = article.metaTitle || article.title;
     const description = article.metaDescription || article.excerpt;
     const imageUrl = article.heroImage
-      ? (article.heroImage.startsWith("/") ? `https://physicslab.app${article.heroImage}` : article.heroImage)
-      : "https://physicslab.app/og-image.png";
+      ? (article.heroImage.startsWith("/") ? `https://physicsfundamentals.cc${article.heroImage}` : article.heroImage)
+      : "https://physicsfundamentals.cc/og-image.png";
 
     return {
       title,
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         type: "article",
         title,
         description,
-        url: `https://physicslab.app/blog/${slug}`,
+        url: `https://physicsfundamentals.cc/blog/${slug}`,
         images: [{ url: imageUrl }],
       },
       twitter: {
@@ -75,15 +75,15 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   }
 
   const imageUrl = article.heroImage
-    ? (article.heroImage.startsWith("/") ? `https://physicslab.app${article.heroImage}` : article.heroImage)
-    : "https://physicslab.app/og-image.png";
+    ? (article.heroImage.startsWith("/") ? `https://physicsfundamentals.cc${article.heroImage}` : article.heroImage)
+    : "https://physicsfundamentals.cc/og-image.png";
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://physicslab.app/blog/${slug}`
+      "@id": `https://physicsfundamentals.cc/blog/${slug}`
     },
     "headline": article.title,
     "description": article.excerpt,
@@ -99,7 +99,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       "name": "Physics Fundamentals",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://physicslab.app/og-image.png"
+        "url": "https://physicsfundamentals.cc/og-image.png"
       }
     }
   };

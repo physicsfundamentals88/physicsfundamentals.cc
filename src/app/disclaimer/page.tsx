@@ -23,7 +23,7 @@ export default function Disclaimer() {
           <section className="mb-10 text-[#c7d2fe]">
             <h2 className="text-2xl font-bold text-white mb-4">1. Educational Purposes Only</h2>
             <p className="mb-4 leading-relaxed">
-              The information and interactive simulations provided by PhysicsLab on https://physicslab.app are intended solely for educational and informational purposes. The Platform aims to assist students, educators, and enthusiasts in visualizing and understanding physical concepts. However, it does not constitute professional advice or absolute scientific truth in all contexts.
+              The information and interactive simulations provided by PhysicsLab on https://physicsfundamentals.cc are intended solely for educational and informational purposes. The Platform aims to assist students, educators, and enthusiasts in visualizing and understanding physical concepts. However, it does not constitute professional advice or absolute scientific truth in all contexts.
             </p>
           </section>
 
@@ -60,3 +60,4 @@ export default function Disclaimer() {
     </div>
   );
 }
+

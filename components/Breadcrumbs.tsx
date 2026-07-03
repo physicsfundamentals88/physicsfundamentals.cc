@@ -19,7 +19,7 @@ export default function Breadcrumbs({ items, themeColor = "blue" }: BreadcrumbsP
       "@type": "ListItem",
       "position": index + 1,
       "name": item.name,
-      "item": item.item.startsWith("http") ? item.item : `https://physicslab.app${item.item}`
+      "item": item.item.startsWith("http") ? item.item : `https://physicsfundamentals.cc${item.item}`
     }))
   };
 
@@ -90,3 +90,4 @@ export default function Breadcrumbs({ items, themeColor = "blue" }: BreadcrumbsP
     </>
   );
 }
+

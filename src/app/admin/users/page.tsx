@@ -35,10 +35,10 @@ interface AuditLog {
 }
 
 const defaultUsers: UserAccount[] = [
-  { id: 1, name: "Super Admin", email: "super.admin@physicsfundamentals.org", role: "Super Admin", status: "Active", lastLogin: "Just now" },
-  { id: 2, name: "Dr. Sarah Jenkins", email: "s.jenkins@physicsfundamentals.org", role: "Administrator", status: "Active", lastLogin: "2 hours ago" },
-  { id: 3, name: "Alex Rivera", email: "alex.r@physicsfundamentals.org", role: "Editor", status: "Active", lastLogin: "Yesterday" },
-  { id: 4, name: "James Carter", email: "j.carter@physicsfundamentals.org", role: "Editor", status: "Inactive", lastLogin: "5 days ago" },
+  { id: 1, name: "Super Admin", email: "super.admin@physicsfundamentals.cc", role: "Super Admin", status: "Active", lastLogin: "Just now" },
+  { id: 2, name: "Dr. Sarah Jenkins", email: "s.jenkins@physicsfundamentals.cc", role: "Administrator", status: "Active", lastLogin: "2 hours ago" },
+  { id: 3, name: "Alex Rivera", email: "alex.r@physicsfundamentals.cc", role: "Editor", status: "Active", lastLogin: "Yesterday" },
+  { id: 4, name: "James Carter", email: "j.carter@physicsfundamentals.cc", role: "Editor", status: "Inactive", lastLogin: "5 days ago" },
 ];
 
 const defaultLogs: AuditLog[] = [

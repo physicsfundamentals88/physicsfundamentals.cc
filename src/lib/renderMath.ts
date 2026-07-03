@@ -11,7 +11,7 @@ export function renderMath(html: string): string {
   // Step 1: Unescape double backslashes stored in DB
   let processed = html.replace(/\\\\/g, "\\");
 
-  // Step 2: Block math with $$ delimiters
+  // Step 2: Block math with $$ delimiters (always run)
   processed = processed.replace(
     /(?:<p[^>]*>\s*)?\$\$([\s\S]*?)\$\$(?:\s*<\/p>)?/g,
     (_match, equation) => {
@@ -20,20 +20,7 @@ export function renderMath(html: string): string {
     }
   );
 
-  // Step 3: Bare block math without delimiters
-  processed = processed.replace(
-    /<p\b[^>]*>([\s\S]*?)<\/p>/gi,
-    (fullMatch, inner) => {
-      const plainText = inner.replace(/<[^>]+>/g, "").trim();
-      if (isBlockLatex(plainText)) {
-        const eq = escapeHtml(plainText);
-        return `<div class="math-block" data-math="${eq}"></div>`;
-      }
-      return fullMatch;
-    }
-  );
-
-  // Step 4: Inline math with $ delimiters
+  // Step 3: Inline math with $ delimiters (always run)
   processed = processed.replace(/\$([^$\n<>]+?)\$/g, (_match, equation) => {
     const eq = equation.trim();
     if (/^\d/.test(eq)) return _match;
@@ -41,6 +28,22 @@ export function renderMath(html: string): string {
     const escaped = escapeHtml(eq);
     return `<span class="math-inline" data-math="${escaped}"></span>`;
   });
+
+  // Step 4: Bare block math scan — skip for very large articles to avoid
+  // Cloudflare Worker CPU limit (Error 1102). Only run on articles ≤ 60 KB.
+  if (processed.length <= 60_000) {
+    processed = processed.replace(
+      /<p\b[^>]*>([\s\S]*?)<\/p>/gi,
+      (fullMatch, inner) => {
+        const plainText = inner.replace(/<[^>]+>/g, "").trim();
+        if (isBlockLatex(plainText)) {
+          const eq = escapeHtml(plainText);
+          return `<div class="math-block" data-math="${eq}"></div>`;
+        }
+        return fullMatch;
+      }
+    );
+  }
 
   return processed;
 }

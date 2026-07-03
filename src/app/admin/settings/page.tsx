@@ -23,8 +23,8 @@ export default function SettingsPage() {
   // General Settings
   const [siteTitle, setSiteTitle] = useState("PhysicsLab");
   const [siteTagline, setSiteTagline] = useState("Interactive Physics Simulations & Visual Learning");
-  const [siteUrl, setSiteUrl] = useState("https://physicsfundamentals.org");
-  const [adminEmail, setAdminEmail] = useState("admin@physicsfundamentals.org");
+  const [siteUrl, setSiteUrl] = useState("https://physicsfundamentals.cc");
+  const [adminEmail, setAdminEmail] = useState("admin@physicsfundamentals.cc");
   const [timezone, setTimezone] = useState("UTC+0");
 
   // Writing Settings
@@ -136,8 +136,8 @@ export default function SettingsPage() {
     
     setSiteTitle("PhysicsLab");
     setSiteTagline("Interactive Physics Simulations & Visual Learning");
-    setSiteUrl("https://physicsfundamentals.org");
-    setAdminEmail("admin@physicsfundamentals.org");
+    setSiteUrl("https://physicsfundamentals.cc");
+    setAdminEmail("admin@physicsfundamentals.cc");
     setTimezone("UTC+0");
     setDefaultCategory("Classical Mechanics");
     setExcerptLength(150);

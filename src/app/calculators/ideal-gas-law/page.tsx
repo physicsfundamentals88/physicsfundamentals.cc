@@ -31,19 +31,19 @@ const breadcrumbJsonLd = {
       "@type": "ListItem",
       "position": 1,
       "name": "Home",
-      "item": "https://physicslab.app"
+      "item": "https://physicsfundamentals.cc"
     },
     {
       "@type": "ListItem",
       "position": 2,
       "name": "Calculators",
-      "item": "https://physicslab.app/calculators"
+      "item": "https://physicsfundamentals.cc/calculators"
     },
     {
       "@type": "ListItem",
       "position": 3,
       "name": "Ideal Gas Law Calculator",
-      "item": "https://physicslab.app/calculators/ideal-gas-law"
+      "item": "https://physicsfundamentals.cc/calculators/ideal-gas-law"
     }
   ]
 };
@@ -63,3 +63,4 @@ export default function Page() {
     </>
   );
 }
+

@@ -349,7 +349,7 @@ export default function NewArticlePage() {
           />
           <div className="wp-slug-row" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--wp-text-muted)", marginTop: 8 }}>
             <span className="wp-slug-label" style={{ fontWeight: 600 }}>Permalink:</span>
-            <span>physicsfundamentals.org/blog/</span>
+            <span>physicsfundamentals.cc/blog/</span>
             <input
               type="text"
               className="wp-input"
@@ -548,7 +548,7 @@ export default function NewArticlePage() {
                 <div style={{ border: "1px solid var(--wp-border)", borderRadius: 4, padding: "10px 12px", background: "#f6f7f7" }}>
                   <p style={{ fontSize: 10, color: "var(--wp-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>SERP Preview</p>
                   <p style={{ color: "#1a0dab", fontSize: 14, fontWeight: 500, marginBottom: 2 }}>{metaTitle || title || "Post title"}</p>
-                  <p style={{ color: "#006621", fontSize: 11, marginBottom: 3 }}>physicsfundamentals.org › blog › {slug || "permalink"}</p>
+                  <p style={{ color: "#006621", fontSize: 11, marginBottom: 3 }}>physicsfundamentals.cc › blog › {slug || "permalink"}</p>
                   <p style={{ color: "#545454", fontSize: 12, lineHeight: 1.4 }}>{metaDescription || "Meta description will appear here..."}</p>
                 </div>
 

@@ -3,7 +3,7 @@ import { articles } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
 
-const baseUrl = "https://physicslab.app";
+const baseUrl = "https://physicsfundamentals.cc";
 
 const calculatorsList = [
   { slug: "capacitance", name: "Capacitance Solver", desc: "Calculate capacitance, charge, voltage, and stored energy for capacitors." },

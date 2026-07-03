@@ -3,7 +3,7 @@ import { getDb } from "@/db";
 import { articles } from "@/db/schema";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://physicslab.app";
+  const baseUrl = "https://physicsfundamentals.cc";
 
   // 1. Core static and category hub pages
   const staticPages = [

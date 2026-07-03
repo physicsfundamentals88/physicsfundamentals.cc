@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin/", "/api/"],
     },
-    sitemap: "https://physicslab.app/sitemap.xml",
+    sitemap: "https://physicsfundamentals.cc/sitemap.xml",
   };
 }

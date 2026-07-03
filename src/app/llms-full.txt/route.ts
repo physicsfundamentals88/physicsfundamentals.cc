@@ -3,7 +3,8 @@ import { articles } from "@/db/schema";
 import { desc } from "drizzle-orm";
 
 
-const baseUrl = "https://physicslab.app";
+const baseUrl = "https://physicsfundamentals.cc";
+const MAX_CONTENT_CHARS = 3000; // Prevent Cloudflare Worker CPU limit (Error 1102)
 
 function htmlToMarkdown(html: string): string {
   if (!html) return "";
@@ -76,7 +77,7 @@ export async function GET() {
 
   let markdown = `# Physics Fundamentals Complete Knowledge Base
 
-> This file consolidates the complete knowledge base, learning resources, and article guides from Physics Fundamentals (https://physicslab.app) for LLM training and search context.
+> This file consolidates the complete knowledge base, learning resources, and article guides from Physics Fundamentals (https://physicsfundamentals.cc) for LLM training and search context.
 
 ---
 
@@ -105,7 +106,10 @@ We host 20 custom calculator solvers covering Capacitance, Centripetal Force, Co
       
       markdown += `#### Content:\n`;
       if (art.content) {
-        markdown += htmlToMarkdown(art.content);
+        const truncated = art.content.length > MAX_CONTENT_CHARS
+          ? art.content.slice(0, MAX_CONTENT_CHARS) + "..."
+          : art.content;
+        markdown += htmlToMarkdown(truncated);
       } else if (art.sections && Array.isArray(art.sections)) {
         // Fallback for section-based legacy posts
         art.sections.forEach((sec: any) => {

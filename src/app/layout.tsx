@@ -48,11 +48,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Physics Fundamentals Team" }],
   creator: "Physics Fundamentals",
-  metadataBase: new URL("https://physicslab.app"),
+  metadataBase: new URL("https://physicsfundamentals.cc"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://physicslab.app",
+    url: "https://physicsfundamentals.cc",
     title: "Physics Fundamentals – Learn Physics from Basics to Advanced Concepts",
     description:
       "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
@@ -96,7 +96,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
   name: "Physics Fundamentals",
-  url: "https://physicslab.app",
+  url: "https://physicsfundamentals.cc",
   description:
     "Master physics with easy-to-understand notes, formulas, tutorials, solved examples, and in-depth guides on mechanics, waves, thermodynamics, electricity, optics, and modern physics.",
   educationalCredentialAwarded: "Physics Knowledge",

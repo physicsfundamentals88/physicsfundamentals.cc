@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
               Welcome to PhysicsLab (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices regarding your personal information, please contact us.
             </p>
             <p className="leading-relaxed">
-              When you visit our website https://physicslab.app (the &quot;Website&quot;), and more generally, use any of our services (the &quot;Services&quot;, which include the Website), we appreciate that you are trusting us with your personal information. We take your privacy very seriously.
+              When you visit our website https://physicsfundamentals.cc (the &quot;Website&quot;), and more generally, use any of our services (the &quot;Services&quot;, which include the Website), we appreciate that you are trusting us with your personal information. We take your privacy very seriously.
             </p>
           </section>
 
@@ -76,7 +76,7 @@ export default function PrivacyPolicy() {
           <section className="mb-10 text-[#c7d2fe]">
             <h2 className="text-2xl font-bold text-white mb-4">6. Contact Us</h2>
             <p className="leading-relaxed">
-              If you have questions or comments about this notice, you may email us at privacy@physicslab.app or by post to our registered office address.
+              If you have questions or comments about this notice, you may email us at privacy@physicsfundamentals.cc or by post to our registered office address.
             </p>
           </section>
         </article>
@@ -85,3 +85,4 @@ export default function PrivacyPolicy() {
     </div>
   );
 }
+
