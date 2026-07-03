@@ -18,6 +18,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { compressImageToFile } from "@/utils/imageCompressor";
+import SEOAnalyzer from "@/components/admin/SEOAnalyzer";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -59,8 +60,10 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   const [publishPanel, setPublishPanel] = useState(true);
   const [categoryPanel, setCategoryPanel] = useState(true);
   const [featuredPanel, setFeaturedPanel] = useState(true);
-  const [seoPanel, setSeoPanel] = useState(false);
+  const [seoMetaPanel, setSeoMetaPanel] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [focusTopic, setFocusTopic] = useState("");
+  const [seoPanel, setSeoPanel] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
@@ -582,11 +585,11 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
 
           {/* SEO Meta */}
           <div className="wp-metabox">
-            <div className="wp-metabox-header" onClick={() => setSeoPanel(!seoPanel)}>
+            <div className="wp-metabox-header" onClick={() => setSeoMetaPanel(!seoMetaPanel)}>
               <h3 className="wp-metabox-title">SEO Settings</h3>
-              <ChevronDown size={14} style={{ transform: seoPanel ? "rotate(180deg)" : "none", transition: "transform 0.2s", opacity: 0.5 }} />
+              <ChevronDown size={14} style={{ transform: seoMetaPanel ? "rotate(180deg)" : "none", transition: "transform 0.2s", opacity: 0.5 }} />
             </div>
-            {seoPanel && (
+            {seoMetaPanel && (
               <div className="wp-metabox-body" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {/* SERP Preview */}
                 <div style={{ border: "1px solid var(--wp-border)", borderRadius: 4, padding: "10px 12px", background: "#f6f7f7" }}>
@@ -635,6 +638,32 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
                 </li>
               </ul>
             </div>
+          </div>
+
+          {/* SEO Analyzer */}
+          <div className="wp-metabox">
+            <div className="wp-metabox-header" onClick={() => setSeoPanel(!seoPanel)}>
+              <h3 className="wp-metabox-title" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 10, background: "#2271b1", color: "white", padding: "1px 6px", borderRadius: 10, fontWeight: 700, letterSpacing: "0.04em" }}>SEO</span>
+                Analysis
+              </h3>
+              <ChevronDown size={14} style={{ transform: seoPanel ? "rotate(180deg)" : "none", transition: "transform 0.2s", opacity: 0.5 }} />
+            </div>
+            {seoPanel && (
+              <div className="wp-metabox-body">
+                <SEOAnalyzer
+                  title={title}
+                  content={content}
+                  slug={slug}
+                  metaTitle={metaTitle}
+                  metaDescription={metaDescription}
+                  excerpt={excerpt}
+                  focusTopic={focusTopic}
+                  onFocusTopicChange={setFocusTopic}
+                  featuredImage={featuredImage}
+                />
+              </div>
+            )}
           </div>
 
         </aside>
