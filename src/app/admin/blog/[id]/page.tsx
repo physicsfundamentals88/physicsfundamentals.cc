@@ -62,6 +62,8 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   const [seoPanel, setSeoPanel] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
 
   // Load categories
   useEffect(() => {
@@ -170,6 +172,43 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
         setLoading(false);
       });
   }, [id]);
+
+  // Auto-save to API (3s debounce) — only after initial load is complete
+  useEffect(() => {
+    if (loading || !id || !title) return;
+    setAutoSaveStatus("idle");
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(async () => {
+      if (featuredImage?.startsWith("blob:") || content?.includes("blob:")) return;
+      try {
+        const payload = {
+          title, slug, content,
+          heroImage: featuredImage,
+          category,
+          author: "Admin",
+          authorInitials: "AD",
+          authorBg: "#2271b1",
+          status,
+          scheduledDate,
+          date: status === "Scheduled"
+            ? scheduledDate
+            : new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          metaTitle, metaDescription, excerpt,
+        };
+        await fetch(`/api/admin/articles/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        setAutoSaveStatus("saved");
+        setTimeout(() => setAutoSaveStatus("idle"), 3000);
+      } catch {
+        // Silently ignore auto-save errors (user can still manually save)
+      }
+    }, 3000);
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, slug, content, category, featuredImage, metaTitle, metaDescription, excerpt, status, scheduledDate]);
 
 
   const wordCount = content.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
@@ -324,6 +363,16 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
             <span style={{ width: 7, height: 7, background: "#00a32a", borderRadius: "50%", display: "inline-block" }} />
             {wordCount} words · {readTime} min read
           </div>
+          {autoSaveStatus === "saving" && (
+            <span style={{ display: "flex", alignItems: "center", gap: 4, color: "#94a3b8" }}>
+              <Loader2 size={11} className="animate-spin" /> Auto-saving…
+            </span>
+          )}
+          {autoSaveStatus === "saved" && (
+            <span style={{ display: "flex", alignItems: "center", gap: 4, color: "#16a34a", fontWeight: 600 }}>
+              <CheckCircle2 size={11} /> Auto-saved
+            </span>
+          )}
         </div>
       </div>
 

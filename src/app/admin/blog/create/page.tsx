@@ -56,6 +56,9 @@ export default function NewArticlePage() {
   const [seoPanel, setSeoPanel] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const DRAFT_KEY = "sa_create_draft_v1";
 
   // Load categories
   useEffect(() => {
@@ -78,6 +81,43 @@ export default function NewArticlePage() {
     // Fallback if not saved or empty
     const names = ["Uncategorized", "Classical Mechanics", "Thermodynamics", "Waves & Optics", "Electromagnetism", "Kinematics", "Modern Physics"];
     setCategoriesList(names);
+  }, []);
+
+  // Auto-save draft to localStorage (3s debounce)
+  useEffect(() => {
+    if (!title && !content && !slug) return; // nothing to save yet
+    setAutoSaveStatus("idle");
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      try {
+        const draft = { title, slug, content, category, featuredImage, metaTitle, metaDescription, excerpt, savedAt: new Date().toISOString() };
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        setAutoSaveStatus("saved");
+        setTimeout(() => setAutoSaveStatus("idle"), 3000);
+      } catch {
+        // Silently ignore storage errors
+      }
+    }, 3000);
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+  }, [title, slug, content, category, featuredImage, metaTitle, metaDescription, excerpt]);
+
+  // Restore draft on mount if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (draft.title) setTitle(draft.title);
+        if (draft.slug) setSlug(draft.slug);
+        if (draft.content) setContent(draft.content);
+        if (draft.category) setCategory(draft.category);
+        if (draft.featuredImage) setFeaturedImage(draft.featuredImage);
+        if (draft.metaTitle) setMetaTitle(draft.metaTitle);
+        if (draft.metaDescription) setMetaDescription(draft.metaDescription);
+        if (draft.excerpt) setExcerpt(draft.excerpt);
+      }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAddCategory = () => {
@@ -179,6 +219,8 @@ export default function NewArticlePage() {
       }
       showNotice("success", `Post ${status.toLowerCase()} successfully!`);
       setStatus(status);
+      // Clear draft after successful publish
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       setTimeout(() => router.push("/admin/blog"), 1500);
     } catch (err: any) {
       showNotice("error", err.message || "Failed to save post.");
@@ -274,6 +316,16 @@ export default function NewArticlePage() {
             <span style={{ width: 7, height: 7, background: "#00a32a", borderRadius: "50%", display: "inline-block" }} />
             {wordCount} words · {readTime} min read
           </div>
+          {autoSaveStatus === "saving" && (
+            <span style={{ display: "flex", alignItems: "center", gap: 4, color: "#94a3b8" }}>
+              <Loader2 size={11} className="animate-spin" /> Saving draft…
+            </span>
+          )}
+          {autoSaveStatus === "saved" && (
+            <span style={{ display: "flex", alignItems: "center", gap: 4, color: "#16a34a", fontWeight: 600 }}>
+              <CheckCircle2 size={11} /> Draft saved
+            </span>
+          )}
         </div>
       </div>
 
