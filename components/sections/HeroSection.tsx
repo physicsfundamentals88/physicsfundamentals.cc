@@ -58,19 +58,6 @@ export default function HeroSection() {
       {/* ── Content ── */}
       <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center gap-6">
 
-        {/* Badge */}
-        <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] hero-anim-down"
-          style={{ fontFamily: "var(--font-dm-sans)", fontSize: 13, fontWeight: 500, color: "rgb(191,219,254)" }}
-        >
-          {/* Animated green dot */}
-          <span className="relative flex h-2 w-2" aria-hidden="true">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-400" />
-          </span>
-          Now building — Join the early access list
-        </div>
-
         {/* ── H1 Heading ── */}
         <h1
           style={{
@@ -129,8 +116,8 @@ export default function HeroSection() {
         >
           {/* Primary: amber */}
           <Link
-            id="hero-get-early-access"
-            href="/login?mode=register"
+            id="hero-try-calculators"
+            href="/calculators"
             className="flex items-center gap-2 active:scale-95 transition-all duration-200 hover:brightness-110"
             style={{
               fontFamily: "var(--font-dm-sans)",
@@ -143,7 +130,7 @@ export default function HeroSection() {
               boxShadow: "0 4px 24px rgba(245,158,11,0.25)",
             }}
           >
-            Get Early Access
+            Try the Calculators
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }} aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
@@ -169,23 +156,6 @@ export default function HeroSection() {
             Browse Articles
           </Link>
         </div>
-
-        {/* Trust signal */}
-        <p
-          style={{
-            fontFamily: "var(--font-dm-sans)",
-            fontWeight: 400,
-            fontSize: 13,
-            color: "rgb(148,163,184)",
-          }}
-          className="hero-anim-fade hero-anim-delay-3"
-        >
-          Trusted by{" "}
-          <span style={{ fontWeight: 600, color: "rgb(203,213,225)" }}>
-            500+
-          </span>{" "}
-          students already on the list
-        </p>
       </div>
     </section>
   );

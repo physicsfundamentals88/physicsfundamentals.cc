@@ -97,21 +97,6 @@ export default function Navbar() {
               </svg>
               Play Games
             </Link>
-            <Link
-              href="/login?mode=register"
-              className="flex items-center gap-1.5 transition-all duration-200 hover:bg-amber-400 active:scale-95 whitespace-nowrap"
-              style={{
-                fontFamily: "var(--font-dm-sans)",
-                fontWeight: 700,
-                fontSize: 14,
-                color: "#0a0f1e",
-                padding: "9px 20px",
-                borderRadius: 8,
-                background: "#f59e0b",
-              }}
-            >
-              Get Early Access
-            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -179,14 +164,6 @@ export default function Navbar() {
                     <path d="M8 5v14l11-7z" />
                   </svg>
                   Play Games
-                </Link>
-                <Link
-                  href="/login?mode=register"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center w-full py-3 rounded-xl text-sm font-semibold"
-                  style={{ color: "#0a0f1e", background: "#f59e0b" }}
-                >
-                  Get Early Access
                 </Link>
               </div>
             </nav>
