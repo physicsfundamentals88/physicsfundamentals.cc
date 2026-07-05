@@ -221,36 +221,28 @@ export default function LatestArticlesSection({ dbArticles: initialArticles = []
               style={{ boxShadow: "0 10px 40px -10px rgba(0,0,0,0.05)" }}
             >
               {/* Illustration or Image Area */}
-              <div className="h-[220px] w-full relative bg-[#0b1221] overflow-hidden flex items-center justify-center">
+              <div className="relative w-full overflow-hidden rounded-t-[20px] bg-slate-50">
                 {article.heroImage ? (
-                  <>
-                    {/* Blurred backdrop to prevent sidebars/empty bars */}
-                    <img
-                      src={article.heroImage}
-                      alt=""
-                      aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover filter blur-xl opacity-30 scale-105 pointer-events-none"
-                    />
-                    {/* Contained crisp image */}
-                    <img
-                      src={article.heroImage}
-                      alt={article.title}
-                      className="relative z-10 max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
-                      loading="lazy"
-                      decoding="async"
-                      width="400"
-                      height="220"
-                    />
-                  </>
+                  <img
+                    src={article.heroImage}
+                    alt={article.title}
+                    className="w-full h-auto block transition-transform duration-500 hover:scale-[1.02]"
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="225"
+                  />
                 ) : article.Illustration ? (
-                  <article.Illustration />
+                  <div className="h-[220px] bg-[#0b1221]">
+                    <article.Illustration />
+                  </div>
                 ) : (
-                  <div className="text-center p-6">
+                  <div className="h-[220px] bg-[#0b1221] flex items-center justify-center text-center p-6">
                     <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
                   </div>
                 )}
                 {/* Category Pill Overlaid */}
-                <div className="absolute left-6 bottom-5 bg-white/10 border border-white/10 text-white/90 text-[10px] font-bold tracking-widest px-3 py-1.5 rounded-full uppercase leading-none">
+                <div className="absolute left-4 bottom-4 bg-black/50 border border-white/10 text-white text-[10px] font-bold tracking-widest px-3 py-1.5 rounded-full uppercase leading-none backdrop-blur-sm">
                   {article.category}
                 </div>
               </div>

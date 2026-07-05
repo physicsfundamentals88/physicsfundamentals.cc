@@ -115,37 +115,24 @@ export default function BlogClient({ initialArticles }: BlogClientProps) {
                   transition={{ duration: 0.45, delay: index * 0.07 }}
                   className="bg-white rounded-[20px] overflow-hidden border border-slate-200 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full w-full"
                 >
-                  <div className="h-[200px] relative w-full bg-[#0b1221] overflow-hidden flex items-center justify-center">
+                  <div className="relative w-full overflow-hidden rounded-t-[20px] bg-slate-50">
                     {article.heroImage ? (
-                      <>
-                        {/* Blurred backdrop to prevent letterboxes/empty bars */}
-                        <img 
-                          src={article.heroImage} 
-                          alt=""
-                          aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover filter blur-xl opacity-30 scale-105 pointer-events-none"
-                        />
-                        {/* Crisp contained foreground image */}
-                        <img 
-                          src={article.heroImage} 
-                          alt={article.title} 
-                          className="relative z-10 max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
-                          width="600"
-                          height="300"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </>
+                      <img 
+                        src={article.heroImage} 
+                        alt={article.title} 
+                        className="w-full h-auto block transition-transform duration-500 group-hover:scale-[1.02]"
+                        width="600"
+                        height="338"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     ) : (
-                      <>
-                        <div className="absolute inset-0 opacity-20 pointer-events-none">
-                           <div className="w-full h-full" style={{ backgroundImage: "radial-gradient(circle at center, #3b82f6 0%, transparent 70%)", opacity: 0.2 }}></div>
+                      <div className="h-[200px] bg-[#0b1221] flex items-center justify-center">
+                        <div className="text-center p-6">
+                          <span className="text-[10px] text-blue-400 tracking-[0.2em] font-bold block mb-2">{article.category}</span>
+                          <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
                         </div>
-                        <div className="relative z-10 text-center p-6">
-                           <span className="text-[10px] text-blue-400 tracking-[0.2em] font-bold block mb-2">{article.category}</span>
-                           <span className="font-serif text-xl block leading-tight text-white">{article.title}</span>
-                        </div>
-                      </>
+                      </div>
                     )}
                   </div>
 

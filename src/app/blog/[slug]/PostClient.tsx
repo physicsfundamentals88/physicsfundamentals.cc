@@ -196,24 +196,11 @@ export default function PostClient({ article, latestArticles, renderedContent }:
 
           {/* Featured Image */}
           {article.heroImage ? (
-            <div
-              className="relative w-full overflow-hidden shadow-md mb-12 bg-[#0b1221] flex items-center justify-center"
-              style={{ minHeight: 260, maxHeight: 480 }}
-            >
-              {/* Blurred backdrop fills empty space — matches image colors so no harsh bars */}
-              <img
-                src={article.heroImage}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                style={{ filter: "blur(28px)", opacity: 0.35, transform: "scale(1.08)" }}
-              />
-              {/* Crisp foreground — full image visible, no cropping */}
+            <div className="relative w-full overflow-hidden mb-12 rounded-xl border border-slate-100">
               <img
                 src={article.heroImage}
                 alt={article.title}
-                className="relative z-10 w-full h-auto block cursor-zoom-in"
-                style={{ maxHeight: 480, objectFit: "contain" }}
+                className="w-full h-auto block cursor-zoom-in"
                 onClick={() => setLightboxImage(article.heroImage)}
                 width="1200"
                 height="525"
@@ -221,7 +208,7 @@ export default function PostClient({ article, latestArticles, renderedContent }:
               />
             </div>
           ) : (
-            <div className="relative aspect-[16/7] md:aspect-[21/9] w-full border border-slate-200/80 overflow-hidden shadow-sm bg-slate-900 mb-12">
+            <div className="relative aspect-[16/7] md:aspect-[21/9] w-full overflow-hidden rounded-xl bg-slate-900 mb-12">
               <div className="w-full h-full bg-gradient-to-br from-[#0c1524] to-[#1e293b] flex items-center justify-center p-8 text-center text-white/5 font-black text-4xl uppercase select-none font-serif tracking-wider leading-none">
                 {article.title}
               </div>
