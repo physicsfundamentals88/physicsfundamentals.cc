@@ -196,11 +196,24 @@ export default function PostClient({ article, latestArticles, renderedContent }:
 
           {/* Featured Image */}
           {article.heroImage ? (
-            <div className="relative w-full border border-slate-200/80 overflow-hidden shadow-sm mb-12 bg-slate-900">
-              <img 
-                src={article.heroImage} 
-                alt={article.title} 
-                className="w-full h-auto block cursor-zoom-in" 
+            <div
+              className="relative w-full overflow-hidden shadow-md mb-12 bg-[#0b1221] flex items-center justify-center"
+              style={{ minHeight: 260, maxHeight: 480 }}
+            >
+              {/* Blurred backdrop fills empty space — matches image colors so no harsh bars */}
+              <img
+                src={article.heroImage}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                style={{ filter: "blur(28px)", opacity: 0.35, transform: "scale(1.08)" }}
+              />
+              {/* Crisp foreground — full image visible, no cropping */}
+              <img
+                src={article.heroImage}
+                alt={article.title}
+                className="relative z-10 w-full h-auto block cursor-zoom-in"
+                style={{ maxHeight: 480, objectFit: "contain" }}
                 onClick={() => setLightboxImage(article.heroImage)}
                 width="1200"
                 height="525"

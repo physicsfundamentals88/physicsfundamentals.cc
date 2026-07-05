@@ -61,6 +61,25 @@
 }
 
 @layer utilities {
+  /* Navbar link hover — works even with inline style overrides */
+  .nav-link-hover:not([aria-current="page"]):hover {
+    background: #1e293b !important;
+    color: #ffffff !important;
+  }
+
+  /* Hide scrollbar across browsers */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Nav slide animation for mobile menu */
+  .nav-slide-anim {
+    animation: navSlideDown 0.2s ease-out both;
+  }
+  @keyframes navSlideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   /* Glass Effects */
   .glass-card {
     background: rgba(255, 255, 255, 0.04);

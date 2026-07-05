@@ -59,7 +59,7 @@ export default function Navbar() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="relative px-4 py-2.5 rounded-xl text-[14px] transition-all duration-200 flex flex-col items-center justify-center font-semibold"
+                    className="relative px-4 py-2.5 rounded-xl text-[14px] transition-all duration-200 flex flex-col items-center justify-center font-semibold nav-link-hover"
                     style={{
                       color: isActive ? "#ffffff" : "rgb(148,163,184)",
                       background: isActive ? "#1e293b" : "transparent",
