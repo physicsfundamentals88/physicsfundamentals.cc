@@ -20,7 +20,7 @@ export async function GET(
     }
     
     // Fetch the specific article
-    const article = await db
+    const article: any = await db
       .prepare("SELECT * FROM articles WHERE slug = ? LIMIT 1")
       .bind(slug)
       .first();
@@ -29,9 +29,23 @@ export async function GET(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
+    const mappedArticle = {
+      ...article,
+      readTime: article.read_time,
+      authorInitials: article.author_initials,
+      authorBg: article.author_bg,
+      heroImage: article.hero_image,
+      scheduledDate: article.scheduled_date,
+      metaTitle: article.meta_title,
+      metaDescription: article.meta_description,
+      siteName: article.site_name,
+      createdAt: article.created_at,
+      updatedAt: article.updated_at,
+    };
+
     // Fetch the 5 latest articles for the sidebar
     const { results: latest } = await db
-      .prepare("SELECT title, slug, date, category, heroImage FROM articles ORDER BY createdAt DESC LIMIT 5")
+      .prepare("SELECT title, slug, date, category, hero_image FROM articles ORDER BY created_at DESC LIMIT 5")
       .all();
 
     const latestArticles = latest.map((a: any) => ({
@@ -39,10 +53,10 @@ export async function GET(
       date: a.date,
       category: a.category,
       href: `/blog/${a.slug}`,
-      heroImage: a.heroImage
+      heroImage: a.hero_image
     }));
 
-    return NextResponse.json({ article, latestArticles });
+    return NextResponse.json({ article: mappedArticle, latestArticles });
   } catch (error: any) {
     console.error(`Failed to fetch article slug ${slug} in API:`, error);
     return NextResponse.json({ error: error.message }, { status: 500 });

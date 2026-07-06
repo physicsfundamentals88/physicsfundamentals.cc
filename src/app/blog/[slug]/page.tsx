@@ -17,16 +17,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     // Use raw Cloudflare D1 driver (executes instantly, no JavaScript ORM overhead)
     const article: any = await db
-      .prepare("SELECT title, metaTitle, excerpt, metaDescription, heroImage FROM articles WHERE slug = ? LIMIT 1")
+      .prepare("SELECT title, meta_title, excerpt, meta_description, hero_image FROM articles WHERE slug = ? LIMIT 1")
       .bind(slug)
       .first();
 
     if (!article) return {};
 
-    const title = article.metaTitle || article.title;
-    const description = article.metaDescription || article.excerpt;
-    const imageUrl = article.heroImage
-      ? (article.heroImage.startsWith("/") ? `https://physicsfundamentals.cc${article.heroImage}` : article.heroImage)
+    const title = article.meta_title || article.title;
+    const description = article.meta_description || article.excerpt;
+    const imageUrl = article.hero_image
+      ? (article.hero_image.startsWith("/") ? `https://physicsfundamentals.cc${article.hero_image}` : article.hero_image)
       : "https://physicsfundamentals.cc/og-image.png";
 
     return {
