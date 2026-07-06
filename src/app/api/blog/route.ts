@@ -22,6 +22,8 @@ export async function GET(request: Request) {
 
     const mappedResults = results.map((row: any) => ({
       ...row,
+      sections: typeof row.sections === "string" ? JSON.parse(row.sections) : (row.sections || []),
+      toc: typeof row.toc === "string" ? JSON.parse(row.toc) : (row.toc || []),
       readTime: row.read_time,
       authorInitials: row.author_initials,
       authorBg: row.author_bg,

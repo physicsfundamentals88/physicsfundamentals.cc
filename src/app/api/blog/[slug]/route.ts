@@ -31,6 +31,8 @@ export async function GET(
 
     const mappedArticle = {
       ...article,
+      sections: typeof article.sections === "string" ? JSON.parse(article.sections) : (article.sections || []),
+      toc: typeof article.toc === "string" ? JSON.parse(article.toc) : (article.toc || []),
       readTime: article.read_time,
       authorInitials: article.author_initials,
       authorBg: article.author_bg,
