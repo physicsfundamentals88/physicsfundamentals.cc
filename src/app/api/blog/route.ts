@@ -1,22 +1,26 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/db";
-import { articles } from "@/db/schema";
-import { desc, ne, and } from "drizzle-orm";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export async function GET(request: Request) {
   try {
-    const db = getDb();
-    const publishedArticles = await db
-      .select()
-      .from(articles)
-      .where(
-        and(
-          ne(articles.status, "Draft"),
-          ne(articles.status, "draft")
-        )
-      )
-      .orderBy(desc(articles.createdAt));
-    return NextResponse.json(publishedArticles);
+    let env: any;
+    try {
+      env = getCloudflareContext().env;
+    } catch {
+      env = process.env;
+    }
+    
+    const db = env?.DB;
+    if (!db) {
+      // Return empty array during local builds if DB is not bound
+      return NextResponse.json([]);
+    }
+
+    const { results } = await db
+      .prepare("SELECT * FROM articles WHERE status IS NULL OR (status != 'Draft' AND status != 'draft') ORDER BY createdAt DESC")
+      .all();
+
+    return NextResponse.json(results);
   } catch (error: any) {
     console.error("Fetch Published Articles Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

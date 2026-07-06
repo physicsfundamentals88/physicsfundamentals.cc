@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/db";
-import { articles } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export async function GET(
   request: Request,
@@ -9,19 +7,34 @@ export async function GET(
 ) {
   const { slug } = await params;
   try {
-    const db = getDb();
+    let env: any;
+    try {
+      env = getCloudflareContext().env;
+    } catch {
+      env = process.env;
+    }
+
+    const db = env?.DB;
+    if (!db) {
+      return NextResponse.json({ error: "DB binding not found" }, { status: 500 });
+    }
     
     // Fetch the specific article
-    const result = await db.select().from(articles).where(eq(articles.slug, slug)).limit(1);
-    const article = result[0];
+    const article = await db
+      .prepare("SELECT * FROM articles WHERE slug = ? LIMIT 1")
+      .bind(slug)
+      .first();
     
     if (!article) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
     // Fetch the 5 latest articles for the sidebar
-    const latest = await db.select().from(articles).orderBy(desc(articles.createdAt)).limit(5);
-    const latestArticles = latest.map(a => ({
+    const { results: latest } = await db
+      .prepare("SELECT title, slug, date, category, heroImage FROM articles ORDER BY createdAt DESC LIMIT 5")
+      .all();
+
+    const latestArticles = latest.map((a: any) => ({
       title: a.title,
       date: a.date,
       category: a.category,

@@ -1,18 +1,26 @@
 import type { Metadata } from "next";
-import { getDb } from "@/db";
-import { articles } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
-import PostClient from "./PostClient";
-import { notFound } from "next/navigation";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import React from "react";
-import { renderMath } from "@/lib/renderMath";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const db = getDb();
-    const result = await db.select().from(articles).where(eq(articles.slug, slug)).limit(1);
-    const article = result[0];
+    let env: any;
+    try {
+      env = getCloudflareContext().env;
+    } catch {
+      env = process.env;
+    }
+
+    const db = env?.DB;
+    if (!db) return {};
+
+    // Use raw Cloudflare D1 driver (executes instantly, no JavaScript ORM overhead)
+    const article: any = await db
+      .prepare("SELECT title, metaTitle, excerpt, metaDescription, heroImage FROM articles WHERE slug = ? LIMIT 1")
+      .bind(slug)
+      .first();
+
     if (!article) return {};
 
     const title = article.metaTitle || article.title;
