@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { getDb } from "@/db";
-import { articles } from "@/db/schema";
-import { eq, ne, and, desc } from "drizzle-orm";
 import Link from "next/link";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
 import { notFound } from "next/navigation";
 import React from "react";
 import Breadcrumbs from "@components/Breadcrumbs";
+import CategoryArticles from "./CategoryArticles";
 
 // Category slug mapping
 const categoryMapping: Record<string, { name: string; desc: string; color: string; bg: string; icon: string }> = {
@@ -106,25 +104,6 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
   const config = categoryMapping[slug];
   if (!config) {
     notFound();
-  }
-
-  // Query articles in this category from SQLite
-  let categoryArticles: any[] = [];
-  try {
-    const db = getDb();
-    categoryArticles = await db
-      .select()
-      .from(articles)
-      .where(
-        and(
-          eq(articles.category, config.name),
-          ne(articles.status, "Draft"),
-          ne(articles.status, "draft")
-        )
-      )
-      .orderBy(desc(articles.createdAt));
-  } catch (e) {
-    console.error(`Failed to fetch articles for category ${config.name}:`, e);
   }
 
   const categoryCalculators = staticCalculators.filter(c => c.category === config.name);
@@ -275,35 +254,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
               Latest {config.name} Articles
             </h2>
             
-            {categoryArticles.length > 0 ? (
-              <div className="space-y-6">
-                {categoryArticles.map(art => (
-                  <Link 
-                    key={art.slug} 
-                    href={`/blog/${art.slug}`}
-                    className="block group"
-                  >
-                    <div className="flex gap-4 items-start">
-                      {art.heroImage && (
-                        <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                          <img src={art.heroImage} alt={art.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
-                        </div>
-                      )}
-                      <div>
-                        <h3 className="text-[14px] font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
-                          {art.title}
-                        </h3>
-                        <p className="text-[12px] text-slate-400 mt-1">{art.date}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="text-slate-400 text-[14px]" style={{ fontFamily: "var(--font-dm-sans)" }}>
-                No articles published under this topic yet. Check back soon!
-              </p>
-            )}
+            <CategoryArticles categoryName={config.name} />
           </div>
         </div>
       </main>
@@ -311,4 +262,15 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ sl
       <Footer />
     </div>
   );
+}
+
+export function generateStaticParams() {
+  return [
+    { slug: "classical-mechanics" },
+    { slug: "electromagnetism" },
+    { slug: "thermodynamics" },
+    { slug: "waves-optics" },
+    { slug: "kinematics" },
+    { slug: "modern-physics" },
+  ];
 }
