@@ -132,17 +132,10 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Apply middleware to all routes except Next.js assets/static files
+// Apply middleware only to admin dashboard and admin API routes to save CPU time on public pages
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/assets (your media/assets upload path)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - favicon.png (favicon file)
-     */
-    "/((?!api/assets|_next/static|_next/image|favicon.ico|favicon.png).*)",
+    "/admin/:path*",
+    "/api/admin/:path*",
   ],
 };
