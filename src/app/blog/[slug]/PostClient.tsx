@@ -85,10 +85,7 @@ export default function PostClient({ article, latestArticles, renderedContent }:
   }, [article.toc]);
 
   useEffect(() => {
-    // Dynamically load KaTeX on the client to avoid server-side CPU limits
-    import("katex").then((katexModule) => {
-      const katex = katexModule.default;
-
+    const runKatex = (katex: any) => {
       // Find and render all block math placeholders
       document.querySelectorAll(".math-block[data-math]").forEach((el) => {
         const math = el.getAttribute("data-math");
@@ -135,7 +132,23 @@ export default function PostClient({ article, latestArticles, renderedContent }:
           }
         }
       });
-    });
+    };
+
+    if ((window as any).katex) {
+      runKatex((window as any).katex);
+    } else {
+      // Load KaTeX script from the same CDN (v0.16.11) to avoid bundling KaTeX JS in Next.js build
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js";
+      script.crossOrigin = "anonymous";
+      script.async = true;
+      script.onload = () => {
+        if ((window as any).katex) {
+          runKatex((window as any).katex);
+        }
+      };
+      document.body.appendChild(script);
+    }
   }, [renderedContent, article.sections]);
 
   const tocItems = (article.toc as any[]) || [];

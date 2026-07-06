@@ -28,8 +28,8 @@ export function renderMath(html: string): string {
   // Step 3: Inline math with $ delimiters (always run)
   processed = processed.replace(/\$([^$\n<>]+?)\$/g, (_match, equation) => {
     const eq = equation.trim();
-    if (/^\d/.test(eq)) return _match;
-    if (!/[a-zA-Z\\]/.test(eq)) return _match;
+    // Allow equations starting with numbers, but ensure it contains letters, backslashes, or math operators
+    if (!/[a-zA-Z\\\(\)\{\}\=\+\-\*\/\_\^]/.test(eq)) return _match;
     const escaped = escapeHtml(eq);
     return `<span class="math-inline" data-math="${escaped}"></span>`;
   });
@@ -54,10 +54,19 @@ export function renderMath(html: string): string {
 }
 
 function isBlockLatex(text: string): boolean {
+  // Must contain a LaTeX command (backslash followed by letters)
   if (!/\\[a-zA-Z]+/.test(text)) return false;
-  if (text.length > 300) return false;
-  if (/\.\s+[A-Z]/.test(text)) return false;
-  return true;
+  if (text.length > 200) return false;
+  
+  // Must not look like a regular English sentence
+  const words = text.split(/\s+/).filter(w => /^[a-zA-Z]{3,}$/.test(w));
+  const commonWords = ["the", "and", "are", "for", "with", "this", "that", "from", "into", "then", "here", "when", "about", "their"];
+  const containsCommonWords = words.some(w => commonWords.includes(w.toLowerCase()));
+  if (containsCommonWords) return false;
+  
+  // Must contain math operators, subscripts, superscripts, or Greek symbols to be a valid block equation
+  const isEquation = /[\=\+\-\*\/\_\^\\\{\}]/.test(text) || /\\[a-zA-Z]+/.test(text);
+  return isEquation;
 }
 
 function escapeHtml(text: string): string {
