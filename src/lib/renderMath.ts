@@ -7,6 +7,11 @@
  */
 export function renderMath(html: string): string {
   if (!html) return "";
+  
+  // Fast path: if there are no math delimiters ($), bypass all regexes entirely
+  if (!html.includes("$")) {
+    return html;
+  }
 
   // Step 1: Unescape double backslashes stored in DB
   let processed = html.replace(/\\\\/g, "\\");
