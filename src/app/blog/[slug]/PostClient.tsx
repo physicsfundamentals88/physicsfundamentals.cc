@@ -97,7 +97,9 @@ export default function PostClient({ article, latestArticles, renderedContent }:
               .replace(/&lt;/g, "<")
               .replace(/&gt;/g, ">")
               .replace(/&quot;/g, '"')
-              .replace(/&#039;/g, "'");
+              .replace(/&#039;/g, "'")
+              .replace(/<[^>]+>/g, "") // Strip any HTML tags like <br>
+              .trim();
 
             katex.render(decodedMath, el as HTMLElement, {
               displayMode: true,
@@ -120,7 +122,9 @@ export default function PostClient({ article, latestArticles, renderedContent }:
               .replace(/&lt;/g, "<")
               .replace(/&gt;/g, ">")
               .replace(/&quot;/g, '"')
-              .replace(/&#039;/g, "'");
+              .replace(/&#039;/g, "'")
+              .replace(/<[^>]+>/g, "") // Strip any HTML tags like <br>
+              .trim();
 
             katex.render(decodedMath, el as HTMLElement, {
               displayMode: false,

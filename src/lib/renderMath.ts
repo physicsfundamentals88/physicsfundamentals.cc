@@ -20,17 +20,18 @@ export function renderMath(html: string): string {
   processed = processed.replace(
     /(?:<p[^>]*>\s*)?\$\$([\s\S]*?)\$\$(?:\s*<\/p>)?/g,
     (_match, equation) => {
-      const eq = escapeHtml(equation.trim());
+      const cleanEq = equation.replace(/<[^>]+>/g, "").trim();
+      const eq = escapeHtml(cleanEq);
       return `<div class="math-block" data-math="${eq}"></div>`;
     }
   );
 
   // Step 3: Inline math with $ delimiters (always run)
   processed = processed.replace(/\$([^$\n<>]+?)\$/g, (_match, equation) => {
-    const eq = equation.trim();
+    const cleanEq = equation.replace(/<[^>]+>/g, "").trim();
     // Allow equations starting with numbers, but ensure it contains letters, backslashes, or math operators
-    if (!/[a-zA-Z\\\(\)\{\}\=\+\-\*\/\_\^]/.test(eq)) return _match;
-    const escaped = escapeHtml(eq);
+    if (!/[a-zA-Z\\\(\)\{\}\=\+\-\*\/\_\^]/.test(cleanEq)) return _match;
+    const escaped = escapeHtml(cleanEq);
     return `<span class="math-inline" data-math="${escaped}"></span>`;
   });
 
