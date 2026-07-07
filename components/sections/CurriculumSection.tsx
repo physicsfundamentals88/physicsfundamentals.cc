@@ -69,7 +69,7 @@ export default function CurriculumSection() {
                   {item.title}
                 </h3>
                 <span 
-                  className="bg-[#eff6ff] text-blue-500 text-[9px] font-bold tracking-[0.1em] px-2.5 py-1 rounded-[6px] shrink-0 uppercase"
+                  className="bg-[#eff6ff] text-blue-700 text-[9px] font-bold tracking-[0.1em] px-2.5 py-1 rounded-[6px] shrink-0 uppercase"
                   style={{ fontFamily: "var(--font-dm-sans)" }}
                   aria-label="Status: Live"
                 >

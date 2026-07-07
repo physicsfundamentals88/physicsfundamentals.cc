@@ -173,7 +173,7 @@ export default function LatestArticlesSection({ dbArticles: initialArticles = []
           console.error("Client-side article fetch failed:", err);
         });
     }
-  }, [initialArticles]);
+  }, []);
 
   const displayArticles = (mounted && dbArticles.length > 0) ? dbArticles : articles.slice(0, 3);
 

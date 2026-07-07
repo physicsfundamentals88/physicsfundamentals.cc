@@ -63,14 +63,14 @@ export default function Breadcrumbs({ items, themeColor = "blue" }: BreadcrumbsP
         className="flex flex-wrap items-center gap-2 mb-4 text-[12px] font-semibold tracking-wide uppercase" 
         style={{ fontFamily: "var(--font-dm-sans)" }}
       >
-        <Link href="/" className="text-slate-400 hover:text-slate-600 transition-colors">
+        <Link href="/" className="text-slate-500 hover:text-slate-700 transition-colors">
           Home
         </Link>
         {items.slice(1).map((item, index) => {
           const isLast = index === items.length - 2;
           return (
             <React.Fragment key={item.item}>
-              <span className="text-slate-300">/</span>
+              <span className="text-slate-300" aria-hidden="true">/</span>
               {isLast ? (
                 <span className={`px-2 py-0.5 rounded-md ${getBadgeClass()}`}>
                   {item.name}
@@ -78,7 +78,7 @@ export default function Breadcrumbs({ items, themeColor = "blue" }: BreadcrumbsP
               ) : (
                 <Link 
                   href={item.item} 
-                  className={`text-slate-400 transition-colors ${getHoverClass()}`}
+                  className={`text-slate-500 transition-colors ${getHoverClass()}`}
                 >
                   {item.name}
                 </Link>

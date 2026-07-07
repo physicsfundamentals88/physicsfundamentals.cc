@@ -7,7 +7,7 @@ const fundamentals = [
     title: "Classical Mechanics",
     description: (
       <>
-        Analyze <span className="text-blue-500">Newtonian mechanics</span> from the ground up. Master force interaction, particle acceleration <span className="text-blue-500">(F = ma)</span>, action-reaction equilibrium, and conservation laws. Build the foundational intuition required to solve complex projectile and orbital mechanics problems.
+        Analyze <span className="text-blue-600">Newtonian mechanics</span> from the ground up. Master force interaction, particle acceleration <span className="text-blue-600">(F = ma)</span>, action-reaction equilibrium, and conservation laws. Build the foundational intuition required to solve complex projectile and orbital mechanics problems.
       </>
     ),
     linkText: "ALL MECHANICS ARTICLES",
@@ -17,7 +17,7 @@ const fundamentals = [
     title: "Waves & Optics",
     description: (
       <>
-        Study the physics of propagation and oscillations. Walk through how <span className="text-blue-500">transverse waves</span> transfer energy, map key parameters via the fundamental <span className="text-blue-500">wave equation v = fλ</span>, and explore light refraction, diffraction, and sound wave interference.
+        Study the physics of propagation and oscillations. Walk through how <span className="text-blue-600">transverse waves</span> transfer energy, map key parameters via the fundamental <span className="text-blue-600">wave equation v = fλ</span>, and explore light refraction, diffraction, and sound wave interference.
       </>
     ),
     linkText: "ALL WAVES ARTICLES",
@@ -27,7 +27,7 @@ const fundamentals = [
     title: "Energy & Thermodynamics",
     description: (
       <>
-        Examine energy conservation and heat exchange mechanisms. Learn how <span className="text-blue-500">mechanical energy</span> transforms into thermal energy, apply the <span className="text-blue-500">first law of thermodynamics</span>, and model gas behavior using the kinetic molecular theory.
+        Examine energy conservation and heat exchange mechanisms. Learn how <span className="text-blue-600">mechanical energy</span> transforms into thermal energy, apply the <span className="text-blue-600">first law of thermodynamics</span>, and model gas behavior using the kinetic molecular theory.
       </>
     ),
     linkText: "ALL THERMODYNAMICS ARTICLES",
@@ -37,7 +37,7 @@ const fundamentals = [
     title: "Forces & Conservation Laws",
     description: (
       <>
-        Explore the immutable principles of momentum and gravity. Investigate collision mathematics, apply <span className="text-blue-500">Newton&apos;s universal law of gravitation</span> to planetary motion, and understand why <span className="text-blue-500">conservation laws</span> form the backbone of modern physics.
+        Explore the immutable principles of momentum and gravity. Investigate collision mathematics, apply <span className="text-blue-600">Newton&apos;s universal law of gravitation</span> to planetary motion, and understand why <span className="text-blue-600">conservation laws</span> form the backbone of modern physics.
       </>
     ),
     linkText: "ALL FORCES ARTICLES",
@@ -85,7 +85,7 @@ export default function WhatAreFundamentalsSection() {
               </p>
               <Link 
                 href={item.linkUrl}
-                className="text-blue-500 bg-transparent hover:bg-blue-50 px-4 py-2.5 -ml-4 rounded-full transition-all duration-300 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.05em] uppercase w-fit group/link mt-auto"
+                className="text-blue-600 bg-transparent hover:bg-blue-50 px-4 py-2.5 -ml-4 rounded-full transition-all duration-300 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.05em] uppercase w-fit group/link mt-auto"
                 style={{ fontFamily: "var(--font-dm-sans)" }}
               >
                 {item.linkText}

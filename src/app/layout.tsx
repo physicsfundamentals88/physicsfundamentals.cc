@@ -128,11 +128,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-          crossOrigin="anonymous"
-        />
       </head>
       <body className="min-h-full flex flex-col bg-[#0b1220] text-[#e2e8f0]" suppressHydrationWarning>
         {children}

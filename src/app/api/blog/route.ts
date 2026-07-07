@@ -17,21 +17,28 @@ export async function GET(request: Request) {
     }
 
     const { results } = await db
-      .prepare("SELECT * FROM articles WHERE status IS NULL OR (status != 'Draft' AND status != 'draft') ORDER BY created_at DESC")
+      .prepare(`
+        SELECT 
+          id, title, slug, excerpt, date, category, status,
+          read_time, author_initials, author_bg, hero_image, created_at, updated_at
+        FROM articles 
+        WHERE status IS NULL OR (status != 'Draft' AND status != 'draft') 
+        ORDER BY created_at DESC
+      `)
       .all();
 
     const mappedResults = results.map((row: any) => ({
-      ...row,
-      sections: typeof row.sections === "string" ? JSON.parse(row.sections) : (row.sections || []),
-      toc: typeof row.toc === "string" ? JSON.parse(row.toc) : (row.toc || []),
+      id: row.id,
+      title: row.title,
+      slug: row.slug,
+      excerpt: row.excerpt,
+      date: row.date,
+      category: row.category,
+      status: row.status,
       readTime: row.read_time,
       authorInitials: row.author_initials,
       authorBg: row.author_bg,
       heroImage: row.hero_image,
-      scheduledDate: row.scheduled_date,
-      metaTitle: row.meta_title,
-      metaDescription: row.meta_description,
-      siteName: row.site_name,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }));

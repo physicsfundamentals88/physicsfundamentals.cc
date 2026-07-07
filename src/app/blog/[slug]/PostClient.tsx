@@ -140,6 +140,15 @@ export default function PostClient({ article, latestArticles, renderedContent }:
     if ((window as any).katex) {
       runKatex((window as any).katex);
     } else {
+      // Load KaTeX CSS dynamically if not already loaded to prevent render-blocking on other pages
+      if (!document.querySelector('link[href*="katex.min.css"]')) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css";
+        link.crossOrigin = "anonymous";
+        document.head.appendChild(link);
+      }
+
       // Load KaTeX script from the same CDN (v0.16.11) to avoid bundling KaTeX JS in Next.js build
       const script = document.createElement("script");
       script.src = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js";
