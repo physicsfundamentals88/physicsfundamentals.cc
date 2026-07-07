@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
@@ -252,31 +251,23 @@ export default function PostClient({ article, latestArticles, renderedContent }:
                     <ChevronDown size={16} className={`text-slate-500 transition-transform ${tocOpen ? "rotate-180" : ""}`} />
                   </button>
                   
-                  <AnimatePresence>
-                    {tocOpen && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <ul className="mt-4 border-t border-slate-200 pt-3 flex flex-col gap-2.5 pl-1.5">
-                          {tocItems.map((item: any, idx: number) => (
-                            <li key={item.id}>
-                              <a
-                                href={`#${item.id}`}
-                                className="text-[13px] text-slate-600 hover:text-blue-600 transition-colors font-medium flex items-center gap-2"
-                              >
-                                <span className="text-[11px] text-slate-400 font-mono font-bold">0{idx + 1}.</span>
-                                {item.label}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <div className={`grid transition-[grid-template-rows,opacity] duration-200 ease-in-out ${tocOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                    <div className="overflow-hidden">
+                      <ul className="mt-4 border-t border-slate-200 pt-3 flex flex-col gap-2.5 pl-1.5">
+                        {tocItems.map((item: any, idx: number) => (
+                          <li key={item.id}>
+                            <a
+                              href={`#${item.id}`}
+                              className="text-[13px] text-slate-600 hover:text-blue-600 transition-colors font-medium flex items-center gap-2"
+                            >
+                              <span className="text-[11px] text-slate-400 font-mono font-bold">0{idx + 1}.</span>
+                              {item.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -626,46 +617,36 @@ export default function PostClient({ article, latestArticles, renderedContent }:
       </div>
 
       {/* Lightbox Modal */}
-      <AnimatePresence>
-        {lightboxImage && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+      {lightboxImage && (
+        <div 
+          onClick={() => setLightboxImage(null)}
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 md:p-8 cursor-zoom-out transition-opacity duration-200"
+        >
+          {/* Close button */}
+          <button 
             onClick={() => setLightboxImage(null)}
-            className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 md:p-8 cursor-zoom-out"
+            className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all"
+            aria-label="Close image viewer"
           >
-            {/* Close button */}
-            <button 
-              onClick={() => setLightboxImage(null)}
-              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-2.5 rounded-full transition-all"
-              aria-label="Close image viewer"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-            
-            {/* Zoomed Image */}
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative max-w-full max-h-[85vh] md:max-h-[90vh] overflow-hidden rounded-lg shadow-2xl"
-              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
-            >
-              <img 
-                src={lightboxImage} 
-                alt="Fullscreen view" 
-                className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          
+          {/* Zoomed Image */}
+          <div
+            className="relative max-w-full max-h-[85vh] md:max-h-[90vh] overflow-hidden rounded-lg shadow-2xl transition-transform duration-200 scale-100"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
+          >
+            <img 
+              src={lightboxImage} 
+              alt="Fullscreen view" 
+              className="max-w-full max-h-[85vh] md:max-h-[90vh] object-contain"
+            />
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
