@@ -8,8 +8,16 @@
 export function renderMath(html: string): string {
   if (!html) return "";
   
-  // Fast path: if there are no math delimiters ($), bypass all regexes entirely
-  if (!html.includes("$")) {
+  // Fast path: check if there's any potential math notation ($, \, {, }, _, ^, =)
+  if (
+    !html.includes("$") && 
+    !html.includes("\\") && 
+    !html.includes("{") && 
+    !html.includes("}") && 
+    !html.includes("=") &&
+    !html.includes("_") &&
+    !html.includes("^")
+  ) {
     return html;
   }
 
@@ -55,19 +63,23 @@ export function renderMath(html: string): string {
 }
 
 function isBlockLatex(text: string): boolean {
-  // Must contain a LaTeX command (backslash followed by letters)
-  if (!/\\[a-zA-Z]+/.test(text)) return false;
   if (text.length > 200) return false;
   
   // Must not look like a regular English sentence
   const words = text.split(/\s+/).filter(w => /^[a-zA-Z]{3,}$/.test(w));
-  const commonWords = ["the", "and", "are", "for", "with", "this", "that", "from", "into", "then", "here", "when", "about", "their"];
+  const commonWords = ["the", "and", "are", "for", "with", "this", "that", "from", "into", "then", "here", "when", "about", "their", "your", "they", "will", "does", "have"];
   const containsCommonWords = words.some(w => commonWords.includes(w.toLowerCase()));
   if (containsCommonWords) return false;
   
-  // Must contain math operators, subscripts, superscripts, or Greek symbols to be a valid block equation
-  const isEquation = /[\=\+\-\*\/\_\^\\\{\}]/.test(text) || /\\[a-zA-Z]+/.test(text);
-  return isEquation;
+  // Must contain clear mathematical notation:
+  // 1. A LaTeX command (e.g., \lambda, \frac)
+  // 2. Or a subscript/superscript with braces/bracket (e.g. F_{AB}, x^2, v_i)
+  // 3. Or a math relation like = with variables/numbers and operators/subscripts (e.g., f = 1/T)
+  const hasLatex = /\\[a-zA-Z]+/.test(text);
+  const hasBraces = /_[a-zA-Z0-9]|_{[^{}]+}/.test(text) || /\^[a-zA-Z0-9]|\^{[^{}]+}/.test(text);
+  const hasMathRelation = /=/.test(text) && (/[0-9\+\-\*\/\_\^]/.test(text) || text.split("=")[0].trim().length <= 5);
+  
+  return hasLatex || hasBraces || hasMathRelation;
 }
 
 function escapeHtml(text: string): string {
