@@ -162,12 +162,6 @@ export default function WatermarkRemoverPage() {
         Upload an image to compress it to WebP format. The processed image will be <strong>automatically saved to your Media Library</strong> where you can use it in blog posts.
       </p>
       <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
-        <button onClick={() => drawTestImage("gemini")} style={{ padding: "10px 20px", background: "#2271b1", color: "white", border: "none", borderRadius: 8, fontWeight: "bold", cursor: "pointer", transition: "all 0.15s ease" }} className="hover:opacity-90 active:scale-95">
-          Generate Gemini Sparkle Test
-        </button>
-        <button onClick={() => drawTestImage("banana")} style={{ padding: "10px 20px", background: "#dba617", color: "white", border: "none", borderRadius: 8, fontWeight: "bold", cursor: "pointer", transition: "all 0.15s ease" }} className="hover:opacity-90 active:scale-95">
-          Generate Banana Test
-        </button>
         <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} style={{ display: "none" }} />
         <button onClick={() => fileRef.current?.click()} disabled={uploading} style={{ padding: "10px 20px", background: "#00a32a", color: "white", border: "none", borderRadius: 8, fontWeight: "bold", cursor: "pointer", transition: "all 0.15s ease", display: "flex", alignItems: "center", gap: 8, opacity: uploading ? 0.6 : 1 }} className="hover:opacity-90 active:scale-95">
           {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}

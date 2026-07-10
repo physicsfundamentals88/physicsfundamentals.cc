@@ -76,8 +76,8 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): void {
   const W = canvas.width;
   const H = canvas.height;
 
-  // We scan a 60x60 corner box
-  const S = Math.min(60, W, H);
+  // Scale the corner scan box dynamically based on image size to support high-res images
+  const S = Math.min(220, Math.max(70, Math.floor(Math.min(W, H) * 0.15)));
   if (S < 30) return;
 
   const offX = W - S;
@@ -88,7 +88,7 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): void {
 
   // Step 1: Calculate the average background color from the outer borders of the patch
   let bgR = 0, bgG = 0, bgB = 0, bgCount = 0;
-  const border = 12; // Outer 12 pixels are considered background
+  const border = Math.floor(S * 0.20); // Outer 20% is background area
 
   for (let y = 0; y < S; y++) {
     for (let x = 0; x < S; x++) {
@@ -124,7 +124,7 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): void {
       const sat = maxVal > 0 ? (maxVal - minVal) / maxVal : 0;
 
       // Gemini Sparkle (lighter/brighter than background, low saturation)
-      const isSparkle = lum > bgLum + 20 && sat < 0.40;
+      const isSparkle = lum > bgLum + 15 && sat < 0.45;
 
       // Nano Banana (yellow/brown body)
       const isYellow = r > 150 && g > 130 && b < 120 && (r - b > 40) && (g - b > 30);
@@ -157,13 +157,16 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): void {
 
   const bboxW = maxX - minX + 1;
   const bboxH = maxY - minY + 1;
-  if (bboxW > 45 || bboxH > 45) {
+  const maxBBox = Math.floor(S * 0.60); // Max bbox size scales with resolution
+
+  if (bboxW > maxBBox || bboxH > maxBBox) {
     return; // Bounding box is too large (likely text or regular image content)
   }
 
   // Step 4: Expand/dilate the mask slightly to cover anti-aliased edge pixels
   const dilatedMask = Array.from({ length: S }, () => new Uint8Array(S));
-  const pad = 3; // minimal padding to avoid blurring surrounding content
+  const pad = Math.max(3, Math.floor(S * 0.05)); // Padding scales with resolution
+
   for (let y = 0; y < S; y++) {
     for (let x = 0; x < S; x++) {
       if (watermarkMask[y][x]) {
@@ -180,16 +183,47 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): void {
     }
   }
 
-  // Step 5: Replace only the masked pixels.
-  // Instead of global blur, we replace each masked pixel with the local background color.
-  // This completely prevents blurring of clean, unmasked areas.
+  // Step 5: Replace only the masked pixels using local nearest-neighbor colors.
+  // This blends the replacement seamlessly with gradients/background textures.
+  const working = new Uint8ClampedArray(px);
+
   for (let y = 0; y < S; y++) {
     for (let x = 0; x < S; x++) {
       if (dilatedMask[y][x]) {
+        // Find the nearest unmasked pixel color
+        let found = false;
+        let rSum = 0, gSum = 0, bSum = 0, count = 0;
+
+        // Search in local concentric rings (radius 1 to 10)
+        for (let rad = 1; rad <= 12 && !found; rad++) {
+          for (let dy = -rad; dy <= rad; dy++) {
+            for (let dx = -rad; dx <= rad; dx++) {
+              if (Math.abs(dy) === rad || Math.abs(dx) === rad) {
+                const ny = y + dy;
+                const nx = x + dx;
+                if (ny >= 0 && ny < S && nx >= 0 && nx < S && !dilatedMask[ny][nx]) {
+                  const idx = (ny * S + nx) * 4;
+                  rSum += working[idx];
+                  gSum += working[idx + 1];
+                  bSum += working[idx + 2];
+                  count++;
+                  found = true;
+                }
+              }
+            }
+          }
+        }
+
         const i = (y * S + x) * 4;
-        px[i] = bgR;
-        px[i + 1] = bgG;
-        px[i + 2] = bgB;
+        if (count > 0) {
+          px[i] = Math.round(rSum / count);
+          px[i + 1] = Math.round(gSum / count);
+          px[i + 2] = Math.round(bSum / count);
+        } else {
+          px[i] = bgR;
+          px[i + 1] = bgG;
+          px[i + 2] = bgB;
+        }
       }
     }
   }
