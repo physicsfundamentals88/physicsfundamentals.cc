@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getDb } from "@/db";
 import { articles } from "@/db/schema";
+import { and, ne } from "drizzle-orm";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://physicsfundamentals.cc";
@@ -57,11 +58,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 3. Dynamic blog article pages from SQLite D1 DB
+  // 3. Dynamic blog article pages from SQLite D1 DB (filtering out drafts and scheduled posts)
   let blogUrls: MetadataRoute.Sitemap = [];
   try {
     const db = getDb();
-    const dbArticles = await db.select({ slug: articles.slug, updatedAt: articles.updatedAt }).from(articles);
+    const dbArticles = await db
+      .select({ slug: articles.slug, updatedAt: articles.updatedAt, status: articles.status, scheduledDate: articles.scheduledDate })
+      .from(articles)
+      .where(
+        and(
+          ne(articles.status, "Draft"),
+          ne(articles.status, "draft"),
+          ne(articles.status, "Scheduled"),
+          ne(articles.status, "scheduled")
+        )
+      );
+
     blogUrls = dbArticles.map((art) => ({
       url: `${baseUrl}/blog/${art.slug}`,
       lastModified: art.updatedAt || new Date(),

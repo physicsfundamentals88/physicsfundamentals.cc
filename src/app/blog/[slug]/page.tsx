@@ -17,11 +17,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     // Use raw Cloudflare D1 driver (executes instantly, no JavaScript ORM overhead)
     const article: any = await db
-      .prepare("SELECT title, meta_title, excerpt, meta_description, hero_image FROM articles WHERE slug = ? LIMIT 1")
+      .prepare("SELECT title, meta_title, excerpt, meta_description, hero_image, status, scheduled_date FROM articles WHERE slug = ? LIMIT 1")
       .bind(slug)
       .first();
 
     if (!article) return {};
+
+    // Loophole Fix: Do not index drafts or unreleased scheduled articles
+    const statusLower = (article.status || "").toLowerCase();
+    const isDraft = statusLower === "draft";
+    const isFutureScheduled = statusLower === "scheduled" && article.scheduled_date && new Date(article.scheduled_date) > new Date();
+
+    if (isDraft || isFutureScheduled) {
+      return {
+        title: "Article Not Found",
+        robots: {
+          index: false,
+          follow: false,
+        },
+      };
+    }
 
     const title = article.meta_title || article.title;
     const description = article.meta_description || article.excerpt;

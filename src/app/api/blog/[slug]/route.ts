@@ -29,6 +29,18 @@ export async function GET(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
+    // Loophole Fix: Do not expose drafts or future scheduled articles publicly
+    const statusLower = (article.status || "").toLowerCase();
+    if (statusLower === "draft") {
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
+    }
+    if (statusLower === "scheduled" && article.scheduled_date) {
+      const releaseTime = new Date(article.scheduled_date);
+      if (releaseTime > new Date()) {
+        return NextResponse.json({ error: "Article not found" }, { status: 404 });
+      }
+    }
+
     const mappedArticle = {
       ...article,
       sections: typeof article.sections === "string" ? JSON.parse(article.sections) : (article.sections || []),
@@ -45,18 +57,27 @@ export async function GET(
       updatedAt: article.updated_at,
     };
 
-    // Fetch the 5 latest articles for the sidebar
+    // Fetch the latest articles for the sidebar, filtering out drafts
     const { results: latest } = await db
-      .prepare("SELECT title, slug, date, category, hero_image FROM articles ORDER BY created_at DESC LIMIT 5")
+      .prepare("SELECT title, slug, date, category, hero_image, status, scheduled_date FROM articles WHERE status IS NULL OR (status != 'Draft' AND status != 'draft') ORDER BY created_at DESC")
       .all();
 
-    const latestArticles = latest.map((a: any) => ({
-      title: a.title,
-      date: a.date,
-      category: a.category,
-      href: `/blog/${a.slug}`,
-      heroImage: a.hero_image
-    }));
+    const latestArticles = latest
+      .filter((a: any) => {
+        const stat = (a.status || "").toLowerCase();
+        if (stat === "scheduled" && a.scheduled_date) {
+          return new Date(a.scheduled_date) <= new Date();
+        }
+        return true;
+      })
+      .slice(0, 5)
+      .map((a: any) => ({
+        title: a.title,
+        date: a.date,
+        category: a.category,
+        href: `/blog/${a.slug}`,
+        heroImage: a.hero_image
+      }));
 
     return NextResponse.json({ article: mappedArticle, latestArticles });
   } catch (error: any) {
