@@ -91,8 +91,10 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): boolean {
   const width = canvas.width;
   const height = canvas.height;
 
-  // Scale box size S dynamically based on image dimensions to handle high-res images
-  const S = Math.min(220, Math.floor(Math.min(width, height) * 0.25));
+  // Tight corner box: cap at 120px regardless of image size.
+  // This keeps the scan away from image content (text, icons) that can appear
+  // further from the corner, preventing false-positive watermark detections.
+  const S = Math.min(120, Math.max(60, Math.floor(Math.min(width, height) * 0.30)));
   if (S <= 0) return false;
 
   const winX = width - S;
@@ -118,8 +120,8 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): boolean {
       // 2. Brown watermark (Banana stem)
       const isBrown = r > 80 && g > 40 && b < 50 && (r - g < 60) && (r - b > 40);
 
-      // 3. Bright White/Grey watermark (Gemini Sparkle)
-      const isWhite = r > 175 && g > 175 && b > 175 && Math.abs(r - g) < 15 && Math.abs(g - b) < 15;
+      // 3. Bright White/Grey/Silver watermark (Gemini Sparkle — may have slight cool or warm tint)
+      const isWhite = r > 165 && g > 165 && b > 165 && Math.abs(r - g) < 30 && Math.abs(g - b) < 30;
 
       if (isYellow || isBrown || isWhite) {
         if (x < minX) minX = x;
@@ -131,11 +133,16 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement): boolean {
     }
   }
 
-  // Only inpaint if we found a clearly localized watermark shape.
-  // matchCount > 5:       rules out random noise pixels
-  // matchCount < S*S*0.70: rules out images with large white/yellow backgrounds
-  if (matchCount <= 5 || matchCount >= (S * S * 0.70)) {
-    // No confident watermark detected — do NOT touch the image.
+  // Only inpaint if we found a clearly localized, compact watermark shape.
+  // Guards:
+  //   matchCount > 5          — rules out random noise pixels
+  //   matchCount < S*S*0.60   — rules out images with mostly white/yellow backgrounds
+  //   bboxArea < 6000         — watermarks are small (< ~78×78 px); large regions are image content
+  const bboxW = maxX - minX + 1;
+  const bboxH = maxY - minY + 1;
+  const bboxArea = bboxW * bboxH;
+  if (matchCount <= 5 || matchCount >= (S * S * 0.60) || bboxArea > 6000) {
+    // No confident watermark detection — do NOT touch the image.
     return false;
   }
 
