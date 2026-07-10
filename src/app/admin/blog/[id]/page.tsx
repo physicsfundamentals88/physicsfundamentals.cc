@@ -48,6 +48,26 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
   const [status, setStatus] = useState<"Published" | "Draft" | "Scheduled">("Draft");
 
   // Sidebar panels
+  const AUTHORS = [
+    { name: "Dr. James Carter", initials: "JC", bg: "#1e40af" },
+    { name: "Dr. Elena Vasquez", initials: "EV", bg: "#6b21a8" },
+    { name: "Dr. Marcus Webb", initials: "MW", bg: "#065f46" },
+    { name: "Dr. Sarah Kim", initials: "SK", bg: "#b45309" },
+  ];
+  const [author, setAuthor] = useState("Dr. Marcus Webb");
+  const [authorInitials, setAuthorInitials] = useState("MW");
+  const [authorBg, setAuthorBg] = useState("#065f46");
+  const [authorPanel, setAuthorPanel] = useState(true);
+
+  const handleAuthorChange = (name: string) => {
+    setAuthor(name);
+    const selected = AUTHORS.find((a) => a.name === name);
+    if (selected) {
+      setAuthorInitials(selected.initials);
+      setAuthorBg(selected.bg);
+    }
+  };
+
   const [featuredImage, setFeaturedImage] = useState<string | null>(null);
   const [category, setCategory] = useState("Uncategorized");
   const [categoriesList, setCategoriesList] = useState<string[]>([
@@ -156,6 +176,17 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
         setContent(data.content || "");
         setFeaturedImage(data.heroImage || null);
         setCategory(data.category || "Uncategorized");
+        if (data.author) {
+          setAuthor(data.author);
+          const selected = AUTHORS.find((a) => a.name === data.author);
+          if (selected) {
+            setAuthorInitials(selected.initials);
+            setAuthorBg(selected.bg);
+          } else {
+            setAuthorInitials(data.authorInitials || "MW");
+            setAuthorBg(data.authorBg || "#065f46");
+          }
+        }
         const rawStatus = data.status || "Draft";
         const normalizedStatus = 
           rawStatus.toLowerCase() === "published" ? "Published" :
@@ -188,9 +219,9 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
           title, slug, content,
           heroImage: featuredImage,
           category,
-          author: "Admin",
-          authorInitials: "AD",
-          authorBg: "#2271b1",
+          author,
+          authorInitials,
+          authorBg,
           status,
           scheduledDate,
           date: status === "Scheduled"
@@ -211,7 +242,7 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
     }, 3000);
     return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, slug, content, category, featuredImage, metaTitle, metaDescription, excerpt, status, scheduledDate]);
+  }, [title, slug, content, category, featuredImage, metaTitle, metaDescription, excerpt, status, scheduledDate, author, authorInitials, authorBg]);
 
 
   const wordCount = content.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
@@ -240,9 +271,9 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
         title, slug, content,
         heroImage: featuredImage,
         category,
-        author: "Admin",
-        authorInitials: "AD",
-        authorBg: "#2271b1",
+        author,
+        authorInitials,
+        authorBg,
         status,
         scheduledDate: date || scheduledDate,
         date: status === "Scheduled"
@@ -534,6 +565,43 @@ export default function EditArticlePage({ params }: EditPostPageProps) {
                     </button>
                   </div>
                 </details>
+              </div>
+            )}
+          </div>
+
+          {/* Author Selection */}
+          <div className="wp-metabox">
+            <div className="wp-metabox-header" onClick={() => setAuthorPanel(!authorPanel)}>
+              <h3 className="wp-metabox-title">Author</h3>
+              <ChevronDown size={14} style={{ transform: authorPanel ? "rotate(180deg)" : "none", transition: "transform 0.2s", opacity: 0.5 }} />
+            </div>
+            {authorPanel && (
+              <div className="wp-metabox-body">
+                <select
+                  value={author}
+                  onChange={(e) => handleAuthorChange(e.target.value)}
+                  className="wp-input"
+                  style={{ width: "100%", fontSize: 13, padding: "6px 10px", appearance: "none", cursor: "pointer" }}
+                >
+                  {AUTHORS.map((a) => (
+                    <option key={a.name} value={a.name}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: "50%",
+                    backgroundColor: authorBg, color: "white",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 11, fontWeight: "bold"
+                  }}>
+                    {authorInitials}
+                  </div>
+                  <span style={{ fontSize: 12, color: "var(--wp-text-muted)" }}>
+                    Selected Author
+                  </span>
+                </div>
               </div>
             )}
           </div>
