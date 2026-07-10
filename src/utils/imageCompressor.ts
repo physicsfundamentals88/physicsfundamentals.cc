@@ -15,110 +15,34 @@ export async function compressToWebP(file: File): Promise<Blob> {
       const img = new Image();
       img.src = event.target?.result as string;
       img.onload = async () => {
-        let width = img.width;
-        let height = img.height;
+        const width = img.width;
+        const height = img.height;
 
-        // Configuration
-        const MAX_RESOLUTION = 1200;
-        const TARGET_MIN_SIZE = 100 * 1024; // 100 KB
-        const TARGET_MAX_SIZE = 150 * 1024; // 150 KB
-
-        // Scale down initially if it exceeds max resolution
-        if (width > MAX_RESOLUTION || height > MAX_RESOLUTION) {
-          const ratio = Math.min(MAX_RESOLUTION / width, MAX_RESOLUTION / height);
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
-        }
-
-        // Create a temporary canvas to check and remove watermarks once
-        const cleanCanvas = document.createElement("canvas");
-        cleanCanvas.width = width;
-        cleanCanvas.height = height;
-        const cleanCtx = cleanCanvas.getContext("2d");
-        if (cleanCtx) {
-          cleanCtx.drawImage(img, 0, 0, width, height);
-          detectAndRemoveWatermark(cleanCanvas);
-        }
-
+        // Create a canvas of the exact same dimensions to preserve full resolution and details
         const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
         const ctx = canvas.getContext("2d");
-
-        let quality = 0.85;
-        let scale = 1.0;
-        let bestBlob: Blob | null = null;
-        let bestDiff = Infinity;
-
-        // Iteratively try to find the quality/resolution that fits the target size.
-        // We do up to 5 attempts to converge close to the 100KB-150KB budget.
-        for (let i = 0; i < 5; i++) {
-          const currentWidth = Math.round(width * scale);
-          const currentHeight = Math.round(height * scale);
-
-          canvas.width = currentWidth;
-          canvas.height = currentHeight;
-          ctx?.clearRect(0, 0, currentWidth, currentHeight);
-          // Draw from the watermark-free clean canvas
-          ctx?.drawImage(cleanCanvas, 0, 0, currentWidth, currentHeight);
-
-          const blob = await new Promise<Blob | null>((res) => {
-            canvas.toBlob((b) => res(b), "image/webp", quality);
-          });
-
-          if (!blob) break;
-
-          // If the original file is small and even at 0.85 quality it's less than 100KB,
-          // we should just return it. No need to artificially inflate it.
-          if (file.size < TARGET_MIN_SIZE && i === 0) {
-            bestBlob = blob;
-            break;
-          }
-
-          const size = blob.size;
-
-          // If it fits in the target range, we are done!
-          if (size >= TARGET_MIN_SIZE && size <= TARGET_MAX_SIZE) {
-            bestBlob = blob;
-            break;
-          }
-
-          // Keep track of the one closest to the range
-          let diff = 0;
-          if (size < TARGET_MIN_SIZE) {
-            diff = TARGET_MIN_SIZE - size;
-          } else {
-            diff = size - TARGET_MAX_SIZE;
-          }
-
-          if (diff < bestDiff) {
-            bestDiff = diff;
-            bestBlob = blob;
-          }
-
-          // Adjust parameters for the next iteration
-          if (size > TARGET_MAX_SIZE) {
-            // File is too large, reduce quality or scale down
-            if (quality > 0.4) {
-              quality -= 0.15;
-            } else if (scale > 0.5) {
-              scale -= 0.2;
-              quality = 0.7; // reset quality somewhat when scaling down
-            } else {
-              break;
-            }
-          } else {
-            // File is too small (< 100KB), but the original was larger than 150KB.
-            // This means we compressed too much in a previous step, so we can afford slightly higher quality.
-            if (quality < 0.95) {
-              quality += 0.05;
-            } else if (scale < 1.0) {
-              scale += 0.1;
-            } else {
-              break;
-            }
-          }
+        
+        if (!ctx) {
+          resolve(file);
+          return;
         }
 
-        resolve(bestBlob || file);
+        // Draw original image at 100% scale
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Run the watermark detection and removal on the full resolution canvas
+        detectAndRemoveWatermark(canvas);
+
+        // Convert the canvas to WebP format at a very high quality (0.92) to keep the image sharp and unblurred
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob || file);
+          },
+          "image/webp",
+          0.92
+        );
       };
       img.onerror = () => resolve(file);
     };
