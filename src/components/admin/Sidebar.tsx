@@ -42,7 +42,7 @@ const navigation: NavItem[] = [
     icon: Image,
     children: [
       { name: "Library", href: "/admin/media" },
-      { name: "Watermark Remover", href: "/admin/media/watermark-remover" },
+      { name: "Image Compressor", href: "/admin/media/watermark-remover" },
     ],
   },
   {
