@@ -1,6 +1,9 @@
 /**
- * Compresses an image file, converting it to WebP format,
- * and attempting to reduce its file size to the target range of 100KB - 150KB.
+ * Processes an image file for watermark removal.
+ * - If a Gemini/banana watermark is detected in the bottom-right corner,
+ *   the watermark is inpainted and the result is returned as WebP at quality 0.95.
+ * - If NO watermark is detected, the original file is returned byte-for-byte unchanged
+ *   (zero quality loss, zero blur, zero re-encoding).
  */
 export async function compressToWebP(file: File): Promise<Blob> {
   // We only support images
@@ -18,30 +21,35 @@ export async function compressToWebP(file: File): Promise<Blob> {
         const width = img.width;
         const height = img.height;
 
-        // Create a canvas of the exact same dimensions to preserve full resolution and details
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        
-        if (!ctx) {
+        // Step 1: Draw the image to a canvas so we can scan its pixels.
+        const scanCanvas = document.createElement("canvas");
+        scanCanvas.width = width;
+        scanCanvas.height = height;
+        const scanCtx = scanCanvas.getContext("2d");
+        if (!scanCtx) {
+          resolve(file);
+          return;
+        }
+        scanCtx.drawImage(img, 0, 0, width, height);
+
+        // Step 2: Scan the bottom-right corner for a watermark.
+        // If none is found, return the ORIGINAL file unchanged — no re-encoding,
+        // no blur, no quality loss whatsoever.
+        const watermarkFound = detectAndRemoveWatermark(scanCanvas);
+
+        if (!watermarkFound) {
           resolve(file);
           return;
         }
 
-        // Draw original image at 100% scale
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Run the watermark detection and removal on the full resolution canvas
-        detectAndRemoveWatermark(canvas);
-
-        // Convert the canvas to WebP format at a very high quality (0.92) to keep the image sharp and unblurred
-        canvas.toBlob(
+        // Step 3: Watermark was detected and removed in-place on scanCanvas.
+        // Export at very high quality (0.95) to keep the image as sharp as possible.
+        scanCanvas.toBlob(
           (blob) => {
             resolve(blob || file);
           },
           "image/webp",
-          0.92
+          0.95
         );
       };
       img.onerror = () => resolve(file);
@@ -70,16 +78,22 @@ export async function compressImageToFile(file: File): Promise<File> {
   }
 }
 
-function detectAndRemoveWatermark(canvas: HTMLCanvasElement) {
+/**
+ * Scans the bottom-right corner of a canvas for known watermark color signatures
+ * (Gemini sparkle white/grey, banana yellow, banana-stem brown).
+ * If a watermark is found, it is inpainted in-place on the canvas.
+ * Returns true if a watermark was detected and removed, false if the image is clean.
+ */
+function detectAndRemoveWatermark(canvas: HTMLCanvasElement): boolean {
   const ctx = canvas.getContext("2d");
-  if (!ctx) return;
+  if (!ctx) return false;
 
   const width = canvas.width;
   const height = canvas.height;
 
   // Scale box size S dynamically based on image dimensions to handle high-res images
   const S = Math.min(220, Math.floor(Math.min(width, height) * 0.25));
-  if (S <= 0) return;
+  if (S <= 0) return false;
 
   const winX = width - S;
   const winY = height - S;
@@ -117,31 +131,26 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement) {
     }
   }
 
+  // Only inpaint if we found a clearly localized watermark shape.
+  // matchCount > 5:       rules out random noise pixels
+  // matchCount < S*S*0.70: rules out images with large white/yellow backgrounds
+  if (matchCount <= 5 || matchCount >= (S * S * 0.70)) {
+    // No confident watermark detected — do NOT touch the image.
+    return false;
+  }
+
   const dilatedMask = Array.from({ length: S }, () => new Uint8Array(S));
 
-  // If we detected a valid localized watermark shape
-  if (matchCount > 5 && matchCount < (S * S * 0.70)) {
-    // Add 8px padding to ensure edges are fully covered
-    const pad = 8;
-    const startX = Math.max(0, minX - pad);
-    const endX = Math.min(S - 1, maxX + pad);
-    const startY = Math.max(0, minY - pad);
-    const endY = Math.min(S - 1, maxY + pad);
+  // Add 8px padding around the detected watermark bounding box to cover anti-aliased edges
+  const pad = 8;
+  const startX = Math.max(0, minX - pad);
+  const endX = Math.min(S - 1, maxX + pad);
+  const startY = Math.max(0, minY - pad);
+  const endY = Math.min(S - 1, maxY + pad);
 
-    for (let y = startY; y <= endY; y++) {
-      for (let x = startX; x <= endX; x++) {
-        dilatedMask[y][x] = 1;
-      }
-    }
-  } else {
-    // Fallback: inpaint the bottom-right inner zone while leaving a border margin
-    // to prevent dark frame borders from bleeding into the light background.
-    const fallbackStart = Math.floor(S * 0.35);
-    const fallbackEnd = S - 8; // Leave 8px border untouched
-    for (let y = fallbackStart; y < fallbackEnd; y++) {
-      for (let x = fallbackStart; x < fallbackEnd; x++) {
-        dilatedMask[y][x] = 1;
-      }
+  for (let y = startY; y <= endY; y++) {
+    for (let x = startX; x <= endX; x++) {
+      dilatedMask[y][x] = 1;
     }
   }
 
@@ -200,4 +209,5 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement) {
 
   winImgData.data.set(workingPixels);
   ctx.putImageData(winImgData, winX, winY);
+  return true;
 }
