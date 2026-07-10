@@ -153,27 +153,71 @@ function detectAndRemoveWatermark(canvas: HTMLCanvasElement) {
   const width = canvas.width;
   const height = canvas.height;
 
-  // Always inpaint the bottom-right corner area (up to 120×120 px).
-  // This universally removes any watermark regardless of color (Gemini G logo,
-  // sparkle shape, banana logo, etc.) by blending surrounding pixel colors.
-  const S = Math.min(120, width, height);
+  // Scale box size S dynamically based on image dimensions to handle high-res images
+  const S = Math.min(220, Math.floor(Math.min(width, height) * 0.25));
+  if (S <= 0) return;
+
   const winX = width - S;
   const winY = height - S;
-
-  if (S <= 0) return;
 
   const winImgData = ctx.getImageData(winX, winY, S, S);
   const winPixels = winImgData.data;
 
-  // Build a mask that covers the inner portion of the corner (avoids false-
-  // positives on clean background images by only replacing the inner 60% zone)
-  const innerStart = Math.floor(S * 0.4);
+  // Scan the corner box for watermark colors to dynamically detect its bounding box
+  let minX = S, maxX = -1, minY = S, maxY = -1;
+  let matchCount = 0;
+
+  for (let y = 0; y < S; y++) {
+    for (let x = 0; x < S; x++) {
+      const idx = (y * S + x) * 4;
+      const r = winPixels[idx];
+      const g = winPixels[idx + 1];
+      const b = winPixels[idx + 2];
+
+      // 1. Yellow watermark (Banana body)
+      const isYellow = r > 150 && g > 130 && b < 120 && (r - b > 40) && (g - b > 30);
+      
+      // 2. Brown watermark (Banana stem)
+      const isBrown = r > 80 && g > 40 && b < 50 && (r - g < 60) && (r - b > 40);
+
+      // 3. Bright White/Grey watermark (Gemini Sparkle)
+      const isWhite = r > 175 && g > 175 && b > 175 && Math.abs(r - g) < 15 && Math.abs(g - b) < 15;
+
+      if (isYellow || isBrown || isWhite) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+        matchCount++;
+      }
+    }
+  }
+
   const dilatedMask = Array.from({ length: S }, () => new Uint8Array(S));
 
-  // Mark the inner 60% × 60% of the corner as "to inpaint"
-  for (let y = innerStart; y < S; y++) {
-    for (let x = innerStart; x < S; x++) {
-      dilatedMask[y][x] = 1;
+  // If we detected a valid localized watermark shape
+  if (matchCount > 5 && matchCount < (S * S * 0.70)) {
+    // Add 8px padding to ensure edges are fully covered
+    const pad = 8;
+    const startX = Math.max(0, minX - pad);
+    const endX = Math.min(S - 1, maxX + pad);
+    const startY = Math.max(0, minY - pad);
+    const endY = Math.min(S - 1, maxY + pad);
+
+    for (let y = startY; y <= endY; y++) {
+      for (let x = startX; x <= endX; x++) {
+        dilatedMask[y][x] = 1;
+      }
+    }
+  } else {
+    // Fallback: inpaint the bottom-right inner zone while leaving a border margin
+    // to prevent dark frame borders from bleeding into the light background.
+    const fallbackStart = Math.floor(S * 0.35);
+    const fallbackEnd = S - 8; // Leave 8px border untouched
+    for (let y = fallbackStart; y < fallbackEnd; y++) {
+      for (let x = fallbackStart; x < fallbackEnd; x++) {
+        dilatedMask[y][x] = 1;
+      }
     }
   }
 
