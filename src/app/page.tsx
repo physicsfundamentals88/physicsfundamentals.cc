@@ -31,10 +31,10 @@ export default function Home() {
       <main id="main-content" className="flex-1 bg-[#f8fafc]">
         <HeroSection />
         <FeaturesSection />
+        <LatestArticlesSection />
         <HowItWorksSection />
         <CurriculumSection />
         <WaitlistSection />
-        <LatestArticlesSection />
         <WhatAreFundamentalsSection />
         <FAQSection />
         <EarlyAccessSection />
