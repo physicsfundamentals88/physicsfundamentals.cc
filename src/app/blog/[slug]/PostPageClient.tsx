@@ -77,11 +77,46 @@ export default function PostPageClient({ slug }: PostPageClientProps) {
   // Render math client-side
   const renderedContent = article.content ? renderMath(article.content) : null;
 
+  // BlogPosting JSON-LD schema for Google Search Console rich snippets
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": article.title,
+    "description": article.excerpt || article.metaDescription || "",
+    "image": article.heroImage
+      ? (article.heroImage.startsWith("/") ? `https://physicsfundamentals.cc${article.heroImage}` : article.heroImage)
+      : "https://physicsfundamentals.cc/og-image.png",
+    "datePublished": article.createdAt || article.date || new Date().toISOString(),
+    "dateModified": article.updatedAt || new Date().toISOString(),
+    "author": {
+      "@type": "Person",
+      "name": article.author || "Dr. Marcus Webb",
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Physics Fundamentals",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://physicsfundamentals.cc/favicon.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://physicsfundamentals.cc/blog/${slug}`
+    }
+  };
+
   return (
-    <PostClient
-      article={article}
-      latestArticles={latestArticles}
-      renderedContent={renderedContent}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <PostClient
+        article={article}
+        latestArticles={latestArticles}
+        renderedContent={renderedContent}
+      />
+    </>
   );
 }
